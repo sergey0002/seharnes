@@ -233,7 +233,7 @@ def _profile_selection(args) -> tuple[list[str], list[str], set[str]]:
                  ".qwen/rules/", ".qwen/settings.json", ".dsh/project.patch.yml",
                  ".dsh/models.overlay.json", "DSH-RULES.md")
     secrets = ("mcp.env", ".env", "config.env")
-    paths, roots = [], set()
+    paths, roots, allowed = [], set(), set()
     for path in files:
         if path.startswith((".kilo/", ".qoder/", ".qwen/", ".dsh/", ".codex/", ".serena/",
                              ".cursor/tools/", ".codex/tools/")):
@@ -243,6 +243,7 @@ def _profile_selection(args) -> tuple[list[str], list[str], set[str]]:
         if path.endswith(".phar") or path.startswith(generated) or any(
                 path.endswith("/" + name) or path == name for name in secrets):
             continue
+        allowed.add(path)
         if "/" in path:
             parts = path.split("/")
             roots.add("/".join(parts[:2]) if parts[0] in (".doc", ".tools") else parts[0])
@@ -253,7 +254,7 @@ def _profile_selection(args) -> tuple[list[str], list[str], set[str]]:
                 ".doc/skil_data", ".doc/tasks", ".doc/architecture", ".doc/archive", ".doc/qa",
                 ".cursor/tools", ".codex/tools", ".kilo", ".qoder", ".qwen", ".dsh", ".codex", ".serena"]
     args.exclude = sorted(set(list(getattr(args, "exclude", None) or []) + defaults))
-    return sorted(roots), sorted(paths), set(files)
+    return sorted(roots), sorted(paths), allowed
 
 
 def _base_state(args, paths: list[str], receipt: dict | None) -> tuple[dict | None, str]:

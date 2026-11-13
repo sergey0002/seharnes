@@ -270,6 +270,67 @@ def cmd_sync(args: argparse.Namespace) -> int:
     return 0 if code == 0 else 1
 
 
+def _transfer_json(command: list[str], root: Path) -> tuple[int, dict | None, str]:
+    code, output = _run(command, root, 600)
+    payload = None
+    for line in reversed(output.strip().splitlines()):
+        try:
+            candidate = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(candidate, dict):
+            payload = candidate
+            break
+    return code, payload, output
+
+
+def python_export(root: Path, target: Path, profile: str, *, yes: bool) -> int:
+    transfer = root / ".agents" / "skills" / "harness-router" / "children" / "new-project" / "scripts" / "harness_transfer.py"
+    if not transfer.is_file():
+        print("transfer engine missing")
+        return 2
+    nonempty = target.is_dir() and any(target.iterdir())
+    if nonempty and not yes:
+        print("target is not empty; pass --yes after reviewing the profile plan")
+        return 2
+    target.mkdir(parents=True, exist_ok=True)
+    operation = "update" if nonempty else "install"
+    plan_code, plan, output = _transfer_json(
+        [sys.executable, str(transfer), "plan", "--source", str(root), "--target", str(target),
+         "--profile", profile, "--operation", operation], root)
+    print(output)
+    if plan_code not in (0, 2) or not plan or not plan.get("plan_path"):
+        return plan_code or 2
+    decisions = {}
+    for row in plan.get("files", []):
+        proposal = row.get("proposal", {})
+        if not proposal.get("requires_review"):
+            continue
+        choices = proposal.get("choices") or []
+        status = proposal.get("status")
+        action = proposal.get("action")
+        if status == "new_from_release" or action == "add":
+            choice = "add"
+        elif status == "same_path_collision":
+            choice = "adopt"
+        else:
+            choice = next((item for item in ("adopt", "replace", "delete", "keep") if item in choices), "keep")
+        decisions[row["path"]] = choice
+    with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as stream:
+        json.dump({"schema_version": 1, "decisions": decisions}, stream, ensure_ascii=False, indent=2)
+        decisions_path = stream.name
+    approve_code, approve, output = _transfer_json(
+        [sys.executable, str(transfer), "approve", "--plan", plan["plan_path"], "--decisions", decisions_path], root)
+    print(output)
+    if approve_code != 0 or not approve or not approve.get("approved_path"):
+        return approve_code or 2
+    apply_code, applied, output = _transfer_json(
+        [sys.executable, str(transfer), "apply", "--plan", plan["plan_path"],
+         "--approved", approve["approved_path"]], root)
+    print(output)
+    return apply_code
+
+
 def cmd_export(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve()
     target = Path(args.target).resolve()
@@ -316,20 +377,6 @@ def cmd_export(args: argparse.Namespace) -> int:
     if args.no_backup:
         command.append("-SkipBackup")
     code, output = _run(command, root)
-    if code == 0:
-        scanner = root / ".agents" / "skills" / "harness-router" / "children" / "add-skill" / "scripts" / "scan_local_skills.py"
-        baseline = target / ".doc" / "skil_data" / "harness-core" / "kit-manifest.json"
-        if scanner.is_file():
-            scan_code, scan_output = _run(
-                ["python3", str(scanner), "--root", str(root), "--baseline", str(baseline), "--write-baseline"],
-                root,
-                120,
-            )
-            output += "\n" + scan_output
-            if scan_code != 0:
-                output += f"\nbaseline write failed: {scan_code}"
-        else:
-            output += "\nbaseline scanner not found, package manifest was not written"
     print(output)
     return code
 
