@@ -1,0 +1,26 @@
+# Selenium Grid / standalone-chrome (порт 4444).
+#
+# Браузер крутится ВНУТРИ контейнера — на рабочем столе WSL его не видно.
+# Смотреть действия: http://127.0.0.1:7900 (noVNC, пароль часто "secret").
+#
+# Если нужно окно прямо на экране Windows/WSLg — не используй этот env:
+# подними локальный chromedriver (start-chromedriver-wsl.sh, порт 9515)
+# и гоняй без --env chromedriver. Раннер task-test.sh сам предпочитает 9515.
+modules:
+    config:
+        WebDriver:
+            host: 127.0.0.1
+            port: 4444
+            url: '%CHROMEDRIVER_APP_URL%'
+            browser: chrome
+            window_size: 1920x1080
+            capabilities:
+                unhandledPromptBehavior: accept
+                goog:chromeOptions:
+                    # HEADLESS ЗАПРЕЩЁН и здесь: смотришь через noVNC :7900
+                    args:
+                        - '--no-sandbox'
+                        - '--disable-dev-shm-usage'
+                        - '--remote-allow-origins=*'
+                        - '--start-maximized'
+                        - '--window-position=0,0'

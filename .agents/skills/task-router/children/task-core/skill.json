@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "name": "task-core",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [
+      "references/sources.md"
+    ],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

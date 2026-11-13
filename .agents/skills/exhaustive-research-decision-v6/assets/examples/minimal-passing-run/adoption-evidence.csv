@@ -1,0 +1,3 @@
+candidate_id,evidence_type,source_ids,excerpt,date,version,independence_group,confidence
+C001,paper,S001,517 claims and 53 Gherkin parity scenarios,2026-05-18,2026.05,authors,high
+C002,case_study,S002,deployed as operational contract source,2026-09-02,2.4,vendor+customer,medium

@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "name": "context7",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {"scripts": [], "references": ["docs/mcp/context7.md"], "assets": []},
+  "tests": [],
+  "children": [],
+  "dependencies": {"skills": [], "project": []},
+  "generated": []
+}

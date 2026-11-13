@@ -1,0 +1,6 @@
+{
+  "prepare-plan": ["find-related-tasks"],
+  "test-task": ["task-test.sh", "gates.py"],
+  "task-doc": ["build-tasks-index"],
+  "send-to-git": ["index_repository"]
+}

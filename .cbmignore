@@ -1,0 +1,8 @@
+# Indexing excludes for codebase-memory-mcp (gitignore syntax).
+# .doc/ and .serena/ are already excluded by the repo .gitignore.
+
+# Generated knowledge graph and its build artifacts.
+graphify-out/
+
+# Local DB dumps and ad-hoc backups, not source.
+backups/

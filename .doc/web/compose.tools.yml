@@ -1,0 +1,19 @@
+services:
+  tools:
+    build:
+      context: .
+      dockerfile: Dockerfile.tools
+    image: copytrust-tools:local
+    working_dir: ${SERVICE_WORKSPACE:-/var/www/html}
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    volumes:
+      - ../../:${SERVICE_WORKSPACE:-/var/www/html}:rw
+      - ${KILO_DATA_DIR:-/home/newuser/.local/share/kilo}:/host-kilo:ro
+    ports:
+      - "127.0.0.1:${WEB_PANEL_PORT:-8077}:8077"
+    environment:
+      HOME: /tmp
+      KILO_DB: /host-kilo/kilo.db
+      PHP_CLI_SERVER_WORKERS: "4"
+    command: php -S 0.0.0.0:8077 -t .doc/web .doc/web/router.php
+    restart: unless-stopped

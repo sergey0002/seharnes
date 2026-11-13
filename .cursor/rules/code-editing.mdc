@@ -1,0 +1,195 @@
+---
+name: "Как править файлы кода"
+description: "Порядок правки кода, MD, HTML, CSS, текста и JSON: Serena для PHP, файловые правки для остальных, проверка уникальности якоря, парсеры и генераторы. Триггеры: правка кода, точечная замена, refactor, правка документации, HTML, CSS, JSON."
+alwaysApply: false
+---
+
+# Как править файлы кода
+
+Serena держит языковой сервер и даёт структурные операции по символам. Правило задаёт
+выбор инструмента под язык файла и проверку результата. Требования задачи и план оно
+не заменяет: сначала план, потом правка.
+
+## Когда применять
+
+- любая правка PHP или JS в репозитории;
+- поиск символа, его связей и реализаций перед изменением;
+- рефакторинг метода или класса;
+- проверка, что правка не задела соседний код.
+
+## Минимальный полный патч
+
+Перед правкой применить лестницу ponytail: нужно ли это вообще; есть ли уже в коде;
+умеет ли стандартная библиотека или платформа; есть ли установленная зависимость;
+можно ли одной понятной строкой; иначе минимум рабочего кода. Не вырезать валидацию
+на границе доверия, обработку ошибок, защиту данных, безопасность и доступность.
+Завершать вызывающие места, фикстуры и тесты, которые ломает правка.
+
+Тестовый контракт задачи важнее правила ponytail про один маленький тест: каждая
+причина R получает свой сценарий S по testaudit. Комментарии не добавлять, если
+пользователь не просил; `shortcut:` не писать по умолчанию.
+
+Скил: [`ponytail`](../../.agents/skills/ponytail/SKILL.md), канон `.agents/skills/ponytail/SKILL.md`.
+
+## Что поддерживается в этом проекте
+
+| Язык | Языковой сервер | Символьные инструменты |
+|---|---|---|
+| PHP | Intelephense | работают: `find_symbol`, `get_symbols_overview`, `find_referencing_symbols`, `find_declaration`, `replace_symbol_body`, `insert_before_symbol`, `insert_after_symbol`, `safe_delete_symbol`, `get_diagnostics_for_file` |
+| JS, Vue, TPL | нет | не работают: `get_symbols_overview` отвечает `Cannot extract symbols ... Active language servers: ['php']`, `find_symbol` отвечает `path is ignored`. Остаются файловые инструменты и `search_for_pattern` |
+| MD, HTML, CSS, JSON, текст | нет | `replace_in_files` эти файлы не видит: по `.doc` отказывает `is ignored`, по обычным каталогам возвращает 0 совпадений. Править по одному файлу через `replace_content` |
+
+Язык файла проверять до выбора инструмента. Для файлов без языкового сервера
+символьные операции не вызывать: ошибка или пустой ответ там ничего не доказывают.
+
+## Правка символа в PHP
+
+Порядок и параметры инструментов: [mcp-serena](./mcp/serena.mdc). Коротко:
+найти класс (`find_symbol depth=1`), прочитать метод (`include_body=true`),
+проверить ссылки (`find_referencing_symbols`), править, проверить диагностикой.
+
+`rename_symbol` и `find_implementations` бесплатно не работают. Переименование
+делать через `replace_in_files` с `dry_run` и `occurrence_ids`, поиск
+реализаций через `search_for_pattern` по `implements <Interface>`.
+
+## Порядок правки без языкового сервера
+
+1. Найти файл: `find_file` или `search_for_pattern`.
+2. Прочитать нужный диапазон: `read_file` с `start_line` и `end_line`.
+3. Править через `replace_content`, для нескольких файлов кода - `replace_in_files` с `dry_run`.
+   `replace_in_files` работает по PHP, JS, Vue и TPL; MD, HTML, CSS, JSON и текст он не находит.
+4. Проверить повторным чтением диапазона, затем `git diff` и тестами проекта.
+
+## Правка MD, HTML, CSS, текста и JSON
+
+Сначала проверить, разрешена ли прямая правка: есть ли первая строка
+`generated ... do not edit` и скрипт-генератор. Если есть, правится источник,
+а файл пересобирается. Прямая правка разрешена только для authored-файлов.
+
+### MD
+
+Сгенерированные представления не править:
+
+- `.doc/architecture/<key>.md` с первой строкой `generated from architecture:<key> ... do not edit`:
+  менять `<key>.json` через `jsondoc.py apply --arch <key>` или `batch`, затем
+  `jsondoc.py render --arch <key>`;
+- `.doc/tasks/{N}/doc.md` с `generated from task:N ... do not edit`: менять
+  `task.json` через `jsondoc.py apply --task N`, затем `jsondoc.py render --task N`;
+  если `task.json` нет, `doc.md` живой и правится как авторский;
+- `.doc/tasks/{N}/plan.md` всегда авторский Markdown: править `replace_content`
+  по уникальному якорю. JSON-модели плана и команды `jsondoc.py plan` в харнесе нет;
+- `.doc/tasks/{N}/task.md` обновляет `gototask`, `diff.md` обновляет `task-diff`.
+
+Авторские MD (`.doc/harnes/**`, `.doc/qa/flows/**`, `.cursor/rules/*.mdc`,
+`.agents/skills/**/*.md`, `index.md` без маркера) править `replace_content` по
+уникальному якорю, `mode: literal`. Строку таблицы менять по якорю строки, а не
+переписывать таблицу. Сохранять meta и добавлять запись в `История изменений`.
+Перед правкой `.doc/` соблюдать `.doc/harnes/doc_rules.md`. После правки канона
+`.cursor/` выполнить `sync-agent-views.sh`.
+
+### HTML
+
+Авторского HTML приложения в проекте нет. `.html` это сгенерированные отчёты
+или сторонние библиотеки:
+
+- `tests/log/report/**` - покрытие PHPUnit;
+- `.doc/tasks/{N}/test-runs/**/report.html` - отчёт Codeception;
+- `.doc/tasks/{N}/reports/change-report/report.html` - отчёт `task-change-report`;
+- `templates_c/**` - кэш Smarty;
+- `admin/scripts/plugins/**`, `scripts/**/doc/**` - сторонние библиотеки.
+
+Эти файлы не править. Менять источник (`.tpl`, `.vue`, PHP, `report-model.json`)
+и пересобирать отчёт или тесты. Авторская HTML-фикстура в тестах скила правится
+`replace_content`, проверка - браузер или тест.
+
+### CSS
+
+Авторские CSS: `styles/**/*.css` и блоки `<style>` в `.vue`. Править
+`replace_content` по полному блоку селектора. Сгенерированные
+`frontend/dist/**/*.css` (webpack, gitignore), `templates_c/**` и минифицированные
+плагины не править; пересобрать `npm run dev` или `npm run prod`.
+
+`replace_in_files` CSS не видит. Для нескольких файлов делать отдельный
+`replace_content` на файл. Проверка: `./node_modules/.bin/prettier --parser css <file>`,
+затем страница в браузере по правилу runtime-checkpoint из `bitbucket-tasks.mdc`.
+
+### Текстовые файлы
+
+Авторские `.env`, `.env.example`, `.htaccess`, `robots.txt`, `*.txt`, `*.conf`,
+`*.ini`, `*.dist` править `replace_content` по уникальному ключу. Значения
+секретов не печатать, `.env` не коммитить, менять только нужный ключ.
+
+Сгенерированные `composer.lock`, `yarn.lock`, `package-lock.json`, `sitemap.xml`,
+логи и `templates_c` не править; пересобрать инструментом.
+
+### JSON
+
+- JSONdoc-канон `task.json` и `.doc/architecture/*.json` менять только через
+  `jsondoc.py apply --dry-run`, затем `apply` и `render`. `replace_content` для
+  них не применять.
+- Конфиги без генератора (`package.json`, `composer.json`,
+  `.agents/skills/*/config.json`) править `replace_content` по уникальному ключу.
+- `.doc/tasks/{N}/reports/**` менять только через скил `task-change-report`:
+  `report-model.json` и `workflow-context.json` - его вход, `report-data.json`,
+  `report-manifest.json` и `report.html` - результат генератора.
+- Сгенерированные `dialogs/index.json`, `_dialogs/plan-state.json`,
+  `test-runs/**`, `manifest.json`, `task-analytics/out/**`, `_jsondoc/**` не
+  править, а пересобирать.
+- Зеркала `.kilo/kilo.jsonc`, `.codex/mcp.json`, `.agents/**` генерируются из
+  `.cursor/mcp.json` и канона `.cursor/` через `sync-agent-views.sh`. Править
+  канон, не зеркало. Legacy `.antigravity`, `.gemini`, `.kilocode` удалены.
+
+Проверка JSON: `python3 -m json.tool <file>`, для канона дополнительно
+`jsondoc.py get --task N` или `--arch <key>`.
+
+### Проверка после правки
+
+1. `git diff -- <file>`: изменены только намеченные строки.
+2. Парсер: `prettier --parser markdown|html|css|json` для текстовых форматов,
+   `python3 -m json.tool` для JSON.
+3. Сгенерированный view: после `render` сверить `view_sha256` в receipt.
+4. UI: браузер или Codeception.
+5. Канон `.cursor/`: `sync-agent-views.sh` и parity.
+
+## Контроль корректности правки
+
+1. Проверка диапазона символа: прочитать тело через `find_symbol include_body`,
+   записать его обратно тем же текстом через `replace_symbol_body`, затем `git diff`.
+   Пустой diff означает, что границы символа определены верно. Так проверяют новый
+   языковой сервер и любой переключённый бэкенд.
+2. После правки - `git diff` по изменённым файлам. Лишние строки и сдвиги видно сразу.
+3. `get_diagnostics_for_file` по изменённому файлу: синтаксис и типы на уровне LSP.
+4. PHPStan по файлам задачи: MCP `phpstan_analyze` с `task=<N>` или
+   `.agents/skills/phpstan-mcp/scripts/phpstan-task.sh <N>`. Стенд на PHP 7.1, phar запускается в
+   PHP 7.4 Docker, `phpVersion: 70100` задан в `.cursor/tools/phpstan.neon`.
+5. Тесты проекта штатным способом задачи. Команда `php -l` на хосте недоступна,
+   синтаксис подтверждается диагностикой и тестами.
+6. Если затронут публичный символ - повторить `find_referencing_symbols` и убедиться,
+   что ссылки не сломались.
+
+## Индекс Serena
+
+Обновление индекса, перезапуск языкового сервера и ограничения по `.doc`:
+[mcp-serena](./mcp/serena.mdc). Отдельно запомнить: `.doc/` в индекс Serena не
+входит, документация ищется через [mcp-jdocmunch](./mcp/jdocmunch.mdc), а
+`multi-search.sh` только для литералов и не-Markdown.
+
+## Границы
+
+- Не править исходники через `python3 - <<'PY'`, `sed -i` или другой скрипт: это
+  обходит проверку уникальности якоря и `git diff`. Скрипты допустимы для
+  генераторов и пакетной обработки данных, но не для правки кода и документов.
+- Не применять символьные инструменты к файлам без языкового сервера.
+- Не запускать `replace_in_files` без `dry_run`, если шаблон может встретиться шире задуманного.
+- Обрыв вызова на 60 с (`-32001`) не означает, что правка не применилась: сервер работает
+  до 240 с. После обрыва перечитать файл, а не повторять правку вслепую.
+- Массовые переносы и переименования делать по плану задачи, а не одной командой по репозиторию.
+
+## Связи
+
+- [Пакетные вызовы](./batch-calls.mdc) - как группировать поиски и чтения
+- [Индексация графа перед push](./cbm-index-before-push.mdc) - граф CBM и порядок push
+- [MCP serena](./mcp/serena.mdc) - инструменты, параметры и ограничения символов
+- [MCP jdocmunch](./mcp/jdocmunch.mdc) - поиск и чтение документации
+
+#code #serena #editing

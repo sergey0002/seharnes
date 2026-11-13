@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "name": "research-assignment",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

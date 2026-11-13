@@ -1,0 +1,10 @@
+{
+  "schema_version": "3.1.0",
+  "default_output_language": "ru",
+  "language_override_policy": "Always render audit reports and summaries in default_output_language unless the user explicitly writes or asks for another language.",
+  "preserve_technical_identifiers": true,
+  "default_self_audit_safe": false,
+  "default_policy_profile": "balanced",
+  "dimension_weights": {},
+  "custom_dimensions": []
+}

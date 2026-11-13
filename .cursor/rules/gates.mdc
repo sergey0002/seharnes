@@ -1,0 +1,25 @@
+---
+description: "Жёсткие гейты харнеса: что прочитать или вызвать до действия. Триггеры: гейт, обязательный первый шаг, что делать сначала, перед действием."
+alwaysApply: true
+gate: true
+---
+
+# Жёсткие гейты
+
+Правило-указатель. Оно называет момент срабатывания и первый вызов, детали остаются в профильном правиле или скиле.
+
+| Когда | Первый вызов | Детали |
+|---|---|---|
+| документация, панель, задача, architecture, harness, отчёт | `search_sections` с `repo` из `doc_resolve_repo` текущего `.doc` и `path_glob`; в Kilo через `execute` | `.cursor/rules/mcp/jdocmunch.mdc` |
+| выбор MCP-сервера или порядка вызова | сначала открыть карту и сверить сервер по задаче | `.cursor/rules/mcp.mdc` |
+| правка кода, шаблона или конфига | прочитать правило правки до изменения файла | `.cursor/rules/code-editing.mdc` |
+| правка SQL, доступа, XSS или пользовательских данных | до записи открыть профильные security gates | `.cursor/rules/mcp/codeprism.mdc`, `.cursor/rules/mcp/semgrep.mdc` |
+| 3 и более независимых поиска или чтения | пачка `multi-search.sh` или `multi-exec.sh` | `.cursor/rules/batch-calls.mdc` |
+| перед `git push` | `index_repository` режим `fast` | `.cursor/rules/cbm-index-before-push.mdc` |
+| commit и push | `send-to-git`; без явной просьбы не пушить | `.cursor/rules/bitbucket-tasks.mdc` |
+| правка харнеса | `improvement`, затем синхронизация и parity | `.cursor/rules/harness-improvement.mdc` |
+| работа по задаче Jira | `gototask`, затем `task-diff` | `.cursor/rules/bitbucket-tasks.mdc` |
+
+Гейт считается выполненным только тогда, когда первый вызов сделан. Если инструмент недоступен, назвать это прямо и указать обходной путь.
+
+#gates #harness #rules

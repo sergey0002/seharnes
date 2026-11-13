@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Read-only report workflow context v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "task_id", "scope", "allowed_steps", "refresh_authorized", "sources", "facts", "steps"],
+  "properties": {
+    "version": {"type": "integer", "enum": [1]},
+    "task_id": {"$ref": "#/$defs/text"},
+    "scope": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "id", "files", "commits"],
+      "properties": {
+        "kind": {"type": "string", "enum": ["task", "stage"]},
+        "id": {"$ref": "#/$defs/text"},
+        "files": {"$ref": "#/$defs/paths"},
+        "commits": {"$ref": "#/$defs/paths"}
+      }
+    },
+    "allowed_steps": {"type": "array", "uniqueItems": true, "items": {"type": "string", "enum": ["diff", "documentation", "html", "jira"]}},
+    "refresh_authorized": {"type": "boolean"},
+    "sources": {"type": "array", "minItems": 1, "items": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256", "role"],
+      "properties": {"path": {"$ref": "#/$defs/text"}, "sha256": {"$ref": "#/$defs/hash"}, "role": {"$ref": "#/$defs/text"}}
+    }},
+    "facts": {"type": "array", "minItems": 1, "items": {
+      "type": "object", "additionalProperties": false, "required": ["id", "text", "evidence"],
+      "properties": {"id": {"$ref": "#/$defs/text"}, "text": {"$ref": "#/$defs/text"}, "evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/text"}}}
+    }},
+    "steps": {
+      "type": "object", "additionalProperties": false,
+      "properties": {"diff": {"$ref": "#/$defs/step"}, "documentation": {"$ref": "#/$defs/step"}, "html": {"$ref": "#/$defs/step"}, "jira": {"$ref": "#/$defs/step"}}
+    },
+    "jira": {
+      "type": "object", "additionalProperties": false,
+      "required": ["text", "release", "release_source", "evidence", "shots", "limitations"],
+      "properties": {
+        "text": {"$ref": "#/$defs/text"}, "release": {"$ref": "#/$defs/text"}, "release_source": {"$ref": "#/$defs/text"},
+        "evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/text"}},
+        "shots": {"type": "array", "items": {
+          "type": "object", "additionalProperties": false, "required": ["path", "title", "caption"],
+          "properties": {"path": {"$ref": "#/$defs/text"}, "title": {"$ref": "#/$defs/text"}, "caption": {"$ref": "#/$defs/text"}}
+        }},
+        "limitations": {"type": "array", "items": {"$ref": "#/$defs/text"}}
+      }
+    }
+  },
+  "$defs": {
+    "text": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "paths": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/text"}},
+    "artifact": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256"],
+      "properties": {"path": {"$ref": "#/$defs/text"}, "sha256": {"$ref": "#/$defs/hash"}}
+    },
+    "step": {
+      "type": "object", "additionalProperties": false, "required": ["status", "input_hash", "artifacts"],
+      "properties": {
+        "status": {"type": "string", "enum": ["pending", "passed", "blocked"]},
+        "input_hash": {"type": "string", "pattern": "^([a-f0-9]{64})?$"},
+        "artifacts": {"type": "array", "items": {"$ref": "#/$defs/artifact"}}
+      }
+    }
+  }
+}

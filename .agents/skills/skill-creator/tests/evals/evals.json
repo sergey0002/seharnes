@@ -1,0 +1,68 @@
+{
+  "skill_name": "skill-creator",
+  "default_eval_mode": "AB_MEANINGFUL",
+  "evals": [
+    {
+      "id": 1,
+      "eval_mode": "AB_MEANINGFUL",
+      "prompt": "Create a new portable skill called 'sql-migration-guard' that reviews Postgres migrations for destructive locks before applying them. Target Claude Code, Codex, Cursor, and OpenCode.",
+      "expected_output": "A lean, frontier-ready skill package with strict 6-key frontmatter, string metadata, agents/openai.yaml, explicit Gotchas, checkable completion criteria, evals, and passing 17-agent preflight.",
+      "files": [],
+      "expectations": [
+        "Runs scaffold_skill.py or creates exact sql-migration-guard/SKILL.md matching directory name",
+        "Frontmatter keeps metadata values as quoted strings and avoids vendor-locked top-level keys",
+        "Description states what/when/boundary without leaking internal workflow steps (zero CSO-LEAK)",
+        "Includes agents/openai.yaml with $sql-migration-guard and passes package_and_verify.py --verify-only"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_mode": "AB_MEANINGFUL",
+      "prompt": "Turn the release-notes generation steps we just debugged in this conversation (git log parsing + markdown formatting + Jira link validation) into a reusable skill without forcing LLMs to do deterministic git/regex counting.",
+      "expected_output": "Extracts observed steps from conversation context, asks only unresolved edge-case questions if needed, puts git/Jira ID extraction into a deterministic script, keeps prose synthesis with the LLM, and verifies.",
+      "files": [],
+      "expectations": [
+        "Separates deterministic extraction/validation into scripts/ without SCRIPT-OVERREACH",
+        "Keeps SKILL.md concise with context pointers to any references/",
+        "Includes a Gotchas section grounded in real edge cases rather than generic filler"
+      ]
+    },
+    {
+      "id": 3,
+      "eval_mode": "AB_MEANINGFUL",
+      "prompt": "We have five manual operational runbooks (/prod-rollback, /rotate-secrets, /drain-node, /db-failover, /hotfix-cut) and our engineers keep forgetting which slash command to run. Design a zero-context-load user-invoked router skill.",
+      "expected_output": "User-invoked router skill with disable-model-invocation: true, opencode/autoinvoke: 'false', agents/openai.yaml allow_implicit_invocation: false, concise 1-line summary, and explicit confirmation gate.",
+      "files": [],
+      "expectations": [
+        "Sets disable-model-invocation: true and metadata.opencode/autoinvoke: 'false'",
+        "Sets policy.allow_implicit_invocation: false in agents/openai.yaml",
+        "Lists each manual command with concrete branch condition when to reach for it",
+        "Omits trigger_evals.json or explains manual-only invocation skips auto-trigger evals"
+      ]
+    },
+    {
+      "id": 4,
+      "eval_mode": "WITH_SKILL_ONLY",
+      "prompt": "Scaffold an atomic skill 'api-contract-diff', mirror it across .agents/skills, .claude/skills, .qoder/skills, and .kiro/skills in a temp repo, and package it into a verified .skill archive.",
+      "expected_output": "Deterministic scaffold_skill.py run with --mirror-project followed by package_and_verify.py producing a verified .skill ZIP archive.",
+      "files": [],
+      "expectations": [
+        "Executes scripts/scaffold_skill.py with --mirror-project",
+        "Verifies relative symlinks exist under .claude/skills, .qoder/skills, and .kiro/skills",
+        "Executes scripts/package_and_verify.py and produces api-contract-diff.skill with PASS status"
+      ]
+    },
+    {
+      "id": 5,
+      "eval_mode": "AB_MEANINGFUL",
+      "prompt": "Rewrite this legacy Claude-only skill (uses !`git status`, workflows/ folder, top-level version/author, numeric metadata, and bloated CAGE prompts) into a clean 17-agent skill and verify with skill-auditor if present.",
+      "expected_output": "Replaces legacy anti-patterns with canonical references/, string metadata, frontier positive instructions, runs skill-reviewer + package_and_verify.py (and sibling skill-auditor), achieving zero portability errors.",
+      "files": [],
+      "expectations": [
+        "Eliminates !command macros, non-canonical directories, and top-level version/author drift",
+        "Converts negative/bloated CAGE rules into concise positive invariants with rationale",
+        "Verifies 0 errors in package_and_verify.py and 0 failures in sibling skill-auditor if available"
+      ]
+    }
+  ]
+}

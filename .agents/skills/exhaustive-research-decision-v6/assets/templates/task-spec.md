@@ -1,0 +1,9 @@
+goal: TODO
+current_state: TODO
+target_state: TODO
+problems_to_solve: [TODO]
+in_scope: [TODO]
+out_of_scope: [TODO]
+definition_of_done: TODO
+residual_unknowns: [TODO]
+brief_hash: TODO

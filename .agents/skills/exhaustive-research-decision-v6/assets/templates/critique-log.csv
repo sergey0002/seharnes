@@ -1,0 +1,2 @@
+critique_id,gate,critic,artifact,finding,severity,status,refinement_id,source_ids,method_ids
+CR001,G-A,TODO,TODO,TODO,low,open,TODO,TODO,TODO

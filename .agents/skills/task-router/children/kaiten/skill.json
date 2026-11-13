@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "name": "kaiten",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [
+      "references/kaiten-contract.md"
+    ],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

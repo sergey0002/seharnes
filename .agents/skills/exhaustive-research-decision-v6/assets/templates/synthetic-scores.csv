@@ -1,0 +1,2 @@
+score_id,criterion_id,formula,input_feature_ids,normalization,method_ids,sensitivity_status,status
+SYN001,K001,TODO,FTR001,TODO,TODO,TODO,draft

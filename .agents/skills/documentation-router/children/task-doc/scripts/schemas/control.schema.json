@@ -1,0 +1,33 @@
+{
+  "$schema": "internal:jsondoc#control",
+  "title": "JSONdoc control artifacts v1.0 (receipt etc.)",
+  "oneOf": [
+    {
+      "type": "object", "additionalProperties": false,
+      "required": ["control", "schema_version", "data_revision", "data_sha256",
+                   "view_sha256", "operation_id", "renderer_version"],
+      "properties": {
+        "control": {"const": "receipt"},
+        "schema_version": {"const": "1.0"},
+        "data_revision": {"type": "integer", "minimum": 1},
+        "data_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "view_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "operation_id": {"type": ["string", "null"]},
+        "renderer_version": {"type": ["string", "null"]}
+      }
+    },
+    {
+      "type": "object", "additionalProperties": false,
+      "required": ["control", "schema_version", "mode"],
+      "properties": {
+        "control": {"const": "config"},
+        "schema_version": {"const": "1.0"},
+        "mode": {"enum": ["legacy", "mixed", "json"]},
+        "release_branch_patterns": {
+          "type": "array", "items": {"type": "string", "minLength": 1}
+        },
+        "release_fallback": {"type": ["string", "null"]}
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+---
+description: "MCP jira-task: экспорт задачи Jira в task.md. Триггеры: экспорт task.md, задача Jira, релизные задачи, jira-task."
+alwaysApply: false
+---
+
+# MCP: jira-task
+
+## Когда
+
+Экспорт задачи Jira и список задач релиза. Вызывается скриптами скилов
+`gototask` и `task-intake`, не агентом напрямую.
+
+## Инструменты
+
+| Инструмент | Параметры | Зачем |
+|---|---|---|
+| `export_task_md` | `issue_id`: номер `2538`, ключ `CT-2538` или URL | записать `task.md` из Jira |
+| `list_release_tasks` | `release_version`: `5.7.2` или `releases/5.7.2` | задачи выбранного релиза |
+
+Запуск идет через контейнер стенда:
+`docker exec -i copytrust-dev-php-apache-1 php /var/www/html/.agents/skills/task-router/children/jira/scripts/server.php`.
+
+## Ошибки и границы
+
+- `task.md` автогенерируемый, руками не править. Обновление только повторным
+  экспортом.
+- Не вызывать MCP вручную в task-flow: используйте `gototask` и `task-intake`.
+- Контейнер стенда должен быть запущен, иначе экспорт падает.
+- Секреты Jira лежат в `.doc/skil_data/jira/config.env`, в документацию не копировать.
+
+## Проверка
+
+```bash
+node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=jira-task
+```
+
+## Связи
+
+- [Полное описание](../../../.agents/skills/task-router/children/jira/docs/mcp/jira-task.md)
+- [Задачи Jira и git](../bitbucket-tasks.mdc)
+- [gototask](../../../.agents/skills/task-router/children/gototask/SKILL.md)
+- [task-intake](../../../.agents/skills/task-router/children/task-intake/SKILL.md)
+- [Карта MCP](../mcp.mdc) - порядок всех серверов и ссылки

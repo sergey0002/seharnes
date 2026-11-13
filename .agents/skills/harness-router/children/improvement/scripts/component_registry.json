@@ -1,0 +1,859 @@
+{
+  "version": 1,
+  "components": {
+    "add-skill": {
+      "required_files": [
+        ".agents/skills/harness-router/children/add-skill/SKILL.md",
+        ".agents/skills/harness-router/children/add-skill/README.md",
+        ".agents/skills/harness-router/children/add-skill/skill.json"
+      ],
+      "config_paths": []
+    },
+    "copy-project": {
+      "required_files": [
+        ".agents/skills/harness-router/children/copy-project/SKILL.md",
+        ".agents/skills/harness-router/children/copy-project/README.md",
+        ".agents/skills/harness-router/children/copy-project/skill.json"
+      ],
+      "config_paths": []
+    },
+    "remove-skill": {
+      "required_files": [
+        ".agents/skills/harness-router/children/remove-skill/SKILL.md",
+        ".agents/skills/harness-router/children/remove-skill/README.md",
+        ".agents/skills/harness-router/children/remove-skill/skill.json"
+      ],
+      "config_paths": []
+    },
+    "skill-authoring": {
+      "required_files": [
+        ".agents/skills/harness-router/children/skill-authoring/SKILL.md",
+        ".agents/skills/harness-router/children/skill-authoring/README.md",
+        ".agents/skills/harness-router/children/skill-authoring/skill.json"
+      ],
+      "config_paths": []
+    },
+    "migration-review": {
+      "required_files": [
+        ".agents/skills/harness-router/children/migration-review/SKILL.md",
+        ".agents/skills/harness-router/children/migration-review/README.md",
+        ".agents/skills/harness-router/children/migration-review/skill.json"
+      ],
+      "config_paths": []
+    },
+    "new-project": {
+      "required_files": [
+        ".agents/skills/harness-router/children/new-project/SKILL.md",
+        ".agents/skills/harness-router/children/new-project/README.md",
+        ".agents/skills/harness-router/children/new-project/skill.json"
+      ],
+      "config_paths": []
+    },
+    "neiroslop": {
+      "required_files": [
+        ".agents/skills/neiroslop/SKILL.md",
+        ".agents/skills/neiroslop/README.md",
+        ".agents/skills/neiroslop/skill.json"
+      ],
+      "config_paths": []
+    },
+    "mcp-audit": {
+      "required_files": [
+        ".agents/skills/harness-router/children/mcp-audit/SKILL.md",
+        ".agents/skills/harness-router/children/mcp-audit/README.md",
+        ".agents/skills/harness-router/children/mcp-audit/skill.json"
+      ],
+      "config_paths": [],
+      "skill_dependencies": []
+    },
+    "harness-improvement": {
+      "required_files": [
+        ".agents/skills/harness-router/children/improvement/SKILL.md",
+        ".cursor/rules/harness-improvement.mdc"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "improvement": {
+      "required_files": [
+        ".agents/skills/harness-router/children/improvement/SKILL.md",
+        ".agents/skills/harness-router/children/improvement/README.md",
+        ".agents/skills/harness-router/children/improvement/skill.json"
+      ],
+      "config_paths": [],
+      "skill_dependencies": []
+    },
+    "prepare-plan": {
+      "required_files": [
+        ".agents/skills/prepare-plan/SKILL.md",
+        ".cursor/rules/prepare-plan.mdc",
+        ".agents/skills/prepare-plan/ADAPTERS.local.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc",
+        ".codex/config.toml"
+      ],
+      "skill_dependencies": [
+        "git-task-blame",
+        "audit-plan"
+      ]
+    },
+    "git-task-blame": {
+      "required_files": [
+        ".agents/skills/task-router/children/git-task-blame/SKILL.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "task-doc": {
+      "required_files": [
+        ".agents/skills/documentation-router/children/task-doc/SKILL.md",
+        ".cursor/rules/task-doc.mdc"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "task-diff": {
+      "required_files": [
+        ".agents/skills/task-router/children/task-diff/SKILL.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "task-intake": {
+      "required_files": [
+        ".agents/skills/task-router/children/task-intake/SKILL.md",
+        ".agents/skills/task-router/children/task-intake/scripts/intake_state.py",
+        ".agents/skills/task-router/children/task-intake/scripts/intake_orchestrator.py",
+        ".agents/skills/task-router/children/task-intake/scripts/intake_analysis.py",
+        ".agents/skills/task-router/children/task-intake/scripts/doc_sections.py"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ],
+      "skill_dependencies": [
+        "gototask",
+        "task-diff",
+        "task-doc"
+      ]
+    },
+    "task-spec": {
+      "required_files": [
+        ".agents/skills/task-router/children/task-spec/SKILL.md",
+        ".agents/skills/task-router/children/task-spec/README.md",
+        ".agents/skills/task-router/children/task-spec/skill.json"
+      ],
+      "config_paths": [],
+      "skill_dependencies": [
+        "yadisk-screenshot"
+      ]
+    },
+    "gototask": {
+      "required_files": [
+        ".agents/skills/task-router/children/gototask/SKILL.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "test-task": {
+      "required_files": [
+        ".agents/skills/task-router/children/testing-router/children/test-task/SKILL.md",
+        ".cursor/rules/test-task.mdc"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ],
+      "skill_dependencies": [
+        "prepare-task-test",
+        "browser-verify",
+        "login-as-user"
+      ]
+    },
+    "browser-verify": {
+      "required_files": [
+        ".agents/skills/task-router/children/testing-router/children/browser-verify/SKILL.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ],
+      "skill_dependencies": [
+        "login-as-user"
+      ]
+    },
+    "send-to-git": {
+      "required_files": [
+        ".agents/skills/send-to-git/SKILL.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "project-doc": {
+      "required_files": [
+        ".agents/skills/documentation-router/children/project-doc/SKILL.md",
+        ".cursor/rules/project-doc.mdc"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "doc-verify": {
+      "required_files": [
+        ".agents/skills/documentation-router/children/doc-verify/SKILL.md",
+        ".cursor/rules/doc-verify.mdc"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "prepare-task-test": {
+      "required_files": [
+        ".agents/skills/task-router/children/testing-router/children/prepare-task-test/SKILL.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "task-code-review": {
+      "required_files": [
+        ".agents/skills/task-router/children/task-code-review/SKILL.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "task-change-report": {
+      "required_files": [
+        ".agents/skills/task-router/children/reporting-router/children/task-change-report/SKILL.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "login-as-user": {
+      "required_files": [
+        ".agents/skills/login-as-user/SKILL.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "yadisk-screenshot": {
+      "required_files": [
+        ".agents/skills/yadisk-screenshot/SKILL.md",
+        ".cursor/rules/yadisk-screenshot.mdc"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "rule-bitbucket-tasks": {
+      "required_files": [
+        ".cursor/rules/bitbucket-tasks.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp": {
+      "required_files": [
+        ".cursor/rules/mcp.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-jdocmunch": {
+      "required_files": [
+        ".cursor/rules/mcp/jdocmunch.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-codeprism": {
+      "required_files": [
+        ".cursor/rules/mcp/codeprism.mdc",
+        ".agents/skills/codeprism/scripts/codeprism-mcp.sh",
+        ".agents/skills/codeprism/docs/mcp/codeprism.md"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-graphiti": {
+      "required_files": [
+        ".cursor/rules/mcp/graphiti.mdc",
+        ".agents/skills/graphiti/scripts/graphiti-stack.sh",
+        ".cursor/mcp-stack/graphiti/docker-compose.yml",
+        ".agents/skills/graphiti/docs/mcp/graphiti.md"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-codebase-memory": {
+      "required_files": [
+        ".cursor/rules/mcp/codebase-memory-mcp.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-serena": {
+      "required_files": [
+        ".cursor/rules/mcp/serena.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-mysql": {
+      "required_files": [
+        ".cursor/rules/mcp/mysql.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-git": {
+      "required_files": [
+        ".cursor/rules/mcp/git.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-jira-task": {
+      "required_files": [
+        ".cursor/rules/mcp/jira-task.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-context7": {
+      "required_files": [
+        ".cursor/rules/mcp/context7.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-playwright": {
+      "required_files": [
+        ".cursor/rules/mcp/playwright.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-phpstan": {
+      "required_files": [
+        ".cursor/rules/mcp/phpstan-mcp.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-php-deps": {
+      "required_files": [
+        ".cursor/rules/mcp/php-deps-mcp.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-semgrep": {
+      "required_files": [
+        ".cursor/rules/mcp/semgrep.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-sourcegraph": {
+      "required_files": [
+        ".cursor/rules/mcp/sourcegraph.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-xdebug": {
+      "required_files": [
+        ".cursor/rules/mcp/xdebug.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-deepwiki": {
+      "required_files": [
+        ".cursor/rules/mcp/deepwiki.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-mcp-bitbucket-task": {
+      "required_files": [
+        ".cursor/rules/mcp/bitbucket-task.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-doc-rules": {
+      "required_files": [
+        ".cursor/rules/doc-rules.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-project-doc-indexing": {
+      "required_files": [
+        ".cursor/rules/project-doc-indexing.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-text-style": {
+      "required_files": [
+        ".cursor/rules/text-style.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-test-priority": {
+      "required_files": [
+        ".cursor/rules/test-priority.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-batch-calls": {
+      "required_files": [
+        ".cursor/rules/batch-calls.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-cbm-index-before-push": {
+      "required_files": [
+        ".cursor/rules/cbm-index-before-push.mdc"
+      ],
+      "config_paths": []
+    },
+    "harness-mirror": {
+      "required_files": [
+        ".agents/skills/harness-router/children/mirror/SKILL.md",
+        ".agents/skills/harness-router/children/mirror/README.md",
+        ".agents/skills/harness-router/children/mirror/scripts/harness_mirror.py",
+        ".agents/skills/harness-router/children/mirror/tests/test_harness_mirror.py",
+        ".agents/skills/harness-router/children/mirror/references/node-format.md",
+        ".agents/skills/harness-router/children/mirror/references/implementation.md",
+        ".agents/skills/harness-router/children/mirror/references/operations.md",
+        ".agents/skills/harness-router/children/mirror/assets/harness-node.schema.json",
+        ".agents/skills/harness-router/children/mirror/assets/viewer.html"
+      ],
+      "config_paths": [
+        ".doc/web",
+        ".kilo/kilo.jsonc",
+        ".codex/config.toml"
+      ],
+      "skill_dependencies": [
+        "harness-improvement"
+      ]
+    },
+    "rule-code-editing": {
+      "required_files": [
+        ".cursor/rules/code-editing.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-context-router": {
+      "required_files": [
+        ".cursor/rules/context-router.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-temp-dir": {
+      "required_files": [
+        ".cursor/rules/temp-dir.mdc"
+      ],
+      "config_paths": []
+    },
+    "rule-gates": {
+      "required_files": [
+        ".cursor/rules/gates.mdc"
+      ],
+      "config_paths": []
+    },
+    "harness-index": {
+      "required_files": [
+        ".agents/skills/harness-router/children/index/SKILL.md",
+        ".agents/skills/harness-router/children/index/references/ADAPTERS.local.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "ponytail": {
+      "required_files": [
+        ".agents/skills/ponytail/SKILL.md",
+        ".agents/skills/ponytail/README.md",
+        ".agents/skills/ponytail/skill.json",
+        ".agents/skills/ponytail/references/attribution.md",
+        ".agents/skills/ponytail/references/audit.md",
+        ".agents/skills/ponytail/references/review.md"
+      ],
+      "config_paths": [],
+      "skill_dependencies": []
+    },
+    "codegraph": {
+      "required_files": [
+        ".agents/skills/codegraph/SKILL.md",
+        ".agents/skills/codegraph/README.md",
+        ".agents/skills/codegraph/skill.json",
+        ".cursor/rules/mcp/codegraph.mdc",
+        ".agents/skills/codegraph/scripts/codegraph-ui.sh"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ],
+      "skill_dependencies": []
+    },
+    "web-panel": {
+      "required_files": [
+        ".doc/web/Dockerfile.tools",
+        ".doc/web/README.md",
+        ".doc/web/app/harness.php",
+        ".doc/web/app/jobs.php",
+        ".doc/web/app/lib.php",
+        ".doc/web/app/pricing.php",
+        ".doc/web/app/providers.php",
+        ".doc/web/bin/build-actions.py",
+        ".doc/web/bin/job-runner.php",
+        ".doc/web/bin/selfcheck.py",
+        ".doc/web/compose.tools.yml",
+        ".doc/web/config/actions.json",
+        ".doc/web/config/actions.schema.json",
+        ".doc/web/config/prices.json",
+        ".doc/web/config/prices.local.example.json",
+        ".doc/web/config/service.json",
+        ".doc/web/install.ps1",
+        ".doc/web/install.sh",
+        ".doc/web/public/assets/app.js",
+        ".doc/web/public/assets/style.css",
+        ".doc/web/public/index.php",
+        ".doc/web/router.php",
+        ".doc/web/verify.sh"
+      ],
+      "config_paths": [
+        ".doc/web/state",
+        ".doc/web/ADAPTERS.local.md"
+      ],
+      "skill_dependencies": []
+    },
+    "task-analytics": {
+      "required_files": [
+        ".agents/skills/task-router/children/analytics/README.md",
+        ".agents/skills/task-router/children/analytics/scripts/task-analytics.py",
+        ".agents/skills/task-router/children/analytics/scripts/lib/db.py",
+        ".agents/skills/task-router/children/analytics/scripts/lib/facts.py",
+        ".agents/skills/task-router/children/analytics/scripts/lib/attribute.py",
+        ".agents/skills/task-router/children/analytics/scripts/lib/metrics.py",
+        ".agents/skills/task-router/children/analytics/scripts/lib/compliance.py",
+        ".agents/skills/task-router/children/analytics/scripts/lib/slices.py",
+        ".agents/skills/task-router/children/analytics/scripts/lib/corpus.py",
+        ".agents/skills/task-router/children/analytics/scripts/lib/render.py",
+        ".agents/skills/task-router/children/analytics/assets/config/thresholds.json",
+        ".agents/skills/task-router/children/analytics/assets/config/required-calls.json",
+        ".agents/skills/task-router/children/analytics/assets/config/slices.json",
+        ".agents/skills/task-router/children/analytics/assets/schemas/analysis.schema.json"
+      ],
+      "config_paths": [
+        ".doc/task-analytics/out"
+      ],
+      "skill_dependencies": []
+    },
+    "codeprism": {
+      "required_files": [
+        ".agents/skills/codeprism/SKILL.md",
+        ".agents/skills/codeprism/README.md",
+        ".agents/skills/codeprism/skill.json",
+        ".agents/skills/codeprism/references/integrations.md",
+        ".cursor/rules/mcp/codeprism.mdc",
+        ".agents/skills/codeprism/scripts/codeprism-mcp.sh",
+        ".agents/skills/codeprism/scripts/codeprism_serve.py",
+        ".agents/skills/codeprism/docs/mcp/codeprism.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ],
+      "skill_dependencies": []
+    },
+    "task-report": {
+      "required_files": [
+        ".agents/skills/task-router/children/reporting-router/children/task-report/SKILL.md"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ]
+    },
+    "copytrust": {
+      "required_files": [
+        ".agents/skills/copytrust/SKILL.md",
+        ".agents/skills/copytrust/README.md",
+        ".agents/skills/copytrust/skill.json"
+      ],
+      "config_paths": []
+    },
+    "platform-logs": {
+      "required_files": [
+        ".agents/skills/copytrust/children/platform-logs/SKILL.md",
+        ".agents/skills/copytrust/children/platform-logs/README.md",
+        ".agents/skills/copytrust/children/platform-logs/skill.json"
+      ],
+      "config_paths": []
+    },
+    "platform-browser-test": {
+      "required_files": [
+        ".agents/skills/copytrust/children/platform-browser-test/SKILL.md",
+        ".agents/skills/copytrust/children/platform-browser-test/README.md",
+        ".agents/skills/copytrust/children/platform-browser-test/skill.json"
+      ],
+      "config_paths": []
+    },
+    "code": {
+      "required_files": [
+        ".agents/skills/code/SKILL.md",
+        ".agents/skills/code/README.md",
+        ".agents/skills/code/skill.json"
+      ],
+      "config_paths": []
+    },
+    "bug-cause": {
+      "required_files": [
+        ".agents/skills/code/children/bug-cause/SKILL.md",
+        ".agents/skills/code/children/bug-cause/README.md",
+        ".agents/skills/code/children/bug-cause/skill.json"
+      ],
+      "config_paths": []
+    },
+    "codebase-memory-mcp": {
+      "required_files": [
+        ".agents/skills/codebase-memory-mcp/SKILL.md",
+        ".agents/skills/codebase-memory-mcp/README.md",
+        ".agents/skills/codebase-memory-mcp/skill.json",
+        ".agents/skills/codebase-memory-mcp/docs/mcp/codebase-memory-mcp.md"
+      ],
+      "config_paths": []
+    },
+    "context7": {
+      "required_files": [
+        ".agents/skills/context7/SKILL.md",
+        ".agents/skills/context7/README.md",
+        ".agents/skills/context7/skill.json",
+        ".agents/skills/context7/docs/mcp/context7.md"
+      ],
+      "config_paths": []
+    },
+    "git": {
+      "required_files": [
+        ".agents/skills/git/SKILL.md",
+        ".agents/skills/git/README.md",
+        ".agents/skills/git/skill.json",
+        ".agents/skills/git/docs/mcp/git.md"
+      ],
+      "config_paths": []
+    },
+    "graphiti": {
+      "required_files": [
+        ".agents/skills/graphiti/SKILL.md",
+        ".agents/skills/graphiti/README.md",
+        ".agents/skills/graphiti/skill.json",
+        ".agents/skills/graphiti/docs/mcp/graphiti.md"
+      ],
+      "config_paths": []
+    },
+    "jdocmunch": {
+      "required_files": [
+        ".agents/skills/jdocmunch/SKILL.md",
+        ".agents/skills/jdocmunch/README.md",
+        ".agents/skills/jdocmunch/skill.json",
+        ".agents/skills/jdocmunch/docs/mcp/jdocmunch.md"
+      ],
+      "config_paths": []
+    },
+    "mysql": {
+      "required_files": [
+        ".agents/skills/mysql/SKILL.md",
+        ".agents/skills/mysql/README.md",
+        ".agents/skills/mysql/skill.json",
+        ".agents/skills/mysql/docs/mcp/mysql.md"
+      ],
+      "config_paths": []
+    },
+    "php-deps-mcp": {
+      "required_files": [
+        ".agents/skills/php-deps-mcp/SKILL.md",
+        ".agents/skills/php-deps-mcp/README.md",
+        ".agents/skills/php-deps-mcp/skill.json",
+        ".agents/skills/php-deps-mcp/docs/mcp/php-deps-mcp.md"
+      ],
+      "config_paths": []
+    },
+    "phpstan-mcp": {
+      "required_files": [
+        ".agents/skills/phpstan-mcp/SKILL.md",
+        ".agents/skills/phpstan-mcp/README.md",
+        ".agents/skills/phpstan-mcp/skill.json",
+        ".agents/skills/phpstan-mcp/docs/mcp/phpstan-mcp.md"
+      ],
+      "config_paths": []
+    },
+    "playwright": {
+      "required_files": [
+        ".agents/skills/playwright/SKILL.md",
+        ".agents/skills/playwright/README.md",
+        ".agents/skills/playwright/skill.json",
+        ".agents/skills/playwright/docs/mcp/playwright.md"
+      ],
+      "config_paths": []
+    },
+    "semgrep": {
+      "required_files": [
+        ".agents/skills/semgrep/SKILL.md",
+        ".agents/skills/semgrep/README.md",
+        ".agents/skills/semgrep/skill.json",
+        ".agents/skills/semgrep/docs/mcp/semgrep.md"
+      ],
+      "config_paths": []
+    },
+    "serena": {
+      "required_files": [
+        ".agents/skills/serena/SKILL.md",
+        ".agents/skills/serena/README.md",
+        ".agents/skills/serena/skill.json",
+        ".agents/skills/serena/docs/mcp/serena.md"
+      ],
+      "config_paths": []
+    },
+    "doc-script": {
+      "required_files": [
+        ".agents/skills/harness-router/children/doc-script/SKILL.md",
+        ".agents/skills/harness-router/children/doc-script/README.md",
+        ".agents/skills/harness-router/children/doc-script/skill.json",
+        ".agents/skills/harness-router/children/doc-script/scripts/doc_script.py"
+      ],
+      "config_paths": [
+        ".agents/skills/harness-router/children/improvement/scripts/component_registry.json"
+      ]
+    },
+    "doc-skill": {
+      "required_files": [
+        ".agents/skills/harness-router/children/doc-skill/SKILL.md",
+        ".agents/skills/harness-router/children/doc-skill/README.md",
+        ".agents/skills/harness-router/children/doc-skill/skill.json",
+        ".agents/skills/harness-router/children/doc-skill/scripts/doc_skill.py"
+      ],
+      "config_paths": [
+        ".agents/skills/harness-router/children/improvement/scripts/component_registry.json"
+      ]
+    },
+    "doc-mcp": {
+      "required_files": [
+        ".agents/skills/harness-router/children/doc-mcp/SKILL.md",
+        ".agents/skills/harness-router/children/doc-mcp/README.md",
+        ".agents/skills/harness-router/children/doc-mcp/skill.json",
+        ".agents/skills/harness-router/children/doc-mcp/scripts/doc_mcp.py"
+      ],
+      "config_paths": [
+        ".cursor/mcp.json"
+      ]
+    },
+    "exhaustive-research-decision-v6": {
+      "required_files": [
+        ".agents/skills/exhaustive-research-decision-v6/SKILL.md",
+        ".agents/skills/exhaustive-research-decision-v6/README.md",
+        ".agents/skills/exhaustive-research-decision-v6/skill.json"
+      ],
+      "config_paths": []
+    },
+    "skill-auditor": {
+      "required_files": [
+        ".agents/skills/skill-auditor/SKILL.md",
+        ".agents/skills/skill-auditor/README.md",
+        ".agents/skills/skill-auditor/skill.json"
+      ],
+      "config_paths": []
+    },
+    "skill-creator": {
+      "required_files": [
+        ".agents/skills/skill-creator/SKILL.md",
+        ".agents/skills/skill-creator/README.md",
+        ".agents/skills/skill-creator/skill.json"
+      ],
+      "config_paths": []
+    },
+    "briefing-intake": {
+      "required_files": [
+        ".agents/skills/exhaustive-research-decision-v6/children/briefing-intake/SKILL.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/briefing-intake/README.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/briefing-intake/skill.json"
+      ],
+      "config_paths": []
+    },
+    "criteria-synthesis": {
+      "required_files": [
+        ".agents/skills/exhaustive-research-decision-v6/children/criteria-synthesis/SKILL.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/criteria-synthesis/README.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/criteria-synthesis/skill.json"
+      ],
+      "config_paths": []
+    },
+    "cursor-state-handoff": {
+      "required_files": [
+        ".agents/skills/exhaustive-research-decision-v6/children/cursor-state-handoff/SKILL.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/cursor-state-handoff/README.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/cursor-state-handoff/skill.json"
+      ],
+      "config_paths": []
+    },
+    "domain-safety-verification": {
+      "required_files": [
+        ".agents/skills/exhaustive-research-decision-v6/children/domain-safety-verification/SKILL.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/domain-safety-verification/README.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/domain-safety-verification/skill.json"
+      ],
+      "config_paths": []
+    },
+    "evidence-provenance": {
+      "required_files": [
+        ".agents/skills/exhaustive-research-decision-v6/children/evidence-provenance/SKILL.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/evidence-provenance/README.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/evidence-provenance/skill.json"
+      ],
+      "config_paths": []
+    },
+    "existing-solution-scouting": {
+      "required_files": [
+        ".agents/skills/exhaustive-research-decision-v6/children/existing-solution-scouting/SKILL.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/existing-solution-scouting/README.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/existing-solution-scouting/skill.json"
+      ],
+      "config_paths": []
+    },
+    "output-contract-and-format-compliance": {
+      "required_files": [
+        ".agents/skills/exhaustive-research-decision-v6/children/output-contract-and-format-compliance/SKILL.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/output-contract-and-format-compliance/README.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/output-contract-and-format-compliance/skill.json"
+      ],
+      "config_paths": []
+    },
+    "research-assignment": {
+      "required_files": [
+        ".agents/skills/exhaustive-research-decision-v6/children/research-assignment/SKILL.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/research-assignment/README.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/research-assignment/skill.json"
+      ],
+      "config_paths": []
+    },
+    "triz-contradiction-resolution": {
+      "required_files": [
+        ".agents/skills/exhaustive-research-decision-v6/children/triz-contradiction-resolution/SKILL.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/triz-contradiction-resolution/README.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/triz-contradiction-resolution/skill.json"
+      ],
+      "config_paths": []
+    },
+    "variant-feature-evaluation": {
+      "required_files": [
+        ".agents/skills/exhaustive-research-decision-v6/children/variant-feature-evaluation/SKILL.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/variant-feature-evaluation/README.md",
+        ".agents/skills/exhaustive-research-decision-v6/children/variant-feature-evaluation/skill.json"
+      ],
+      "config_paths": []
+    },
+    "audit-plan": {
+      "required_files": [
+        ".agents/skills/task-router/children/audit-plan/SKILL.md",
+        ".agents/skills/task-router/children/audit-plan/README.md",
+        ".agents/skills/task-router/children/audit-plan/skill.json",
+        ".cursor/rules/audit-plan.mdc"
+      ],
+      "config_paths": [
+        ".kilo/kilo.jsonc"
+      ],
+      "skill_dependencies": [
+        "prepare-plan",
+        "git-task-blame"
+      ]
+    }
+  }
+}

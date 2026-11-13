@@ -1,0 +1,4 @@
+criterion_id,name,origin,type,unit,direction,applies_to_all,na_policy,formula,input_feature_ids,weight,hard_gate,source_ids,method_ids,decision_critical,synthetic,owner,status
+K001,executable spec gate,brief,hard_gate,bool,target,yes,not_applicable_only,—,FTR001,—,yes,S001,M010|M015,yes,no,demo-owner,verified
+K002,delta archive depth,candidate_union,weighted,score,maximize,yes,not_supported_is_zero,—,FTR002,0.2,no,S002,M060|M015,yes,no,demo-owner,verified
+K003,project fit percent,synthetic,synthetic,percent,maximize,yes,not_applicable_only,0.6*FTR001 + 0.3*FTR002 + 0.1*FTR003,FTR001|FTR002|FTR003,0.3,no,S001|S002,M015|M060,yes,yes,demo-owner,verified

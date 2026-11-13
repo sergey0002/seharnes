@@ -1,0 +1,303 @@
+{
+  "mcpServers": {
+    "bitbucket-task": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "exec",
+        "-i",
+        "copytrust-dev-php-apache-1",
+        "php",
+        "/var/www/html/.doc/.bitbucket/server.php"
+      ],
+      "disabled": true,
+      "alwaysAllow": [
+        "export_task_md"
+      ]
+    },
+    "codebase-memory-mcp": {
+      "type": "http",
+      "url": "http://127.0.0.1:9131/mcp",
+      "disabled": false,
+      "alwaysAllow": [
+        "list_projects",
+        "index_status",
+        "get_graph_schema",
+        "get_architecture",
+        "search_graph",
+        "search_code",
+        "trace_path",
+        "get_code_snippet",
+        "query_graph",
+        "detect_changes"
+      ]
+    },
+    "codegraph": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/.agents/skills/codegraph/scripts/codegraph-mcp.sh"
+      ],
+      "disabled": false,
+      "alwaysAllow": [
+        "codegraph_explore"
+      ]
+    },
+    "codeprism": {
+      "type": "http",
+      "url": "http://127.0.0.1:9201/mcp",
+      "disabled": false,
+      "alwaysAllow": [
+        "get_graph_stats",
+        "get_context",
+        "get_module_summary",
+        "get_file_map",
+        "get_impact",
+        "get_callers",
+        "get_callees",
+        "get_data_flow",
+        "search_symbol",
+        "get_dependencies",
+        "get_dependents",
+        "scan_file",
+        "scan_diff",
+        "check_secret_exposure"
+      ]
+    },
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@3.2.2"
+      ],
+      "disabled": false
+    },
+    "deepwiki": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-deepwiki@latest"
+      ],
+      "disabled": true
+    },
+    "graphiti": {
+      "type": "http",
+      "url": "http://127.0.0.1:8000/mcp/",
+      "disabled": false,
+      "alwaysAllow": [
+        "get_status",
+        "add_memory",
+        "add_triplet",
+        "search_nodes",
+        "search_memory_facts",
+        "get_episodes",
+        "get_episode_entities",
+        "get_entity_edge",
+        "summarize_saga",
+        "build_communities"
+      ]
+    },
+    "git": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "mcp-server-git",
+        "--repository",
+        "${workspaceFolder}"
+      ],
+      "disabled": false,
+      "alwaysAllow": [
+        "git_status",
+        "git_log",
+        "git_diff",
+        "git_show",
+        "git_blame"
+      ]
+    },
+    "jira-task": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "exec",
+        "-i",
+        "copytrust-dev-php-apache-1",
+        "php",
+        "/var/www/html/.agents/skills/task-router/children/jira/scripts/server.php"
+      ],
+      "disabled": false,
+      "alwaysAllow": [
+        "export_task_md",
+        "list_release_tasks"
+      ],
+      "env": {
+        "JIRA_CONFIG_FILE": "/var/www/html/.doc/skil_data/jira/config.env"
+      }
+    },
+    "mysql": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/.tools/scripts/run-with-mcp-env.sh",
+        "node",
+        "${workspaceFolder}/.tools/scripts/mysql-mcp-proxy.mjs"
+      ],
+      "envFile": "${workspaceFolder}/.cursor/mcp.env",
+      "env": {
+        "MYSQL_HOST": "127.0.0.1",
+        "MYSQL_PORT": "8031",
+        "MYSQL_USER": "user",
+        "MYSQL_DATABASE": "gb_copydev5",
+        "MYSQL_MCP_LISTEN_HOST": "127.0.0.1",
+        "MYSQL_MCP_LISTEN_PORT": "3306"
+      },
+      "disabled": false,
+      "alwaysAllow": [
+        "connect_db",
+        "list_tables",
+        "describe_table",
+        "query"
+      ]
+    },
+    "php-deps-mcp": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/.tools/scripts/node-mcp.sh",
+        "${workspaceFolder}/.tools/mcp-servers/php-toolchain/server.js"
+      ],
+      "env": {
+        "MCP_PHP_TOOLCHAIN_MODE": "php-deps",
+        "MCP_WORKSPACE": "${workspaceFolder}",
+        "PHP_BIN": "${env:PHP_BIN}"
+      },
+      "envFile": "${workspaceFolder}/.cursor/mcp.env",
+      "disabled": false,
+      "alwaysAllow": [
+        "phpcallgraph_generate",
+        "phpda_analyze"
+      ]
+    },
+    "phpstan-mcp": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/.tools/scripts/node-mcp.sh",
+        "${workspaceFolder}/.tools/mcp-servers/php-toolchain/server.js"
+      ],
+      "env": {
+        "MCP_PHP_TOOLCHAIN_MODE": "phpstan",
+        "MCP_WORKSPACE": "${workspaceFolder}",
+        "PHP_BIN": "${env:PHP_BIN}"
+      },
+      "envFile": "${workspaceFolder}/.cursor/mcp.env",
+      "disabled": false,
+      "alwaysAllow": [
+        "phpstan_analyze"
+      ]
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.38"
+      ],
+      "env": {
+        "PLAYWRIGHT_MCP_EXECUTABLE_PATH": "/home/newuser/.local/chrome-for-testing/chrome-wrap.sh",
+        "LD_LIBRARY_PATH": "/home/newuser/.local/chrome-deps/root/usr/lib/x86_64-linux-gnu:/home/newuser/.local/chrome-deps/root/lib/x86_64-linux-gnu",
+        "CHROME_PATH": "/home/newuser/.local/chrome-for-testing/chrome-wrap.sh"
+      },
+      "disabled": false,
+      "alwaysAllow": [
+        "browser_navigate",
+        "browser_snapshot",
+        "browser_click",
+        "browser_type",
+        "browser_fill_form",
+        "browser_evaluate",
+        "browser_take_screenshot"
+      ],
+      "disabledTools": [
+        "browser_press_key",
+        "browser_navigate_back",
+        "browser_drag",
+        "browser_hover",
+        "browser_select_option",
+        "browser_tabs"
+      ]
+    },
+    "semgrep": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "semgrep",
+        "mcp"
+      ],
+      "disabled": false
+    },
+    "serena": {
+      "type": "http",
+      "url": "http://127.0.0.1:9121/mcp",
+      "disabled": false,
+      "alwaysAllow": [
+        "list_dir",
+        "read_file",
+        "find_file",
+        "find_symbol",
+        "get_symbols_overview",
+        "search_for_pattern",
+        "find_referencing_symbols",
+        "find_declaration",
+        "get_diagnostics_for_file",
+        "replace_content"
+      ]
+    },
+    "sourcegraph": {
+      "type": "http",
+      "url": "http://127.0.0.1:7080/.api/mcp/v1",
+      "disabled": true,
+      "headers": {
+        "Authorization": "token sgp_local_21caa5a8c2fdce18911a098fdc40a7fa61ca2466"
+      },
+      "alwaysAllow": [
+        "sg_keyword_search",
+        "sg_nls_search",
+        "sg_read_file",
+        "sg_list_repos",
+        "sg_list_files"
+      ]
+    },
+    "xdebug": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "xdebug-mcp"
+      ],
+      "disabled": true
+    },
+    "jdocmunch": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/.agents/skills/jdocmunch/scripts/jdocmunch-mcp.sh",
+        "serve"
+      ],
+      "disabled": false,
+      "alwaysAllow": [
+        "doc_list_repos",
+        "doc_resolve_repo",
+        "search_sections",
+        "get_section",
+        "get_sections",
+        "get_doc",
+        "list_docs",
+        "get_toc_tree",
+        "get_backlinks",
+        "get_wiki_stats"
+      ]
+    }
+  }
+}

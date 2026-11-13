@@ -1,0 +1,4 @@
+feature_id,canonical_name,aliases,definition,unit,direction,source_ids,method_ids,version_scope
+FTR001,executable_spec,operational_contract|gherkin,spec drives executable acceptance checks,bool,maximize,S001,M010|M060,2026.05
+FTR002,delta_archive,change_proposal|archive,proposed changes are versioned and archived,score,maximize,S002,M060,2.4
+FTR003,clean_room_boundary,reverse_spec|parity,"rebuild agent sees spec only, not source",score,maximize,S001|S002,M060,v6

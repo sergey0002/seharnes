@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "environments": [
+    {
+      "id": "cursor",
+      "enabled": true,
+      "adapter": "cursor",
+      "rules": {"source": ".cursor/rules", "target": ".cursor/rules", "format": "mdc"},
+      "skills": {"mode": "native", "target": ".agents/skills"},
+      "mcp": {"source": ".cursor/mcp.json", "target": ".cursor/mcp.json"},
+      "instructions": {"target": "AGENTS.md"}
+    },
+    {
+      "id": "codex",
+      "enabled": true,
+      "adapter": "codex",
+      "rules": {"source": ".cursor/rules", "target": ".codex/rules", "format": "flat_md"},
+      "skills": {"mode": "mirror", "target": ".codex/skills"},
+      "mcp": {"source": ".cursor/mcp.json", "target": ".codex/config.toml"}
+    },
+    {
+      "id": "kilo",
+      "enabled": true,
+      "adapter": "kilo",
+      "rules": {"source": ".cursor/rules", "target": ".kilo/rules", "format": "flat_md"},
+      "skills": {"mode": "native", "target": ".agents/skills"},
+      "mcp": {"source": ".cursor/mcp.json", "target": ".kilo/kilo.jsonc"}
+    },
+    {
+      "id": "qoder",
+      "enabled": true,
+      "adapter": "qoder",
+      "rules": {"source": ".cursor/rules", "target": ".qoder/rules", "format": "trigger"},
+      "skills": {"mode": "mirror", "target": ".qoder/skills"},
+      "mcp": {"source": ".cursor/mcp.json", "target": ".qoder/settings.json"}
+    },
+    {
+      "id": "qwen",
+      "enabled": true,
+      "adapter": "qwen",
+      "rules": {"source": ".cursor/rules", "target": ".qwen/rules", "format": "paths"},
+      "skills": {"mode": "native", "target": ".agents/skills"},
+      "mcp": {"source": ".cursor/mcp.json", "target": ".qwen/settings.json"}
+    },
+    {
+      "id": "agents",
+      "enabled": true,
+      "adapter": "agents",
+      "rules": {"source": ".cursor/rules", "target": ".agents/rules", "format": "trigger"},
+      "skills": {"mode": "native", "target": ".agents/skills"},
+      "mcp": {"source": ".cursor/mcp.json", "target": ".agents/mcp.json"}
+    }
+  ]
+}

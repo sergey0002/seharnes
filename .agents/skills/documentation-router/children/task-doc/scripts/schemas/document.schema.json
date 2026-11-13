@@ -1,0 +1,1360 @@
+{
+  "$schema": "internal:jsondoc#document",
+  "title": "JSONdoc document contract v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "id",
+    "revision",
+    "metadata",
+    "summary",
+    "tags",
+    "sections",
+    "section_order",
+    "files",
+    "findings",
+    "decisions",
+    "requirements",
+    "progress",
+    "stages",
+    "notes",
+    "relations",
+    "artifacts",
+    "checks",
+    "git_events",
+    "tracker",
+    "git_state",
+    "jira_report",
+    "sources",
+    "history"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "kind": {
+      "enum": [
+        "task",
+        "architecture",
+        "artifact",
+        "navigation"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "title",
+        "task_type",
+        "doc_type",
+        "branch",
+        "release",
+        "updated_at",
+        "status",
+        "source_status"
+      ],
+      "properties": {
+        "task_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "task_type": {
+          "enum": [
+            "feature",
+            "bug",
+            "refactor",
+            "support",
+            "unknown",
+            null
+          ]
+        },
+        "doc_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "branch": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "release": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "updated_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        },
+        "status": {
+          "enum": [
+            "unknown",
+            "in_progress",
+            "done",
+            "blocked",
+            "actual",
+            "outdated",
+            "draft",
+            "frozen"
+          ]
+        },
+        "source_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "summary": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tag_id",
+          "reason",
+          "status",
+          "source_ids"
+        ],
+        "properties": {
+          "tag_id": {
+            "type": "string",
+            "pattern": "^[a-z]+:[a-z0-9-]+$"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "confirmed",
+              "candidate"
+            ]
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          }
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "level",
+          "parent_id",
+          "anchor",
+          "anchor_aliases",
+          "body_markdown",
+          "source_ids",
+          "origin"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6
+          },
+          "parent_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "anchor": {
+            "type": "string",
+            "minLength": 1
+          },
+          "anchor_aliases": {
+            "$ref": "#/$defs/string_array"
+          },
+          "body_markdown": {
+            "type": "string"
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "origin": {
+            "enum": [
+              "authored",
+              "imported",
+              "opaque"
+            ]
+          }
+        }
+      }
+    },
+    "section_order": {
+      "$ref": "#/$defs/string_array"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "path",
+          "role",
+          "change",
+          "state",
+          "source_ids",
+          "revision",
+          "ranges",
+          "previous_path"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "change": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "state": {
+            "enum": [
+              "current",
+              "planned",
+              "deleted",
+              "historical",
+              "unknown"
+            ]
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "revision": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ranges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "start",
+                "end"
+              ],
+              "properties": {
+                "start": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "end": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          "previous_path": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "statement",
+          "symptom",
+          "cause",
+          "resolution",
+          "status",
+          "severity",
+          "file_ids",
+          "source_ids",
+          "superseded_by",
+          "section_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "pitfall",
+              "invariant",
+              "risk",
+              "blocker",
+              "docs-code-mismatch",
+              "research"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "symptom": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "cause": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "resolution": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "observed",
+              "hypothesis",
+              "resolved",
+              "superseded"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low",
+              null
+            ]
+          },
+          "file_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "superseded_by": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "section_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "context",
+          "choice",
+          "alternatives",
+          "status",
+          "source_ids",
+          "superseded_by",
+          "section_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "context": {
+            "type": "string",
+            "minLength": 1
+          },
+          "choice": {
+            "type": "string",
+            "minLength": 1
+          },
+          "alternatives": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "text",
+                "reason"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "status": {
+            "enum": [
+              "proposed",
+              "accepted",
+              "implemented",
+              "superseded"
+            ]
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "superseded_by": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "section_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "text",
+          "source_ids",
+          "stage_ids",
+          "scenario_refs",
+          "state",
+          "reason"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "stage_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "scenario_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/record_ref"
+            }
+          },
+          "state": {
+            "enum": [
+              "unknown",
+              "open",
+              "closed",
+              "out_of_scope"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "progress": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "state",
+          "reason",
+          "requirement_ids",
+          "source_ids"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "const": "item"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "enum": [
+              "unknown",
+              "todo",
+              "doing",
+              "done",
+              "blocked"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "requirement_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          }
+        }
+      }
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "number",
+          "title",
+          "status",
+          "placeholder",
+          "trigger",
+          "depends_on",
+          "superseded_by",
+          "plan_artifact_id",
+          "diff_artifact_ids",
+          "diff_manifest_id",
+          "test_artifact_ids",
+          "test_run_ids",
+          "documentation_refs",
+          "requirement_ids",
+          "source_ids"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^stage:[0-9]+$"
+          },
+          "number": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "unknown",
+              "planned",
+              "active",
+              "blocked",
+              "implemented",
+              "verified",
+              "closed",
+              "superseded"
+            ]
+          },
+          "placeholder": {
+            "type": "boolean"
+          },
+          "trigger": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "depends_on": {
+            "$ref": "#/$defs/string_array"
+          },
+          "superseded_by": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "plan_artifact_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "diff_artifact_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "diff_manifest_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "test_artifact_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "test_run_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "documentation_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/record_ref"
+            }
+          },
+          "requirement_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "text",
+          "source_ids",
+          "section_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "user_decision",
+              "observation",
+              "open_question"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "section_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "target",
+          "kind",
+          "reason",
+          "source_ids",
+          "status",
+          "availability"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target": {
+            "$ref": "#/$defs/record_ref"
+          },
+          "kind": {
+            "enum": [
+              "baseline",
+              "parent",
+              "depends_on",
+              "related",
+              "regression",
+              "documents",
+              "implements",
+              "supersedes"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "status": {
+            "enum": [
+              "confirmed",
+              "candidate"
+            ]
+          },
+          "availability": {
+            "enum": [
+              "present",
+              "not_exported",
+              "missing",
+              "external"
+            ]
+          }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "role",
+          "path",
+          "sha256",
+          "scope",
+          "revision",
+          "availability",
+          "projection_path",
+          "source_ids"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "enum": [
+              "brief",
+              "plan",
+              "diff",
+              "diff_files",
+              "research_ledger",
+              "test_matrix",
+              "test_spec",
+              "test_run",
+              "workflow_context",
+              "change_report",
+              "jira_report",
+              "audit",
+              "attachment",
+              "notes"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "scope": {
+            "type": "string",
+            "pattern": "^(task|stage:[0-9]+)$"
+          },
+          "revision": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "availability": {
+            "enum": [
+              "present",
+              "missing",
+              "not_exported"
+            ]
+          },
+          "projection_path": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          }
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "artifact_id",
+          "scope",
+          "revision",
+          "source_ids",
+          "result",
+          "source_verdict",
+          "run_identity"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "artifact_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1
+          },
+          "revision": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "result": {
+            "enum": [
+              "passed",
+              "failed",
+              "partial",
+              "blocked",
+              "not_run",
+              "unknown"
+            ]
+          },
+          "source_verdict": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "run_identity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "task",
+              "stage",
+              "group",
+              "run"
+            ],
+            "properties": {
+              "task": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "stage": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "group": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "run": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "git_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "action",
+          "commit",
+          "branch",
+          "remote",
+          "source_ids",
+          "observed_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "enum": [
+              "commit",
+              "push",
+              "merge"
+            ]
+          },
+          "commit": {
+            "type": "string",
+            "minLength": 7
+          },
+          "branch": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "remote": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          },
+          "observed_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "tracker": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "issue_key",
+            "exported_at",
+            "exporter",
+            "availability",
+            "snapshot"
+          ],
+          "properties": {
+            "issue_key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exported_at": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+            },
+            "exporter": {
+              "enum": [
+                "gototask",
+                "task-diff",
+                "manual"
+              ]
+            },
+            "availability": {
+              "enum": [
+                "present",
+                "not_exported",
+                "external"
+              ]
+            },
+            "snapshot": {
+              "type": "object"
+            },
+            "source_ids": {
+              "$ref": "#/$defs/string_array"
+            }
+          }
+        }
+      ]
+    },
+    "git_state": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "checked_at",
+            "commit",
+            "pushed_to",
+            "contained_in",
+            "release_branches",
+            "not_pushed_refs",
+            "unmatched_branches",
+            "fetch_status",
+            "source_ids"
+          ],
+          "properties": {
+            "checked_at": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+            },
+            "commit": {
+              "type": "string",
+              "minLength": 7
+            },
+            "pushed_to": {
+              "$ref": "#/$defs/string_array"
+            },
+            "contained_in": {
+              "$ref": "#/$defs/string_array"
+            },
+            "release_branches": {
+              "$ref": "#/$defs/string_array"
+            },
+            "not_pushed_refs": {
+              "$ref": "#/$defs/string_array"
+            },
+            "unmatched_branches": {
+              "$ref": "#/$defs/string_array"
+            },
+            "fetch_status": {
+              "enum": [
+                "fresh",
+                "stale",
+                "unknown"
+              ]
+            },
+            "source_ids": {
+              "$ref": "#/$defs/string_array"
+            }
+          }
+        }
+      ]
+    },
+    "business_logic": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "facts",
+            "linked_rule_ids"
+          ],
+          "properties": {
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "unconfirmed": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "linked_rule_ids": {
+              "$ref": "#/$defs/string_array"
+            }
+          }
+        }
+      ]
+    },
+    "jira_report": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text",
+            "updated_at",
+            "release",
+            "source_ids"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1
+            },
+            "updated_at": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+            },
+            "release": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "source_ids": {
+              "$ref": "#/$defs/string_array"
+            }
+          }
+        }
+      ]
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "path",
+          "pointer",
+          "sha256",
+          "revision",
+          "observed_at",
+          "observation",
+          "availability"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "brief",
+              "code",
+              "plan",
+              "doc",
+              "test",
+              "git",
+              "user",
+              "migration"
+            ]
+          },
+          "path": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pointer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "revision": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "observed_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "observation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "availability": {
+            "enum": [
+              "present",
+              "not_exported",
+              "missing",
+              "external"
+            ]
+          }
+        }
+      }
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "at",
+          "actor",
+          "summary",
+          "source_ids"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "at": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          },
+          "actor": {
+            "enum": [
+              "task-doc",
+              "project-doc",
+              "doc-verify",
+              "migration",
+              "user",
+              "gototask",
+              "task-diff",
+              "send-to-git",
+              "ingest",
+              "agent-review",
+              "prepare-plan",
+              "jira-report",
+              "business-analyst"
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ids": {
+            "$ref": "#/$defs/string_array"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "string_array": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "record_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "record_id",
+        "anchor"
+      ],
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "anchor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+    "require-dev": {
+        "php": "^8.2",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "codeception/codeception": "^5.3",
+        "codeception/module-phpbrowser": "*",
+        "codeception/module-asserts": "*",
+        "codeception/module-webdriver": "^4.0",
+        "codeception/module-db": "^3.2",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

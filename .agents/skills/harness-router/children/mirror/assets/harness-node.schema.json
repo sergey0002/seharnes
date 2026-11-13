@@ -1,0 +1,201 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "harness-node.schema.json",
+  "title": "harness node v2.1",
+  "description": "One JSON node per harness file. Concatenating raw blocks by order must reproduce the source byte for byte.",
+  "oneOf": [
+    { "$ref": "#/definitions/declarative" },
+    { "$ref": "#/definitions/executable" }
+  ],
+  "definitions": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_id", "name", "type", "environment", "source_file_path",
+        "canonical", "projection_of", "transferable", "content_sha256",
+        "parser_version", "schema_version", "description"
+      ],
+      "properties": {
+        "node_id": { "type": "string", "pattern": "^(skill|rule|script|config|doc):[a-z0-9][a-z0-9._-]*(@[a-z0-9-]+)?$" },
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "enum": ["skill", "rule", "script", "config", "doc"] },
+        "environment": { "enum": ["cursor", "codex", "kilo", "antigravity", "gemini", "agents", "dsh", "project"] },
+        "source_file_path": { "type": "string", "minLength": 1 },
+        "canonical": { "type": "boolean" },
+        "projection_of": { "type": ["string", "null"] },
+        "transferable": { "type": "boolean" },
+        "content_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "parser_version": { "type": "string" },
+        "schema_version": { "type": "string" },
+        "description": { "type": "string" },
+        "symlink_target": { "type": "string" }
+      }
+    },
+    "relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_name", "target_type", "relation_type", "origin", "resolution"],
+      "properties": {
+        "target_name": { "type": "string", "minLength": 1 },
+        "target_type": { "enum": ["rule", "skill", "script", "config", "external_tool", "doc", "mcp"] },
+        "target_path": { "type": ["string", "null"] },
+        "target_node_id": { "type": ["string", "null"] },
+        "relation_type": {
+          "enum": [
+            "invokes_tool", "delegates_to", "constrained_by", "governed_by",
+            "enforces_gate", "reads_context", "next_stage_pipeline",
+            "patches_target", "mirrors", "synced_by"
+          ]
+        },
+        "origin": { "enum": ["auto", "agent"] },
+        "resolution": { "enum": ["resolved", "ambiguous", "unresolved", "external", "missing"] },
+        "candidates": { "type": "array", "items": { "type": "string" } },
+        "anchor_text": { "type": "string" },
+        "execution_moment": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "if": { "properties": { "origin": { "const": "agent" } }, "required": ["origin"] },
+      "then": { "required": ["anchor_text"], "properties": { "anchor_text": { "minLength": 1 } } }
+    },
+    "source_of_truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "scope"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "path": { "type": ["string", "null"] },
+        "scope": { "type": "string" }
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["pending", "filled"] },
+        "model": { "type": ["string", "null"] }
+      }
+    },
+    "reconstruction_meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_blocks", "line_ending", "bom", "final_newline"],
+      "properties": {
+        "total_blocks": { "type": "integer", "minimum": 1 },
+        "line_ending": { "enum": ["\n", "\r\n", "mixed"] },
+        "bom": { "type": "boolean" },
+        "final_newline": { "type": "boolean" }
+      }
+    },
+    "declarative": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["meta", "lifecycle", "sources_of_truth", "reconstruction_meta", "content_blocks", "global_relations", "analysis"],
+      "properties": {
+        "meta": {
+          "allOf": [ { "$ref": "#/definitions/meta" }, { "properties": { "type": { "enum": ["skill", "rule", "config", "doc"] } } } ]
+        },
+        "lifecycle": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["trigger_condition", "phase"],
+          "properties": {
+            "trigger_condition": { "type": "string" },
+            "phase": { "enum": ["pre-execution", "execution", "post-execution", "fallback"] },
+            "priority": { "type": ["integer", "null"] }
+          }
+        },
+        "sources_of_truth": { "type": "array", "items": { "$ref": "#/definitions/source_of_truth" } },
+        "reconstruction_meta": {
+          "allOf": [
+            { "$ref": "#/definitions/reconstruction_meta" },
+            { "required": ["has_frontmatter"], "properties": { "has_frontmatter": { "type": "boolean" } } }
+          ]
+        },
+        "content_blocks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["block_id", "order", "block_type", "header_text", "header_level", "raw_content", "relations"],
+            "properties": {
+              "block_id": { "type": "string" },
+              "order": { "type": "integer", "minimum": 0 },
+              "block_type": { "enum": ["frontmatter", "section", "preamble"] },
+              "header_text": { "type": ["string", "null"] },
+              "header_level": { "type": ["integer", "null"] },
+              "raw_content": { "type": "string" },
+              "relations": { "type": "array", "items": { "$ref": "#/definitions/relation" } }
+            }
+          }
+        },
+        "global_relations": { "type": "array", "items": { "$ref": "#/definitions/relation" } },
+        "analysis": { "$ref": "#/definitions/analysis" }
+      }
+    },
+    "executable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["meta", "execution_profile", "lifecycle", "sandbox_policy", "reconstruction_meta", "code_blocks", "global_relations", "analysis"],
+      "properties": {
+        "meta": {
+          "allOf": [ { "$ref": "#/definitions/meta" }, { "required": ["type"], "properties": { "type": { "const": "script" } } } ]
+        },
+        "execution_profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["runtime", "interpreter_shebang", "command_template", "env_vars_required", "arguments"],
+          "properties": {
+            "runtime": { "enum": ["bash", "sh", "zsh", "python", "node"] },
+            "interpreter_shebang": { "type": ["string", "null"] },
+            "command_template": { "type": "string" },
+            "env_vars_required": { "type": "array", "items": { "type": "string" } },
+            "arguments": { "type": "array", "items": { "type": "object" } }
+          }
+        },
+        "lifecycle": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["trigger_condition", "phase", "security_level"],
+          "properties": {
+            "trigger_condition": { "type": "string" },
+            "phase": { "enum": ["pre-execution", "execution", "post-execution", "fallback"] },
+            "security_level": { "enum": ["read_only", "idempotent_write", "destructive_write"] }
+          }
+        },
+        "sandbox_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["requires_approval", "filesystem_access", "network_access"],
+          "properties": {
+            "requires_approval": { "type": "boolean" },
+            "filesystem_access": { "enum": ["read_only", "workspace_only", "unrestricted"] },
+            "network_access": { "type": "boolean" }
+          }
+        },
+        "reconstruction_meta": { "$ref": "#/definitions/reconstruction_meta" },
+        "code_blocks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["block_id", "order", "line_range", "name_or_purpose", "raw_code", "relations"],
+            "properties": {
+              "block_id": { "type": "string" },
+              "order": { "type": "integer", "minimum": 0 },
+              "line_range": { "type": "string", "pattern": "^[0-9]+-[0-9]+$" },
+              "name_or_purpose": { "type": "string" },
+              "raw_code": { "type": "string" },
+              "relations": { "type": "array", "items": { "$ref": "#/definitions/relation" } }
+            }
+          }
+        },
+        "global_relations": { "type": "array", "items": { "$ref": "#/definitions/relation" } },
+        "analysis": { "$ref": "#/definitions/analysis" }
+      }
+    }
+  }
+}

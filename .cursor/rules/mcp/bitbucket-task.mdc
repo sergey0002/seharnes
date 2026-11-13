@@ -1,0 +1,29 @@
+---
+description: "MCP bitbucket-task: legacy экспорт задач Bitbucket, отключен. Триггеры: bitbucket-task, legacy трекер."
+alwaysApply: false
+---
+
+# MCP: bitbucket-task (отключен)
+
+## Когда
+
+Сервер отключен. Трекер переведен на Jira, экспорт задачи делает
+[mcp-jira-task](./jira-task.mdc).
+
+## Инструменты
+
+Сервер отключен. Legacy-метод `export_task_md` заменен на
+[mcp-jira-task](./jira-task.mdc).
+
+## Ошибки и границы
+
+- В задачах не использовать.
+- Каталог `.doc/.bitbucket/` остается историческим артефактом, не источником.
+- Не вызывать контейнерный сервер вручную.
+
+## Связи
+
+- [Полное описание](../../../.doc/harnes/mcp/bitbucket-task.md)
+- [jira-task](./jira-task.mdc)
+- [Задачи Jira и git](../bitbucket-tasks.mdc)
+- [Карта MCP](../mcp.mdc) - порядок всех серверов и ссылки

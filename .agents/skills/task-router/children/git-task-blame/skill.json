@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "name": "git-task-blame",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [
+      {
+        "name": "gototask",
+        "required": false,
+        "reason": "вызывается по тексту скила"
+      }
+    ],
+    "project": []
+  },
+  "generated": []
+}

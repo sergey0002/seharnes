@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "name": "task-code-review",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [
+      "references/openai.yaml"
+    ],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

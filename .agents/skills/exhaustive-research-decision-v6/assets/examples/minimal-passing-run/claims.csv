@@ -1,0 +1,3 @@
+claim_id,statement,decision_critical,source_ids,method_ids,verification_status,qualification,contradiction_ids
+CL001,Reversa has executable parity scenarios,yes,S001,M017|M010,verified,paper results only,D001
+CL002,Spec Suite has delta archive and clean-room profile,yes,S002,M017|M060,verified,vendor case study,D001

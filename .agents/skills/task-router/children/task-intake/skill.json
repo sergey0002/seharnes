@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "name": "task-intake",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/doc_sections.py",
+      "scripts/intake_analysis.py",
+      "scripts/intake_orchestrator.py",
+      "scripts/intake_state.py"
+    ],
+    "references": [],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_doc_sections.py",
+    "tests/test_intake_analysis.py",
+    "tests/test_intake_orchestrator.py",
+    "tests/test_intake_state.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [
+      {
+        "name": "gototask",
+        "required": true,
+        "reason": "вызывается по тексту скила"
+      },
+      {
+        "name": "task-diff",
+        "required": true,
+        "reason": "вызывается по тексту скила"
+      },
+      {
+        "name": "task-doc",
+        "required": true,
+        "reason": "вызывается по тексту скила"
+      }
+    ],
+    "project": [
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/check-doc-text.py",
+        "owner": "docscripts",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/task-identity.py",
+        "owner": "docscripts",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/validate-docs.ps1",
+        "owner": "docscripts",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/task-doc/scripts/jsondoc.py",
+        "owner": "jsondoc",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      }
+    ]
+  },
+  "generated": []
+}

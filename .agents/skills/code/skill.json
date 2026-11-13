@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "name": "code",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [
+    "children/bug-cause"
+  ],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

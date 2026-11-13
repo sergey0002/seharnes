@@ -1,0 +1,94 @@
+---
+description: Правила работы с документацией — обязательное чтение .doc/harnes/doc_rules.md перед любой работой с .doc/
+alwaysApply: true
+---
+
+# Работа с документацией проекта
+
+## Обязательное чтение
+
+**Перед любой работой с документацией в `.doc/` (чтение, правка, создание файлов) —
+сначала прочитай [`.doc/harnes/doc_rules.md`](../../.doc/harnes/doc_rules.md).**
+
+Это касается:
+
+- архитектурных документов в `.doc/architecture/`
+- документации задач в `.doc/tasks/{N}/doc.md`
+- операционной документации панели в `.doc/web/README.md`
+- любых новых файлов внутри `.doc/`
+
+Не угадывай структуру и формат — все правила (имена файлов, секции,
+meta-блоки, ссылки, маркеры статуса, чеклисты) собраны в `.doc/harnes/doc_rules.md`.
+
+## Текст документации
+
+Пиши по правилу [text-style](./text-style.mdc). Главное: каждый тезис понятен
+без перечитывания соседних секций. Называй объект, место и результат прямо в
+тезисе. Не используй "см. выше", "как говорилось ранее", "данный", "функционал".
+В таблицах каждая ячейка самостоятельна. Ссылка на секцию важнее пересказа.
+
+## Порядок чтения для архитектуры
+
+```
+1. .doc/harnes/doc_rules.md              ← правила, всегда первым
+2. .doc/architecture/index.md     ← оглавление, навигация
+3. Только релевантные файлы по ссылкам из index.md (не сканировать всё)
+```
+
+## Поиск и чтение документации
+
+Любое упоминание документации, панели, задачи, architecture, harnes, отчёта
+или просьба "подтяни контекст" начинается с MCP `jdocmunch`, индекс
+из `doc_resolve_repo` для текущего `.doc`. Это гейт: первый вызов `search_sections`, прямой Grep
+по `.doc` только после пустого результата MCP. Полное правило:
+[mcp-jdocmunch](./mcp/jdocmunch.mdc).
+
+```
+doc_resolve_repo(current .doc) -> search_sections -> get_section_context / get_section
+```
+
+- Документацию ищут и ориентируются по ней через jdocmunch, а не обходом `.doc`.
+- Точный литерал в уже известном файле, regex, не-Markdown и сгенерированные
+  каталоги: `multi-search.sh` / `rg`. URL, порт и номер задачи сначала ищутся
+  смысловым запросом через jdocmunch.
+- CBM и codegraph работают по коду, не по документации.
+- Правила серверов: [codebase-memory](./mcp/codebase-memory-mcp.mdc), [codegraph](./mcp/codegraph.mdc), [serena](./mcp/serena.mdc), [mysql](./mcp/mysql.mdc), [context7](./mcp/context7.mdc).
+- Для задач: код через `codebase-memory-mcp` → `codegraph` → `serena`; данные через `mysql`.
+
+## Поиск по кодовой базе
+
+Код ищется через MCP `codebase-memory-mcp`: классы, методы, вызовы, маршруты,
+таблицы и связь с текущим diff. Методы, аргументы и когда какой брать:
+[mcp-codebase-memory](./mcp/codebase-memory-mcp.mdc). Эксплуатация и установка:
+[документация сервера](../../.agents/skills/codebase-memory-mcp/docs/mcp/codebase-memory-mcp.md).
+
+Порядок: `list_projects` → `get_graph_schema` → `get_architecture` →
+`search_graph` → `trace_path` → `get_code_snippet` → `detect_changes`.
+Свежесть графа проверяется по `indexed_at` в `index_status`; перед `git push`
+граф обновляется вручную по правилу [cbm-index-before-push](./cbm-index-before-push.mdc).
+
+MCP-маршрут в [`.doc/harnes/doc_rules.md`](../../.doc/harnes/doc_rules.md) остается
+для кода и данных.
+
+## Что строго запрещено
+
+- Перезаписывать архитектурные файлы целиком
+- Обновлять `.doc/architecture/*` без явной команды пользователя
+  ИСКЛЮЧЕНИЯ — обновлять **обязательно** без AskQuestion:
+  • **task-doc** (Режим B): шаг B3 — синхронизация + обратные ссылки на задачу
+  • **index.md при индексации project-doc**
+- Создавать новый architecture/*.md без Index Gate (сначала проверить index и существующие docs)
+- Сканировать всю архитектурную документацию без навигации через `index.md`
+- Копировать текст между документами — только ссылки
+- Использовать `[[wikilinks]]` или абсолютные пути
+
+Полный список запретов и шаблоны диалогов с пользователем — в
+[`.doc/harnes/doc_rules.md`](../../.doc/harnes/doc_rules.md) (раздел «Правила для AI-агентов»).
+
+## Связи
+
+- [`.doc/harnes/doc_rules.md`](../../.doc/harnes/doc_rules.md) — единый стандарт документации
+- [`.cursor/rules/text-style.mdc`](./text-style.mdc) - как писать тексты документации и отчётов
+- [`.cursor/rules/bitbucket-tasks.mdc`](./bitbucket-tasks.mdc) — порядок работы с задачами
+- [`.cursor/rules/task-doc.mdc`](./task-doc.mdc) — документирование задач
+- [`.cursor/rules/mcp/jdocmunch.mdc`](./mcp/jdocmunch.mdc) — поиск и чтение документации

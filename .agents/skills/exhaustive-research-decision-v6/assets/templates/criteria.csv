@@ -1,0 +1,2 @@
+criterion_id,name,origin,type,unit,direction,applies_to_all,na_policy,formula,input_feature_ids,weight,hard_gate,source_ids,method_ids,decision_critical,synthetic,owner,status
+K001,TODO,brief,factual,TODO,maximize,yes,TODO,—,FTR001,0.5,no,TODO,TODO,yes,no,TODO,draft

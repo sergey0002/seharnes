@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "name": "codebase-memory-mcp",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+    "scripts/codebase-memory-mcp-launch.cmd",
+    "scripts/codebase-memory-mcp-launch.sh",
+      "scripts/codebase-memory-mcp-ui.sh"
+    ],
+    "references": ["docs/mcp/codebase-memory-mcp.md"],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {"skills": [], "project": []},
+  "generated": []
+}

@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "name": "reporting-router",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [
+    "children/task-report",
+    "children/task-change-report"
+  ],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

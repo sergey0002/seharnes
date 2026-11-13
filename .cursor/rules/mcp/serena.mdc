@@ -1,0 +1,65 @@
+---
+description: "MCP serena: символы, ссылки, диагностика и точечные правки через PHP LSP. Триггеры: find_symbol, references, замена тела метода, диагностика PHP, serena."
+alwaysApply: false
+---
+
+# MCP: serena
+
+## Когда
+
+Точная работа с символами после CBM и codegraph: найти объявление, ссылки,
+диагностику, заменить тело метода. Для документации serena не применяется:
+`.doc/` в ее индекс не входит.
+
+## Порядок правки символа
+
+1. `find_symbol` с `depth=1` по классу - состав класса.
+2. `find_symbol` с `include_body=true` по методу - тело целиком.
+3. `find_referencing_symbols` - кто использует символ.
+4. Правка по размеру: `replace_symbol_body`, `insert_before_symbol`,
+   `insert_after_symbol` или `replace_content` в режиме `literal` / `regex`.
+5. `get_diagnostics_for_file` и `git diff`.
+6. Для публичного символа повторить `find_referencing_symbols`.
+
+## Инструменты
+
+| Инструмент | Параметры | Зачем |
+|---|---|---|
+| `find_symbol` | `name_path_pattern`, `relative_path`, `depth`, `include_body`, `substring_matching` | найти символ и тело |
+| `get_symbols_overview` | `relative_path` | дерево символов файла |
+| `find_referencing_symbols` | `name_path_pattern`, `relative_path` | все ссылки |
+| `find_declaration` | regex с одной группой, `include_body` | найти объявление |
+| `search_for_pattern` | regex, `paths_include_glob`, `context_lines_before`, `context_lines_after` | поиск по коду |
+| `replace_content` | `relative_path`, `mode` `literal` или `regex`, `allow_multiple_occurrences` | точечная замена |
+| `replace_symbol_body` | `name_path`, `relative_path`, тело | заменить метод целиком |
+| `insert_before_symbol` / `insert_after_symbol` | символ, код | вставка рядом |
+| `safe_delete_symbol` | символ, файл | удаление без ссылок |
+| `replace_in_files` | шаблон, `dry_run`, `occurrence_ids` | массовая замена и переименование |
+| `get_diagnostics_for_file` | `relative_path` | ошибки LSP |
+
+## Ошибки и границы
+
+- `rename_symbol` и `find_implementations` в бесплатном Intelephense не работают.
+  Переименование: `replace_in_files` с `dry_run`, затем применение по
+  `occurrence_ids`. Реализации: `search_for_pattern` по `implements <Interface>`.
+- Правки символов только для языков с языковым сервером. PHP обслуживается,
+  JS, Vue и TPL нет: там файловые инструменты.
+- Перед массовой заменой обязателен `dry_run`.
+- Клиент обрывает вызов на 60 с, сервер работает до 240 с. После обрыва
+  перечитать файл, а не повторять правку вслепую.
+- Поиск по `.doc` через serena не работает: используйте
+  [mcp-jdocmunch](./jdocmunch.mdc).
+
+## Проверка
+
+```bash
+node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=serena
+```
+
+## Связи
+
+- [Полное описание](../../../.agents/skills/serena/docs/mcp/serena.md)
+- [Правка кода](../code-editing.mdc) - выбор инструмента по языку
+- [codebase-memory](./codebase-memory-mcp.mdc) - карта до символов
+- [codegraph](./codegraph.mdc) - blast radius и исходник вне точечных символов
+- [Карта MCP](../mcp.mdc) - порядок всех серверов и ссылки

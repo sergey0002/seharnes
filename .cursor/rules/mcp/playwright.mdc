@@ -1,0 +1,63 @@
+---
+description: "MCP playwright: браузерная проверка UI. Триггеры: проверить UI, клик, скриншот, e2e без Cest, playwright."
+alwaysApply: false
+---
+
+# MCP: playwright
+
+## Когда
+
+Проверка UI там, где нет метода Codeception Acceptance: конкретная ветка
+поведения, визуальный результат, DOM. Основное покрытие дает Codeception.
+
+## Порядок проверки
+
+1. Проверить, есть ли Cest или PHPUnit метод для ветки.
+2. Если метода нет, открыть страницу и снять `browser_snapshot`.
+3. Выполнить шаги: `browser_click`, `browser_type`, `browser_fill_form`.
+4. Проверить результат `browser_snapshot`, при необходимости
+   `browser_evaluate` и `browser_take_screenshot`.
+
+## Инструменты
+
+| Инструмент | Параметры | Зачем |
+|---|---|---|
+| `browser_navigate` | `url` | открыть страницу |
+| `browser_snapshot` | - | DOM-снимок и ссылки `ref` |
+| `browser_click` | `element`, `ref`, `button`, `doubleClick`, `modifiers` | клик по элементу |
+| `browser_type` | `element`, `ref`, `text`, `submit`, `slowly` | ввод текста |
+| `browser_fill_form` | `fields[]`: `name`, `type`, `ref`, `value` | заполнить форму |
+| `browser_evaluate` | `function`, `element`, `ref` | выполнить JS |
+| `browser_take_screenshot` | `type`, `filename`, `element`, `ref`, `fullPage` | скриншот |
+
+Отключены осознанно: `browser_press_key`, `browser_navigate_back`,
+`browser_drag`, `browser_hover`, `browser_select_option`, `browser_tabs`.
+
+В пакете есть и другие инструменты: `browser_verify_*`, `browser_mouse_*`,
+`browser_network_requests`, `browser_wait_for`, `browser_close`,
+`browser_resize`, `browser_handle_dialog`, `browser_pdf_save`,
+`browser_file_upload`, `browser_generate_locator`, `browser_console_messages`,
+`browser_start_tracing`, `browser_stop_tracing`, `browser_install`. В маршрут
+проверки задачи они не входят; включать только точечно и после проверки.
+
+## Ошибки и границы
+
+- Сначала Codeception, Playwright только для веток без метода.
+- Браузер всегда headed, без облачных и скрытых инструментов.
+- Не править шаблоны ради теста.
+- Стенд `:8030` и chromedriver не поднимать без спроса; порядок в
+  [test-task](../test-task.mdc) и [test-priority](../test-priority.mdc).
+- Скриншот макета или ручного DOM не доказывает исправление приложения.
+
+## Проверка
+
+```bash
+node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=playwright
+```
+
+## Связи
+
+- [Полное описание](../../../.agents/skills/playwright/docs/mcp/playwright.md)
+- [Проверка задачи](../test-task.mdc)
+- [browser-verify](../../../.agents/skills/task-router/children/testing-router/children/browser-verify/SKILL.md)
+- [Карта MCP](../mcp.mdc) - порядок всех серверов и ссылки

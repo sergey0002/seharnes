@@ -1,0 +1,123 @@
+---
+description: "MCP codeprism: persistent knowledge graph PHP, JS и TS через codeprism-ai, контекст символа, вызывающие, влияние, поток данных, security gate перед записью. Триггеры: codeprism, CodePrism, граф кода, кто вызывает, blast radius, влияние правки, поток данных, security gate, скил codeprism."
+alwaysApply: false
+---
+
+# MCP: codeprism
+
+> Сервер собран из пакета `codeprism-ai` (knight22-21/CodePrism) и работает по
+> MCP. Это граф структуры и безопасности. Исходник, правки и диагностика PHP
+> остаются у [codegraph](./codegraph.mdc), [codebase-memory](./codebase-memory-mcp.mdc)
+> и [serena](./serena.mdc). Агентский сценарий поверх сервера:
+> [скил codeprism](../../../.agents/skills/codeprism/SKILL.md).
+
+## Когда
+
+Когда нужен структурный ответ без чтения файлов: контекст символа, вызывающие и
+вызываемые, влияние правки, зависимые файлы, поток данных, проверка кода перед
+записью.
+
+Брать до чтения файлов, когда вопрос структурный. Не брать за полным телом
+функции, за документацией, за Smarty `.tpl` и Markdown: они не индексируются.
+
+## Конфигурация
+
+| Что | Значение |
+|---|---|
+| Транспорт | Streamable HTTP, `http://127.0.0.1:9201/mcp`; stdio-мост `bash .agents/skills/codeprism/scripts/codeprism-mcp.sh` |
+| Пакет | `codeprism-ai==0.1.11`, Python 3.12 |
+| Окружение | `.cursor/tools/codeprism-ai/venv` |
+| Цель | корень проекта задаётся позиционным аргументом службы; `CODEPRISM_TARGET` проверяет корень stdio-моста |
+| Индекс | SQLite в user-data, по одному на проект, сохраняется |
+| Конфиг | `.codeprism.toml` в корне: языки, исключения, security, embeddings |
+| Наблюдатель | запускается после фоновой индексации; debounce 800 мс, задержка 1-2 с |
+| Фоновый индекс | включен, отключается `CODEPRISM_NO_AUTO_INDEX=1` |
+
+После настройки исключений исторический замер 2026-11-03: 1934 файла,
+13507 символов. Повторный запуск инкрементальный. `.gitignore` соблюдается.
+
+## Инструменты
+
+| Инструмент | Обязательные аргументы | Зачем |
+|---|---|---|
+| `get_graph_stats` | `path` | готовность и размеры графа |
+| `get_context` | `file`, `symbol` | подпись, вызывающие, вызываемые, типы; `depth` 1-3 |
+| `get_module_summary` | `file` | назначение файла и публичный API |
+| `get_file_map` | - | роли файлов в каталоге, `project_path` |
+| `get_impact` | `file`, `symbol` | что сломается, затронутые тесты |
+| `get_callers` | `file`, `function` | все места вызова |
+| `get_callees` | `file`, `function` | все вызовы из функции |
+| `get_data_flow` | `file`, `symbol` | поток значения |
+| `search_symbol` | `query` | поиск символа, `kind` |
+| `get_dependencies` | `file` | импорты, внутренние и внешние |
+| `get_dependents` | `file` | файлы, зависящие от этого |
+| `scan_file` | `file` | security-скан файла, `content` |
+| `scan_diff` | `original`, `proposed` | security-скан правки, `file` |
+| `check_secret_exposure` | `content` | поиск секретов в тексте |
+| `check_dependencies_cve` | `requirements` | CVE в зависимостях |
+| `record_read` | `session_id`, `file`, `symbol` | учет прочитанного |
+| `record_write` | `session_id`, `file`, `content_before`, `content_after` | учет записи |
+| `get_session_context` | `session_id` | сводка сессии |
+| `undo_write` | `session_id` | откат записей, `steps` |
+| `index_project` | `path` | отключен на общем HTTP-сервере |
+| `update_file` | `path` | обновление одного файла |
+
+`file` и `path` даются относительно корня проекта. При неоднозначном имени
+передавать более длинный путь.
+
+## Правила использования
+
+1. Сначала `get_graph_stats` с `path="."`, затем `get_context`. Без `path`
+   сервер закрывает соединение. Индекс должен быть готов.
+2. Перед чтением файла брать `get_context` с `depth=2`.
+3. Влияние правки оценивать через `get_impact`, затем `get_callers` и
+   `get_callees`.
+4. Перед записью файла всегда вызывать `scan_diff`, для нового файла
+   `scan_file`. `BLOCK` запрещает запись, `WARN` требует сообщить о находке.
+5. На длинной задаче вести `record_read` и `record_write`, в конце смотреть
+   `get_session_context`.
+6. При включенной фоновой индексации наблюдатель запускается после ее завершения и
+   обновляет индекс при сохранении файлов с задержкой 1-2 с. Для мгновенного
+   результата вызывать `update_file`. Изменение `.codeprism.toml` применяется
+   после перезапуска сервера. `index_project` не вызывать: он не читает конфиг и
+   возвращает в индекс исключенные файлы.
+7. Полное тело функции читать только когда граф не дал ответа.
+
+## Ошибки и границы
+
+- Граф это структура, не тела функций. Для точного кода нужен codegraph или
+  чтение файла.
+- Вызовы через импорты связываются только для Python. Для PHP, JS и TS связь по
+  имени, одноименные функции могут связаться неверно.
+- Smarty `.tpl`, Markdown и файлы из `.gitignore` не индексируются.
+- Наблюдатель обновляет граф через 1-2 с после сохранения. Файлы из исключенных
+  каталогов и `*.min.js` не наблюдаются. `codeprism watch` и `index_project` не
+  используются: они не читают конфиг.
+- Покрытие индекса неполное: в этом репозитории около 72 процентов файлов после
+  исключения сторонних плагинов, переводов и миграций.
+- `index_project` и CLI `index` не читают `.codeprism.toml`. Для применения
+  настроек перезапускать сервер.
+- Embeddings выключены: в 0.1.11 сборка падает на дублях ID, а при включении
+  `search_symbol` перестает искать по подстроке.
+- Не заменяет codegraph для исходника и Serena для правок PHP.
+- `PASS` в security-проверке означает, что известный шаблон не найден. Это не
+  доказательство безопасности, финальную проверку делает semgrep.
+- Одноименные проекты: скил и сервер относятся именно к `codeprism-ai`
+  (knight22-21), а не к rustic-ai.
+
+## Проверка
+
+```bash
+node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=codeprism
+```
+
+Ожидаемо для общего HTTP-сервера: `OK codeprism`, 20 инструментов в `tools/list`.
+
+## Связи
+
+- [Скил codeprism](../../../.agents/skills/codeprism/SKILL.md) - агентский сценарий
+- [Полное описание](../../../.agents/skills/codeprism/docs/mcp/codeprism.md)
+- [Карта MCP](../mcp.mdc)
+- [codegraph](./codegraph.mdc) - исходник, вызывающие и blast radius
+- [codebase-memory](./codebase-memory-mcp.mdc) - структурный граф и trace_path
+- [serena](./serena.mdc) - правки PHP

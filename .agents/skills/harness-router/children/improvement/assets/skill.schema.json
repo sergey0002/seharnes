@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://copytrust.local/harness/skill.schema.json",
+  "title": "Harness skill manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "name",
+    "kind",
+    "entry",
+    "readme",
+    "resources",
+    "tests",
+    "children",
+    "dependencies",
+    "generated"
+  ],
+  "properties": {
+    "schema": { "const": 1 },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "kind": { "enum": ["leaf", "orchestrator"] },
+    "entry": { "const": "SKILL.md" },
+    "readme": { "const": "README.md" },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scripts", "references", "assets"],
+      "properties": {
+        "scripts": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "references": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "assets": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "children": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["skills", "project"],
+      "properties": {
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "required", "reason"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "required": { "type": "boolean" },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "project": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "owner", "required", "reason"],
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "owner": { "type": "string", "minLength": 1 },
+              "required": { "type": "boolean" },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "generated": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

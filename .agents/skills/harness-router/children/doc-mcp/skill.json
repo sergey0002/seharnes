@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "name": "doc-mcp",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": ["scripts/doc_mcp.py"],
+    "references": ["docs/scripts/doc_mcp.py.md"],
+    "assets": []
+  },
+  "tests": ["tests/test_doc_mcp.py"],
+  "children": [],
+  "dependencies": {"skills": [], "project": []},
+  "generated": []
+}

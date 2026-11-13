@@ -1,0 +1,26 @@
+[codeprism]
+languages = ["php", "javascript", "typescript"]
+respect_gitignore = true
+auto_index = true
+enable_embeddings = false
+enable_security_gate = true
+watch_debounce_ms = 800
+
+[codeprism.security]
+block_on_secrets = true
+warn_on_weak_crypto = true
+check_new_dependencies = true
+ignore_paths = [
+  "*/vendor/*",
+  "*/node_modules/*",
+  "*/templates_c/*",
+  "*/frontend/dist/*",
+  "*/scripts/plugins/*",
+  "*/scripts/jscalendar-1.0/*",
+  "*/scripts/ui/minified/*",
+  "*/scripts/ui/i18n/*",
+  "*/resources/lang/*",
+  "*/sql/migrations/*",
+  "*/tests/fixtures/*",
+  "*/*.min.js",
+]

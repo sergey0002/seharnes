@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task change report model",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task", "summary", "logic", "changes", "diagrams", "tests", "teamlead_questions", "timeline", "risks", "evidence"],
+  "properties": {
+    "schema_version": {"const": "2.0"},
+    "task": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "title"],
+      "properties": {"id": {"type": "string", "pattern": "^[0-9]+$"}, "title": {"$ref": "#/$defs/text"}, "stage": {"$ref": "#/$defs/text"}, "full_text": {"$ref": "#/$defs/text"}}
+    },
+    "summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["spoken_summary", "problem", "solution", "result"],
+      "properties": {"spoken_summary": {"$ref": "#/$defs/text"}, "problem": {"$ref": "#/$defs/text"}, "solution": {"$ref": "#/$defs/text"}, "result": {"$ref": "#/$defs/text"}}
+    },
+    "logic": {
+      "type": "object", "additionalProperties": false,
+      "required": ["before", "after", "delta"],
+      "properties": {"before": {"$ref": "#/$defs/sourcedText"}, "after": {"$ref": "#/$defs/sourcedText"}, "delta": {"$ref": "#/$defs/sourcedText"}}
+    },
+    "business_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "statement"],
+        "properties": {
+          "title": {"$ref": "#/$defs/text"},
+          "statement": {"$ref": "#/$defs/text"},
+          "type": {"type": "string"},
+          "code": {"type": "array", "items": {"type": "string"}},
+          "tests": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "changes": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["title", "before", "after", "rationale", "source"], "properties": {"title": {"$ref": "#/$defs/text"}, "before": {"$ref": "#/$defs/text"}, "after": {"$ref": "#/$defs/text"}, "rationale": {"$ref": "#/$defs/text"}, "source": {"$ref": "#/$defs/text"}}}},
+    "diagrams": {"type": "array", "minItems": 2, "items": {"type": "object", "additionalProperties": false, "required": ["title", "text", "source"], "properties": {"title": {"$ref": "#/$defs/text"}, "text": {"$ref": "#/$defs/text"}, "source": {"$ref": "#/$defs/text"}}}},
+    "tests": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["name", "status", "description"], "properties": {"name": {"$ref": "#/$defs/text"}, "status": {"enum": ["passed", "failed", "blocked", "not-run", "unknown"]}, "description": {"$ref": "#/$defs/text"}, "result_file": {"type": "string"}}}},
+    "teamlead_questions": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["question", "answer", "source"], "properties": {"question": {"$ref": "#/$defs/text"}, "answer": {"$ref": "#/$defs/text"}, "source": {"$ref": "#/$defs/text"}}}},
+    "timeline": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["step", "source"], "properties": {"step": {"$ref": "#/$defs/text"}, "source": {"$ref": "#/$defs/text"}}}},
+    "stages": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["name", "status", "summary", "source"], "properties": {"name": {"$ref": "#/$defs/text"}, "status": {"enum": ["done", "in-progress", "blocked", "not-run"]}, "summary": {"$ref": "#/$defs/text"}, "source": {"$ref": "#/$defs/text"}}}},
+    "screenshots": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["path", "title", "caption"], "properties": {"path": {"type": "string"}, "title": {"$ref": "#/$defs/text"}, "caption": {"$ref": "#/$defs/text"}}}},
+    "jira_reply": {"$ref": "#/$defs/text"},
+    "jira": {
+      "type": "object", "additionalProperties": false,
+      "required": ["text", "release", "release_source", "evidence", "shots", "limitations"],
+      "properties": {
+        "text": {"$ref": "#/$defs/text"}, "release": {"$ref": "#/$defs/text"},
+        "release_source": {"$ref": "#/$defs/text"},
+        "evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}},
+        "shots": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["path", "title", "caption"], "properties": {"path": {"$ref": "#/$defs/text"}, "title": {"$ref": "#/$defs/text"}, "caption": {"$ref": "#/$defs/text"}}}},
+        "limitations": {"type": "array", "items": {"$ref": "#/$defs/text"}}
+      }
+    },
+    "file_roles": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/text"}
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "role"],
+        "properties": {
+          "path": {"type": "string"},
+           "role": {"$ref": "#/$defs/text"}
+        }
+      }
+    },
+    "risks": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["text", "confidence"], "properties": {"text": {"$ref": "#/$defs/text"}, "confidence": {"enum": ["confirmed", "inferred", "unconfirmed", "contradicted"]}}}},
+    "evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {
+    "text": {"type": "string", "minLength": 1},
+    "sourcedText": {"type": "object", "additionalProperties": false, "required": ["text", "source"], "properties": {"text": {"$ref": "#/$defs/text"}, "source": {"$ref": "#/$defs/text"}}}
+  }
+}

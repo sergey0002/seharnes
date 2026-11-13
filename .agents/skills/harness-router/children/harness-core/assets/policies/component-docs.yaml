@@ -1,0 +1,45 @@
+# Preliminary policy. Strict script and README checks add required sections or
+# forbidden literals while retaining all installed trusted requirements.
+schema_version: 1
+policy_id: "component_docs"
+self_path: ".agents/skills/harness-router/children/harness-core/assets/policies/component-docs.yaml"
+owner: "harness-core"
+rules:
+  CD01:
+    severity: "error"
+    enabled: true
+    scope: "skill_readme"
+    filename: "README.md"
+    forbid_links: true
+    forbid_relations_section: true
+    forbidden_literals:
+      - "Заполнить:"
+      - "Описание уточняется"
+      - "Скил установлен"
+  CD02:
+    severity: "error"
+    enabled: true
+    scope: "script_doc"
+    layout_key: "layout.docs.script_skill"
+    required_sections:
+      - "## Суть"
+      - "## Когда запускать"
+      - "## Аргументы"
+      - "## Коды выхода"
+      - "## Что читает и что пишет"
+      - "## Побочные эффекты"
+      - "## Окружение и зависимости"
+      - "## Примеры"
+      - "## Ограничения"
+      - "## Связи"
+      - "## История изменений"
+  CD03:
+    severity: "error"
+    enabled: true
+    scope: "active_mcp_doc"
+    layout_key: "layout.docs.mcp_skill"
+  CD04:
+    severity: "error"
+    enabled: true
+    scope: "component_doc"
+    forbid_duplicate_owner: true

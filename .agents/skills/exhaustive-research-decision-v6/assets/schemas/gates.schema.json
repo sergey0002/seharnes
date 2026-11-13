@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GatesV6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "task_dir", "errors", "warnings", "gates_closed", "residual_unknowns", "timestamp", "freedom_profile"],
+  "properties": {
+    "status": {"type": "string", "enum": ["PASS", "FAIL", "INCOMPLETE", "INIT"]},
+    "task_dir": {"type": "string", "minLength": 1},
+    "errors": {"type": "integer", "minimum": 0},
+    "warnings": {"type": "integer", "minimum": 0},
+    "gates_closed": {"type": "array", "items": {"type": "string"}},
+    "residual_unknowns": {"type": "array", "items": {"type": "string"}},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "freedom_profile": {"type": "string", "enum": ["frontier", "balanced", "regulated"]}
+  }
+}

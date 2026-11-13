@@ -1,0 +1,37 @@
+---
+description: "MCP sourcegraph: legacy полнотекстовый поиск, отключен. Триггеры: sourcegraph, zoekt, legacy поиск."
+alwaysApply: false
+---
+
+# MCP: sourcegraph (отключен)
+
+## Когда
+
+Сервер выключен в каноне с 2026-10-29. В задачах не использовать.
+
+## Замена
+
+| Задача | Чем заменить |
+|---|---|
+| Связи и структура кода | [codegraph](./codegraph.mdc) |
+| Точный литерал или regex | `multi-search.sh` / `rg` |
+| Структура и вызовы | [codebase-memory](./codebase-memory-mcp.mdc) |
+| Документация | [mcp-jdocmunch](./jdocmunch.mdc) |
+
+## Инструменты
+
+Сервер отключен, инструменты не используются. Legacy-набор:
+`sg_keyword_search`, `sg_nls_search`, `sg_read_file`, `sg_list_repos`, `sg_list_files`.
+
+## Ошибки и границы
+
+- Локальный стек `sourcegraph-local/` остается опцией для ручного поиска, но не
+  частью агентского маршрута.
+- Токен и headers из канона в документацию не копировать.
+- Не поднимать стек без необходимости: он ест память вместе с остальными MCP.
+
+## Связи
+
+- [Полное описание](../../../.doc/harnes/mcp/sourcegraph.md)
+- [MCP-стек](../../../.doc/harnes/state/15-mcp-stack.md)
+- [Карта MCP](../mcp.mdc) - порядок всех серверов и ссылки

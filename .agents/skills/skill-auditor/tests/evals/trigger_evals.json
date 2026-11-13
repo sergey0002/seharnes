@@ -1,0 +1,82 @@
+[
+  {
+    "query": "Проведи аудит моего нового скила в .claude/skills/deploy-helper/SKILL.md — кажется, он слишком жирный и плохо триггерится в Codex",
+    "should_trigger": true
+  },
+  {
+    "query": "Оцени качество этого сложного многоагентного скила с субагентами и MCP по критериям контекст-инжиниринга и дай рекомендации",
+    "should_trigger": true
+  },
+  {
+    "query": "Check my SKILL.md and agents/*.md folder for skill smells, MAST failure risks, and security issues before our team commits it to .agents/skills/",
+    "should_trigger": true
+  },
+  {
+    "query": "I downloaded a skill pack from skills.sh — can you review whether it's safe and follows Anthropic & agentskills.io best practices?",
+    "should_trigger": true
+  },
+  {
+    "query": "Почему мой скил сжирает 40к токенов и субагенты теряют формат вывода? Разбери архитектуру и поставь оценку",
+    "should_trigger": true
+  },
+  {
+    "query": "Score this Cursor .cursor/skills/pr-audit/ folder for portability across Claude Code and Codex CLI",
+    "should_trigger": true
+  },
+  {
+    "query": "У меня есть SKILL.md + scripts/validate.py + 4 reference файла, проверь нет ли битых ссылок, утечек секретов и ошибок в скриптах",
+    "should_trigger": true
+  },
+  {
+    "query": "Grade this agent skill rubric compliance and generate before/after refactoring diffs",
+    "should_trigger": true
+  },
+  {
+    "query": "Проверь наш корневой AGENTS.md и .cursor/rules/api.mdc на переносимость между Codex и Claude Code и на конфликт правил",
+    "should_trigger": true
+  },
+  {
+    "query": "Audit our whole .agents/skills/ directory for trigger cannibalization between skills and startup metadata budget",
+    "should_trigger": true
+  },
+  {
+    "query": "Сделай code review этого Express API контроллера на TypeScript на SQL-инъекции и N+1 запросы",
+    "should_trigger": false
+  },
+  {
+    "query": "Напиши с нуля Python-скрипт для парсинга выгрузки транзакций из Postgres в CSV",
+    "should_trigger": false
+  },
+  {
+    "query": "Help me debug why my MCP server fails to start in Docker with OAuth 401 error",
+    "should_trigger": false
+  },
+  {
+    "query": "Explain the difference between prompt caching and RAG in transformer inference",
+    "should_trigger": false
+  },
+  {
+    "query": "Write unit tests with pytest for src/billing/invoice.py",
+    "should_trigger": false
+  },
+  {
+    "query": "Create a brand new GitHub Actions CI workflow that builds and pushes a multi-arch container image",
+    "should_trigger": false
+  },
+  {
+    "query": "Summarize the git diff on my current feature branch and draft a Conventional Commit message",
+    "should_trigger": false
+  },
+  {
+    "query": "Review my React components for unnecessary re-renders and missing accessibility aria labels",
+    "should_trigger": false
+  },
+  {
+    "query": "Создай с нуля новый скил для генерации миграций Alembic (greenfield skill authoring, пока ничего не написано)",
+    "should_trigger": false
+  },
+  {
+    "query": "Build a brand new Claude Code subagent and SKILL.md from my product spec from scratch",
+    "should_trigger": false
+  }
+]

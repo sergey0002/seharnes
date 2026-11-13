@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "task_dir": "examples/minimal-passing-run",
+  "errors": 0,
+  "warnings": 0,
+  "gates_closed": [
+    "BRIEF",
+    "REUSE_FIRST",
+    "CANDIDATE_ADOPTION",
+    "UNION_COMPLETE",
+    "GAP_FILLING",
+    "CRITERIA_TRANSPARENCY",
+    "SYNTHETIC_TRANSPARENCY",
+    "MATRIX_COMPLETE",
+    "ASSIGNMENT",
+    "PROVENANCE",
+    "CONTRADICTION",
+    "CRITIQUE",
+    "SENSITIVITY",
+    "VERIFICATION",
+    "HUMAN_GATE",
+    "OUTPUT_CONTRACT",
+    "CONTEXT_BUDGET",
+    "RESIDUAL_UNKNOWNS",
+    "NO_FAKE_PASS"
+  ],
+  "residual_unknowns": [
+    "[C002 native client parity after v2.4]"
+  ],
+  "timestamp": "2026-11-10T06:33:21.038209+00:00",
+  "freedom_profile": "balanced"
+}

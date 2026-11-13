@@ -1,0 +1,13 @@
+task_id: TODO
+phase: init
+wave: 0
+freedom_profile: balanced
+model_class: standard
+risk_class: low
+active_subagents: []
+open_gates: [all]
+last_checkpoint: 1970-01-01T00:00:00+00:00
+next_action: TODO
+residual_unknowns: [TODO]
+loaded_files: []
+files_changed_since_checkpoint: []

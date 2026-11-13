@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "name": "mirror",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/classify_isolated.py",
+      "scripts/harness_mirror.py"
+    ],
+    "references": [
+      "references/ADAPTERS.local.md",
+      "references/implementation.md",
+      "references/mirror-format-draft.txt",
+      "references/mirror-format.md",
+      "references/mirror-idea.txt",
+      "references/mirror-plan.md",
+      "references/node-format.md",
+      "references/operations.md",
+      "references/panel-integration.md"
+    ],
+    "assets": [
+      "assets/harness-node.schema.json",
+      "assets/viewer.html"
+    ]
+  },
+  "tests": [
+    "tests/test_harness_mirror.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [
+      {
+        "name": "improvement",
+        "required": true,
+        "reason": "вызывается по тексту скила"
+      }
+    ],
+    "project": []
+  },
+  "generated": [
+    "../../.state/harness-mirror"
+  ]
+}

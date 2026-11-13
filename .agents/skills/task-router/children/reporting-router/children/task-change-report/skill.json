@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "name": "task-change-report",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/generate_report.py",
+      "scripts/workflow_contract.py"
+    ],
+    "references": [],
+    "assets": [
+      "assets/report-model.schema.json",
+      "assets/workflow-context.schema.json"
+    ]
+  },
+  "tests": [
+    "tests/test_generate_report.py",
+    "tests/test_skill_integration.py",
+    "tests/test_workflow_contract.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

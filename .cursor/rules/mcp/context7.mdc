@@ -1,0 +1,49 @@
+---
+description: "MCP context7: документация внешних библиотек и API. Триггеры: внешняя библиотека, framework API, SDK, context7."
+alwaysApply: false
+---
+
+# MCP: context7
+
+## Когда
+
+Вопросы о внешних библиотеках, фреймворках, SDK, CLI и облачных API. Первый
+источник для чужого API вместо памяти модели. Внутренняя документация проекта
+идет через [mcp-jdocmunch](./jdocmunch.mdc).
+
+## Порядок вызова
+
+1. `resolve-library-id` - получить идентификатор библиотеки по имени.
+2. `query-docs` - задать вопрос по документации.
+
+## Инструменты
+
+| Инструмент | Параметры | Зачем |
+|---|---|---|
+| `resolve-library-id` | `query`, `libraryName` | получить идентификатор библиотеки по имени |
+| `query-docs` | `libraryId`, `query` | получить документацию по версии |
+
+`libraryId` имеет вид `/org/project` или `/org/project/version`. Версию брать из
+`composer.json` или `package.json`, если она там закреплена.
+
+## Ошибки и границы
+
+- Не использовать для рефакторинга, бизнес-логики, code review и общих
+  концепций.
+- В запрос не передавать секреты и приватный код.
+- Нужен доступ к Context7 и сети.
+- Версии библиотек могут расходиться с проектом: сверять с `composer.json` или
+  `package.json`.
+
+## Проверка
+
+```bash
+node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=context7
+```
+
+## Связи
+
+- [Полное описание](../../../.agents/skills/context7/docs/mcp/context7.md)
+- [Документация проекта](./jdocmunch.mdc)
+- [Подготовка плана](../prepare-plan.mdc)
+- [Карта MCP](../mcp.mdc) - порядок всех серверов и ссылки

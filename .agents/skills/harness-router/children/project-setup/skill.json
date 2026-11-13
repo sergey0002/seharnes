@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "name": "project-setup",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/onboard-project.py"
+    ],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

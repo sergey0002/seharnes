@@ -1,0 +1,4 @@
+{
+  "releaseBranch": "release/5.6.0.6",
+  "releaseBranchFallbacks": ["releases/5.6.0.6"]
+}

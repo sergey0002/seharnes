@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "name": "send-to-git",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [
+      {
+        "name": "task-router",
+        "required": false,
+        "reason": "task-doc для документации задачи"
+      }
+    ],
+    "project": [
+      {
+        "path": ".agents/skills/documentation-router/children/task-doc/scripts/jsondoc.py",
+        "owner": "jsondoc",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      }
+    ]
+  },
+  "generated": []
+}

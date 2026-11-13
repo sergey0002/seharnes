@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "name": "jira",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/diag-auth.php",
+      "scripts/export_task.py",
+      "scripts/server.php",
+      "scripts/src/AdfTextConverter.php",
+      "scripts/src/EnvConfig.php",
+      "scripts/src/IssueIdParser.php",
+      "scripts/src/JiraClient.php",
+      "scripts/src/McpStdioServer.php",
+      "scripts/src/ReleaseExporter.php",
+      "scripts/src/ReleaseMarkdownBuilder.php",
+      "scripts/src/TaskExporter.php",
+      "scripts/src/TaskMarkdownBuilder.php",
+      "scripts/test-adf-converter.php",
+      "scripts/test-dual-export.php"
+    ],
+    "references": [
+      "references/jira-config.md"
+    ],
+    "assets": [
+      "scripts/config.env.example"
+    ]
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

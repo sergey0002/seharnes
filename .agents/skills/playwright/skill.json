@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "name": "playwright",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": ["docs/mcp/playwright.md"],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {"skills": [], "project": []},
+  "generated": []
+}

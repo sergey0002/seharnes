@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "name": "add-skill",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/add_skill.py",
+      "scripts/scan_local_skills.py"
+    ],
+    "references": [
+      "references/install.md"
+    ],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_add_skill.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

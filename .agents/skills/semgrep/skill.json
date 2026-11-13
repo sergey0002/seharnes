@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "name": "semgrep",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": ["docs/mcp/semgrep.md"],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {"skills": [], "project": []},
+  "generated": []
+}

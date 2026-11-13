@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "name": "task-spec",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/task_spec.py"
+    ],
+    "references": [
+      "references/task-template.md"
+    ],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [
+      {
+        "name": "yadisk-screenshot",
+        "required": false,
+        "reason": "скачивание скриншотов по публичной ссылке Яндекс.Диска"
+      }
+    ],
+    "project": []
+  },
+  "generated": []
+}

@@ -1,0 +1,38 @@
+---
+description: "Пакетная сверка architecture/*.md с кодом (1=1). Триггеры: сверка документации, продолжи сверку, verify docs, doc-verify."
+globs:
+  - ".doc/architecture/**/*.md"
+  - ".agents/skills/documentation-router/children/doc-verify/scripts/get-verify-batch.ps1"
+  - ".agents/skills/documentation-router/children/doc-verify/scripts/mark-verify-done.ps1"
+  - ".agents/skills/documentation-router/children/doc-verify/scripts/find-related-tasks.ps1"
+attach: glob
+alwaysApply: false
+---
+
+# Сверка документации с кодом (Cursor)
+
+Полный скил: [`.agents/skills/documentation-router/children/doc-verify/SKILL.md`](../../.agents/skills/documentation-router/children/doc-verify/SKILL.md)  
+Детальная инструкция шага: `.agents/skills/documentation-router/children/doc-verify/SKILL.md` (канон; reference.md не существует)  
+Правила записи в `.doc/`: [doc-rules](./doc-rules.mdc).
+
+## Цикл
+
+```
+1. get-verify-batch.ps1 -Status && -Count 1
+2. Read architecture doc ЦЕЛИКОМ
+3. Сверка с кодом (F) + связи arch (L) + find-related-tasks (T) + Obsidian (O)
+4. Точечные правки; П-N → ../tasks/{N}/; зеркало в существующий tasks/*/doc.md
+5. mark-verify-done.ps1 -Path FILE.md -Issues N
+6. Отчёт; «продолжи сверку»
+```
+
+## Важно
+
+- 1 шаг = 1 документ
+- **MCP Gate обязателен:** [codebase-memory](./mcp/codebase-memory-mcp.mdc) → [codegraph](./mcp/codegraph.mdc) (с `projectPath`) → [serena](./mcp/serena.mdc)
+- Документ и связанные секции искать через jdocmunch ([mcp-jdocmunch](./mcp/jdocmunch.mdc)); найденный файл читать целиком по известному пути
+- **V6 задачи обязателен:** `find-related-tasks.ps1` → секция `## Связанные задачи` (score≥20) + П-N при баге/решении + зеркало в task doc.md. Без V6 нельзя mark-verify-done
+- Нет `[[wikilinks]]`; ссылки на файлы даются с якорем, например `file.md#якорь`
+- Не создавать tasks/*/doc.md из verify
+- Vault Obsidian: целевой root `.doc/`
+- В отчёте всегда блоки `MCP:` и `Задачи (T): кандидатов K, список +X, П-N +Y`

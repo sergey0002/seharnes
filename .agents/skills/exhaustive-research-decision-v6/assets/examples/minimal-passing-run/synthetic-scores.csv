@@ -1,0 +1,2 @@
+score_id,criterion_id,formula,input_feature_ids,normalization,method_ids,sensitivity_status,status
+SYN001,K003,0.6*FTR001 + 0.3*FTR002 + 0.1*FTR003,FTR001|FTR002|FTR003,minmax_0_1,M015|M060,PASS,verified

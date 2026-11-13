@@ -1,0 +1,10 @@
+# Copy to project root as phpda.yml (or pass path to phpda_analyze).
+# Scans workspace source — adjust source/filePattern for your layout.
+
+mode: usage
+source: .
+filePattern: "*.php"
+ignore: "vendor|node_modules|storage|tests|.cursor"
+formatter: PhpDA\Writer\Strategy\Svg
+target: .cursor/artifacts/phpda.svg
+groupLength: 12

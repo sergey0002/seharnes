@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "name": "doc-script",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/doc_script.py"
+    ],
+    "references": [],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_doc_script.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

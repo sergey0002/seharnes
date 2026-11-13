@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "name": "task-router",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [
+    "children/analytics",
+    "children/audit-plan",
+    "children/git-task-blame",
+    "children/gototask",
+    "children/jira",
+    "children/kaiten",
+    "children/reporting-router",
+    "children/task-code-review",
+    "children/task-core",
+    "children/task-diff",
+    "children/task-intake",
+    "children/task-spec",
+    "children/testing-router"
+  ],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

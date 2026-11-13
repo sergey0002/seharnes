@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "name": "remove-skill",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/remove_skill.py"
+    ],
+    "references": [
+      "references/remove.md"
+    ],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_remove_skill.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

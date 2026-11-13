@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "default_output_language": "ru",
+  "default_skill_content_language": "match_user_or_en_for_public",
+  "default_install_layout": ".agents/skills",
+  "cross_agent_mirrors": [
+    ".claude/skills",
+    ".qoder/skills",
+    ".kiro/skills"
+  ],
+  "run_skill_auditor_gate": true
+}

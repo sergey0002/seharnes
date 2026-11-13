@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "name": "harness-router",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [
+    "children/add-skill",
+    "children/copy-project",
+    "children/environment-sync",
+    "children/harness-core",
+    "children/improvement",
+    "children/index",
+    "children/mcp-audit",
+    "children/migration-review",
+    "children/mirror",
+    "children/new-project",
+    "children/project-setup",
+    "children/remove-skill",
+    "children/skill-authoring",
+    "children/doc-script",
+    "children/doc-skill",
+    "children/doc-mcp"
+  ],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "query": "Создай новый скил для ревью SQL-миграций так, чтобы он работал и в Claude Code, и в Codex, и в Cursor.",
+    "should_trigger": true
+  },
+  {
+    "query": "Help me turn the deployment checklist we just worked out in this chat into a reusable SKILL.md with evals.",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to build a user-invoked slash skill (/release-cut) that doesn't pollute startup context tokens and works with OpenAI Codex UI cards.",
+    "should_trigger": true
+  },
+  {
+    "query": "Package my ./my-custom-skill folder into a .skill archive and generate its agents/openai.yaml.",
+    "should_trigger": true
+  },
+  {
+    "query": "Подготовь шаблон нового агентного скила с нуля: выбери какие скрипты нужны, напиши чистый промпт и добавь evals.",
+    "should_trigger": true
+  },
+  {
+    "query": "Our five manual incident runbooks are hard to remember — design a router skill pointing to each of them.",
+    "should_trigger": true
+  },
+  {
+    "query": "Rewrite my bloated 600-line skill using progressive disclosure, no-op pruning, and 17-agent portability.",
+    "should_trigger": true
+  },
+  {
+    "query": "How should I structure a brand-new multi-agent skill with subagents and trigger evals before shipping it?",
+    "should_trigger": true
+  },
+  {
+    "query": "Упакуй скил из папки .agents/skills/pr-helper и прокинь симлинки для .claude/skills и .qoder/skills.",
+    "should_trigger": true
+  },
+  {
+    "query": "Draft an evals.json and 20-query trigger set for a new skill I am authoring from scratch.",
+    "should_trigger": true
+  },
+  {
+    "query": "Audit this existing third-party skill for security risks, MAST failures, and give me a 0-100 quality score and SARIF report.",
+    "should_trigger": false
+  },
+  {
+    "query": "Проведи строгий аудит моего готового скила через skill-auditor и оцени его совместимость с 17 агентами.",
+    "should_trigger": false
+  },
+  {
+    "query": "Run an A/B benchmark between baseline and with_skill runs on ./existing-skill and output grading.json.",
+    "should_trigger": false
+  },
+  {
+    "query": "Проверь всю папку .claude/skills на конфликты триггеров между 12 уже установленными скилами и выдай отчёт.",
+    "should_trigger": false
+  },
+  {
+    "query": "Update our project's README.md and write a Python CLI tool to parse nginx access logs.",
+    "should_trigger": false
+  },
+  {
+    "query": "Review this pull request diff in src/auth.ts for SQL injection and race conditions.",
+    "should_trigger": false
+  },
+  {
+    "query": "Configure an MCP server in .mcp.json so Claude Desktop can query our local Postgres database.",
+    "should_trigger": false
+  },
+  {
+    "query": "Найди в этом репозитории захардкоженные секреты и поправь GitHub Actions workflow.",
+    "should_trigger": false
+  },
+  {
+    "query": "Score ./vendor/pdf-skill on balanced policy and tell me if it is PRODUCTION_READY or NEEDS_WORK.",
+    "should_trigger": false
+  },
+  {
+    "query": "Explain how Anthropic's prompt caching works for long system prompts in general API apps.",
+    "should_trigger": false
+  }
+]

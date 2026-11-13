@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "copytrust-tools actions",
+  "type": "object",
+  "required": ["schema", "actions"],
+  "properties": {
+    "schema": {"type": "integer", "const": 1},
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "group", "interpreter", "script", "timeout", "enabled"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]+$"},
+          "label": {"type": "string", "minLength": 1},
+          "group": {"type": "string", "enum": ["analytics", "harness", "task", "views"]},
+          "interpreter": {"type": "string", "enum": ["python3", "bash", "pwsh", "php"]},
+          "script": {"type": "string", "pattern": "^\\.(agents|cursor|doc)/"},
+          "args": {"type": "array", "items": {"type": "string"}},
+          "params": {
+            "type": "object",
+            "additionalProperties": {"type": "string", "enum": ["int"]}
+          },
+          "cwd": {"type": "string"},
+          "timeout": {"type": "integer", "minimum": 1, "maximum": 3600},
+          "write_scope": {"type": "array", "items": {"type": "string"}},
+          "progress_regex": {"type": "string"},
+          "confirm": {"type": "boolean"},
+          "profile": {"type": "string", "enum": ["core", "full"]},
+          "enabled": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

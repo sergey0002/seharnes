@@ -1,0 +1,6 @@
+[
+  {"id":"audit-positive","input":"Проведи аудит плана без реализации.","expected":"Select audit-plan, add a new pass row, rebuild evidence, apply fixes to plan.md with pass marks, set verdict."},
+  {"id":"author-negative","input":"Подготовь план исправления.","expected":"Route to prepare-plan, not audit-plan."},
+  {"id":"second-auditor","input":"Второй аудитор проверяет тот же план после первого.","expected":"Use the next pass id, keep old marks and rows, add new marks and one new journal row."},
+  {"id":"author-edits-after-audit","input":"Автор изменил план после прохода и поднял plan_rev.","expected":"Previous verdict is stale, full new pass required before ready."}
+]

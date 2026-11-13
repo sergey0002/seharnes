@@ -1,0 +1,3 @@
+standard_id,requirement,artifact,status,score,gap,owner,method_ids
+STD-01,brief frozen and hashed,00-brief.md,compliant,9,—,demo-owner,M010
+STD-02,complete candidate x criterion matrix,decision-matrix.csv,compliant,9,—,criteria-critic,M060|M015

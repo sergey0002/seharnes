@@ -1,0 +1,42 @@
+[
+  {
+    "query": "Почисти от нейрослопа отчёт к задаче, звучит как ChatGPT",
+    "should_trigger": true
+  },
+  {
+    "query": "Очеловечь текст письма клиенту, убери канцелярит",
+    "should_trigger": true
+  },
+  {
+    "query": "Проверь текст и покажи только маркеры, что выдаёт нейросеть",
+    "should_trigger": true
+  },
+  {
+    "query": "Приведи к нормальному виду описание PR, слишком машинно",
+    "should_trigger": true
+  },
+  {
+    "query": "Напиши отчёт к задаче: починил фильтр по дате, залил на dev",
+    "should_trigger": true
+  },
+  {
+    "query": "Отрефактори этот PHP-контроллер и добавь валидацию",
+    "should_trigger": false
+  },
+  {
+    "query": "Проверь договор аренды на юридические риски",
+    "should_trigger": false
+  },
+  {
+    "query": "Перепиши этот JSON в YAML",
+    "should_trigger": false
+  },
+  {
+    "query": "Проанализируй SQL-запрос и предложи индекс",
+    "should_trigger": false
+  },
+  {
+    "query": "Сделай скриншот страницы заказов в браузере",
+    "should_trigger": false
+  }
+]

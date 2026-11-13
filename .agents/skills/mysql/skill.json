@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "name": "mysql",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {"scripts": [], "references": ["docs/mcp/mysql.md"], "assets": []},
+  "tests": [],
+  "children": [],
+  "dependencies": {"skills": [], "project": []},
+  "generated": []
+}

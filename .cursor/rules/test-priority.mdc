@@ -1,0 +1,106 @@
+---
+description: Приоритет тестирования свежих правок — сначала R/S текущего этапа, потом task coverage, потом regression соседних флоу. Триггеры: test-task, prepare-task-test, проверь этап R.
+alwaysApply: false
+---
+
+# Test Priority - приоритет свежих правок
+
+При подготовке и прогоне тестов задачи тестировать **в первую очередь** строки, затронутые текущей реализацией, затем регрессию соседних флоу.
+
+## Принцип
+
+Feedback-loop короче, если свежие правки проверяются сразу. Порядок:
+
+1. **New R/S** - сценарии текущего этапа реализации (один R только что внедрён).
+2. **Task coverage** - все R/S задачи (`@group task-{N}`).
+3. **Neighbor flows** - регрессия соседних флоу из `qa/index.md`.
+4. **Playwright gap** - ветки без Cest/PHPUnit метода ([mcp-playwright](./mcp/playwright.mdc)).
+
+Ветка логики - отдельный исход поведения в `test.md`. Ветка покрыта, если для неё есть
+Cest или PHPUnit метод, иначе она проверяется через Playwright.
+
+## В prepare-task-test
+
+При сборке Cest (фаза B) порядок методов в классе:
+
+1. Методы для R/S из `plan.md` Decomposition (в порядке R1, R2, ...).
+2. Методы для веток diff без S.
+3. Методы для соседних флоу (regression).
+
+Пример:
+
+```php
+class Task2548Cest {
+    // R1/S1: happy path текущего этапа
+    public function testOrderServiceSelection(AcceptanceTester $I) { ... }
+    
+    // R2/S2: другой исход текущего этапа
+    public function testOrderServiceUnavailable(AcceptanceTester $I) { ... }
+    
+    // diff branch без S
+    public function testOrderCancellation(AcceptanceTester $I) { ... }
+    
+    // regression: соседний флоу
+    public function testOrderListStillWorks(AcceptanceTester $I) { ... }
+}
+```
+
+## В test-task
+
+### Режим этапа ("проверь этап R3")
+
+Гонять **только** S текущего R. Соседи, Playwright и gates.py не запускать. Проверки `php -l` по файлам этапа одной пачкой через `multi-exec.sh`.
+
+### Режим конца ("тестируй задачу")
+
+Порядок прогона:
+
+1. **Task methods first**: `codecept run --group task-{N}` (все R/S задачи).
+2. **Neighbor flows**: прогон соседних флоу из `qa/index.md` (только затронутые diff.files.md).
+3. **Playwright gap**: только ветки без Cest/PHPUnit метода.
+4. **Gates**: `gates.py` с актуальным verdict.json.
+
+Не гонять весь Acceptance suite. Не повторять один assert разными инструментами.
+
+## В browser-verify
+
+При прогоне Codeception передавать методы в порядке приоритета через `--filter` или группу `--group task-{N}`.
+
+Playwright вызывать только для строк таблицы веток, у которых нет Cest/PHPUnit метода (колонка Test = playwright в test.md).
+
+## В отчёте test-runs
+
+Секция "Priority order" должна показать:
+
+```
+=== Priority order ===
+1. Task R/S methods (task-{N}): {count} passed/failed
+2. Neighbor flows: {count} passed/failed
+3. Playwright gap: {count} passed/failed
+Total: {N} assertions, {M} screenshots
+```
+
+Если метод этапа упал - сразу показать его в топе отчёта, не ждать конца всего прогона.
+
+## Stage-расширение (задачи со stage{N}/)
+
+Когда у задачи есть `stage{K}/plan.md` (K > 1) и свежий diff:
+
+1. **Stage scope detection** (test-task шаг 2): прочитать `stage{K}/plan.md ## Decomposition`,
+   извлечь R/S ids стейджа, построить два набора - **Stage S-ids** и **Full S-ids** (из
+   `test.md ## Ветки логики`). В impact-блок добавить строку stage scope.
+2. **Двухфазный прогон**: фаза 1 - только методы Stage S-ids; фаза 2 (только если фаза 1
+   зелёная) - вся задача. Stage failed = остановка, full не гонять, отчёт "not run".
+3. **Вердикты раздельно**: `test-runs/{stamp}/stage-verdict.json` (stage-only) и
+   `verdict.json` (full). Готово только если stage passed + full passed + gates.py зелёный.
+4. **Метка stage в test.md**: строки веток стейджа помечать источником `R3/S3 stage{K}`,
+   новые методы Cest - комментарием `// stage{K}`.
+
+Раннер `task-test.sh` фильтрует методы стейджа по ac-matrix (`--phase stage --stage-num K`);
+без флага - обычный полный прогон.
+
+## Связи
+
+- [test-task SKILL.md](../skills/task-router/children/testing-router/children/test-task/SKILL.md)
+- [prepare-task-test SKILL.md](../skills/task-router/children/testing-router/children/prepare-task-test/SKILL.md)
+- [browser-verify SKILL.md](../skills/task-router/children/testing-router/children/browser-verify/SKILL.md)

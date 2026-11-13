@@ -1,0 +1,76 @@
+---
+description: "Перед git push обязательно переиндексировать граф codebase-memory: auto_index выключен глобально, ручная индексация — единственная точка синхронизации."
+alwaysApply: true
+---
+
+# Индексация графа перед push
+
+## Почему это обязательно
+
+`auto_index` выключен глобально (`codebase-memory-mcp config set auto_index false`).
+Причина: к проекту одновременно подключены несколько клиентов (Kilo Code, DSH,
+VS Code), у каждого свой stdio-процесс `codebase-memory-mcp`, и
+`index_repository` не блокируется между процессами. При включённом автоиндексе
+они стартуют переиндексацию одного проекта параллельно.
+
+Плата за это — граф отстаёт от рабочего дерева. Единственная точка
+синхронизации — перед `git push`.
+
+Наблюдатель файлов (`auto_watch`, `watcher_enabled`) включён, но ручную точку он
+не заменяет: прогон может завершиться ошибкой (`status=failed`,
+`watcher.index.err` в `cbm-daemon.log`), и граф молча отстаёт. Признак свежести
+только `indexed_at` из `index_status`.
+
+## Правило
+
+**Перед `git push` выполнить индексацию без исключений.**
+
+Полный набор инструментов, параметров и ограничений:
+[mcp-codebase-memory](./mcp/codebase-memory-mcp.mdc).
+
+```
+index_repository(repo_path="/home/newuser/projects/copytrust/testdeploydocker", mode="fast")
+```
+
+`fast` достаточно: нужна структура графа (файлы, классы, вызовы функций), а не
+семантические рёбра. `full` — только после крупного рефакторинга, когда нужны
+`SIMILAR_TO` / `SEMANTICALLY_RELATED`.
+
+## Порядок в коммите
+
+1. тесты и PHPStan прошли;
+2. `git commit` (локально);
+3. `index_repository` — граф догоняет новый коммит;
+4. `git push`.
+
+Индексировать **после** коммита, а не до: индексатор читает рабочее дерево, и
+при индексации до коммита в граф попадут правки, которых нет в истории. Если
+после индексации правил ещё менялись — вернуться к шагу 3.
+
+## Проверка
+
+```
+index_status(project="home-newuser-projects-copytrust-testdeploydocker")
+```
+
+Или без MCP-сервера:
+
+```bash
+codebase-memory-mcp cli --json index_status --project home-newuser-projects-copytrust-testdeploydocker
+codebase-memory-mcp cli --json list_projects --detail stats
+```
+
+`indexed_at` старше последнего коммита, а число узлов не выросло при ожидаемом
+приросте изменений — индексация не прошла.
+
+## Чего не делать
+
+- Не включать `auto_index` «на время», чтобы не вызывать руками: это ломает
+  параллельную работу нескольких процессов CBM на один проект.
+- Не индексировать `full` на каждый коммит: по времени это как от нескольких
+  десятков секунд до минут на большом репозитории.
+
+## Связи
+
+- [MCP codebase-memory](./mcp/codebase-memory-mcp.mdc) - инструменты и параметры
+- [Задачи Jira и git](./bitbucket-tasks.mdc) - порядок commit и push

@@ -1,0 +1,274 @@
+# Canonical Roots Manifest
+# Single Source of Truth for all harness paths
+# Updated: 2026-11-11
+# Read by validate_structure.py. Other validators declare their paths in code.
+
+schema_version: 1
+manifest:
+  path: ".doc/harnes/state/canon-paths.yaml"
+  role: "policy"
+  owner: "harness-core"
+  required_profiles:
+    - "core"
+    - "developer"
+    - "project"
+
+canonical_roots:
+  path_manifest: ".doc/harnes/state/canon-paths.yaml" # этот документ
+  rules: ".cursor/rules"              # 38 .mdc files with triggers
+  skills: ".agents/skills"            # SKILL.md, scripts/, skill.json
+  mcp_config: ".cursor/mcp.json"      # MCP server map
+  mcp_env: ".cursor/mcp.env"          # secrets (git-excluded)
+  scripts: ".tools/scripts"           # системные утилиты; скрипты MCP и инструментов лежат в scripts/ своих скилов
+  mcp_servers: ".tools/mcp-servers"   # php-toolchain (phpstan, php-deps), local tooling tree
+
+# Preliminary declarations. Strict checks consume selected skill and document
+# rules; export and release generation do not yet use the policy bundle.
+policies:
+  skill_format:
+    path: ".agents/skills/harness-router/children/harness-core/assets/policies/skill-format.yaml"
+    required_profiles:
+      - "core"
+      - "developer"
+      - "project"
+  component_docs:
+    path: ".agents/skills/harness-router/children/harness-core/assets/policies/component-docs.yaml"
+    required_profiles:
+      - "core"
+      - "developer"
+      - "project"
+local_extension:
+  path: ".doc/harnes/state/canon-paths.local.yaml"
+  allowed_sections:
+    - "custom_components"
+
+# Machine-checked layout. validate_structure.py reads this section.
+layout:
+  scripts:
+    system: ".tools/scripts"
+    skill: ".agents/skills/{skill}/scripts"
+    stack: ".cursor/mcp-stack"
+  docs:
+    script_skill: ".agents/skills/{skill}/docs/scripts"
+    script_tools: ".agents/skills/harness-router/children/harness-core/docs/scripts/tools"
+    mcp_skill: ".agents/skills/{skill}/docs/mcp"
+    mcp_disabled: ".doc/harnes/archive/mcp"
+    state: ".doc/harnes/state"
+  tools_inventory: ".doc/harnes/state/26-tools.md"
+  skill_data: ".doc/skil_data/{skill}"
+  task_tests: ".doc/tasks/{task}/test-runs"
+  temp_dir: ".doc/temp"
+  test_path_markers:
+    - "test"
+    - "browser-test"
+    - "test-run"
+    - "testrun"
+    - "test-result"
+    - "screenshot"
+  forbidden_roots:
+    - ".cursor/scripts"
+    - ".agents/scripts"
+    - ".codex/scripts"
+    - ".kilo/scripts"
+
+# Distribution attributes for existing path keys. Every entry refers to a key
+# in canonical_roots or layout; unknown references and keys are hard errors.
+distribution:
+  - ref: "canonical_roots.path_manifest"
+    role: "policy"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "canonical_roots.rules"
+    role: "authored"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "canonical_roots.skills"
+    role: "authored"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "canonical_roots.mcp_config"
+    role: "config"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "merge"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "canonical_roots.mcp_env"
+    role: "secret"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "exclude"
+    owner: "harness-core"
+    doc_policy: "not_applicable"
+    scan_policy: "secret"
+  - ref: "canonical_roots.scripts"
+    role: "authored"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "canonical_roots.mcp_servers"
+    role: "authored"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "optional"
+    scan_policy: "owned"
+  - ref: "layout.scripts.system"
+    role: "authored"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "layout.scripts.skill"
+    role: "authored"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "layout.scripts.stack"
+    role: "authored"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "layout.docs.script_skill"
+    role: "authored"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "layout.docs.script_tools"
+    role: "authored"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "layout.docs.mcp_skill"
+    role: "authored"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "layout.docs.mcp_disabled"
+    role: "local"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "preserve"
+    owner: "project"
+    doc_policy: "optional"
+    scan_policy: "local"
+  - ref: "layout.docs.state"
+    role: "state"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "exclude"
+    owner: "project"
+    doc_policy: "not_applicable"
+    scan_policy: "state"
+  - ref: "layout.tools_inventory"
+    role: "authored"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "copy"
+    owner: "harness-core"
+    doc_policy: "required"
+    scan_policy: "owned"
+  - ref: "layout.skill_data"
+    role: "state"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "exclude"
+    owner: "project"
+    doc_policy: "not_applicable"
+    scan_policy: "state"
+  - ref: "layout.task_tests"
+    role: "state"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "exclude"
+    owner: "project"
+    doc_policy: "not_applicable"
+    scan_policy: "state"
+  - ref: "layout.temp_dir"
+    role: "state"
+    profiles:
+      - "core"
+      - "developer"
+      - "project"
+    copy_policy: "exclude"
+    owner: "project"
+    doc_policy: "not_applicable"
+    scan_policy: "state"
+
+# Why separate directories (historical, now documented):
+# Rules: .cursor/rules/  - Cursor-native .mdc with frontmatter triggers; IDE reads directly
+# Skills: .agents/skills/ is canonical; generated views vary by environment.
+# MCP/Config: .cursor/mcp.json - Single source for all adapters; secrets in .cursor/mcp.env
+# Scripts: .tools/scripts/ - системные утилиты: multi-search, multi-exec, php-docker, node-mcp, mcp-shared-server, mysql-mcp-proxy, run-with-mcp-env, wait-for-ports
+# Skill scripts: .agents/skills/{skill}/scripts/ - лаунчеры MCP и инструменты скила; документация в {skill}/docs/scripts/
+# MCP Servers: .tools/mcp-servers/ - php-toolchain (phpstan, php-deps); local tooling tree, not mirrored into agent views

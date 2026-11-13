@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "actions": [
+    {
+      "id": "analytics_scan",
+      "label": "Обновить диалоги",
+      "group": "analytics",
+      "interpreter": "python3",
+      "script": ".agents/skills/task-router/children/analytics/scripts/task-analytics.py",
+      "args": [
+        "--db",
+        "/host-kilo/kilo.db",
+        "--root",
+        "{workspace}",
+        "scan",
+        "--allow-partial"
+      ],
+      "cwd": ".",
+      "timeout": 600,
+      "write_scope": [
+        ".doc/tasks",
+        ".doc/task-analytics/out"
+      ],
+      "progress_regex": "сессия\\s+(\\d+)\\s+из\\s+(\\d+)",
+      "confirm": true,
+      "profile": "full",
+      "enabled": true
+    },
+    {
+      "id": "harness_build",
+      "label": "Пересобрать граф харнеса",
+      "group": "harness",
+      "interpreter": "python3",
+      "script": ".agents/skills/harness-router/children/mirror/scripts/harness_mirror.py",
+      "args": [
+        "rebuild"
+      ],
+      "cwd": ".",
+      "timeout": 180,
+      "write_scope": [
+        ".doc/skil_data/mirror"
+      ],
+      "progress_regex": "",
+      "confirm": false,
+      "profile": "core",
+      "enabled": true
+    },
+    {
+      "id": "harness_structure_strict",
+      "label": "Проверить структуру и мусор (строго)",
+      "group": "harness",
+      "interpreter": "python3",
+      "script": ".agents/skills/harness-router/children/harness-core/scripts/harness_cli.py",
+      "args": ["doctor", "--mode", "strict", "--checks", "structure"],
+      "cwd": ".",
+      "timeout": 300,
+      "write_scope": [],
+      "progress_regex": "",
+      "confirm": false,
+      "profile": "core",
+      "enabled": true
+    },
+    {
+      "id": "harness_check",
+      "label": "Проверить граф харнеса",
+      "group": "harness",
+      "interpreter": "python3",
+      "script": ".agents/skills/harness-router/children/mirror/scripts/harness_mirror.py",
+      "args": [
+        "check"
+      ],
+      "cwd": ".",
+      "timeout": 120,
+      "write_scope": [],
+      "progress_regex": "",
+      "confirm": false,
+      "profile": "core",
+      "enabled": true
+    },
+    {
+      "id": "sync_views",
+      "label": "Синхронизировать зеркала",
+      "group": "views",
+      "interpreter": "bash",
+      "script": ".agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh",
+      "args": [],
+      "cwd": ".",
+      "timeout": 300,
+      "write_scope": [
+        ".codex",
+        ".kilo",
+        ".agents"
+      ],
+      "progress_regex": "",
+      "confirm": true,
+      "profile": "full",
+      "enabled": true
+    },
+    {
+      "id": "task_diff",
+      "label": "Обновить диф задачи",
+      "group": "task",
+      "interpreter": "pwsh",
+      "script": ".agents/skills/task-router/children/task-diff/scripts/task-diff.ps1",
+      "args": [
+        "-Task",
+        "{task}"
+      ],
+      "params": {
+        "task": "int"
+      },
+      "cwd": ".",
+      "timeout": 300,
+      "write_scope": [
+        ".doc/tasks"
+      ],
+      "progress_regex": "",
+      "confirm": false,
+      "profile": "full",
+      "enabled": true
+    }
+  ]
+}

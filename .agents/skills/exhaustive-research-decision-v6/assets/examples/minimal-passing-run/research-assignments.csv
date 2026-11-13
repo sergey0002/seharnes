@@ -1,0 +1,2 @@
+assignment_id,linked_ids,objective,scope_in,scope_out,method_ids,assigned_agent,input_files,output_file,stop_condition,return_schema,max_summary_tokens,wave,status
+A001,C001|C002,collect proven use and feature cells,vendor docs and case studies,final ranking,M050|M017,candidate-scout,00-brief.md|research-protocol.md,candidates.csv,2 candidates with adoption evidence,assignment.schema.json,2000,1,done

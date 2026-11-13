@@ -1,0 +1,107 @@
+---
+description: Graphiti MCP - временной граф знаний для долговременной памяти агента. Триггеры: graphiti, память агента, граф памяти, temporal knowledge graph, что известно о клиенте, сохрани в память, найди в памяти, история решений по проекту, эпизоды памяти.
+alwaysApply: false
+---
+
+# Graphiti: временной граф знаний
+
+## Когда
+
+Graphiti хранит эпизоды, сущности и связи между ними с метками времени. Сервер
+нужен, когда вопрос требует долговременной памяти между сессиями: что уже
+решали по проекту, какие правила и ограничения называл пользователь, как
+менялись договорённости во времени.
+
+Сервер не заменяет документацию и граф кода:
+
+| Вопрос | Инструмент |
+|---|---|
+| Как устроен код, кто вызывает символ | [mcp-codebase-memory](./codebase-memory-mcp.mdc), [mcp-codegraph](./codegraph.mdc) |
+| Что написано в документации `.doc/` | [mcp-jdocmunch](./jdocmunch.mdc) |
+| Что решали раньше и почему, история договорённостей | `graphiti` |
+
+Когда не брать:
+
+- разовый факт из текущего диалога, который не переживёт сессию;
+- секреты, токены и пароли - в граф они не попадают;
+- продуктовые данные клиентов без явной задачи на их сохранение.
+
+## Порядок вызова
+
+1. `get_status` - проверить, что сервер и FalkorDB отвечают.
+2. `search_memory_facts` - найти факты по теме. Это основной поиск.
+3. `search_nodes` - найти сущности, если нужен список объектов, а не фактов.
+4. `get_episodes` - поднять исходные эпизоды, когда нужен контекст и дата.
+5. `add_memory` - записать новый эпизод после содержательного решения.
+6. `get_episode_entities` - проверить, что из эпизода извлеклось.
+
+Поиск идёт с `group_id`. В FalkorDB каждый `group_id` хранится в отдельном графе,
+поэтому граф и есть база проекта. Правило: один проект - один `group_id`, значение
+`main` не используется. Проектные данные пишутся и читаются с одним и тем же
+`group_id`, проект задаёт его в `.cursor/mcp.env` (`GRAPHITI_GROUP_ID`).
+
+## Инструменты
+
+| Инструмент | Аргументы | Результат |
+|---|---|---|
+| `get_status` | - | Состояние сервера и подключения к базе |
+| `add_memory` | `name`, `episode_body`, `group_id`, `source` (`text`, `json`, `message`), `source_description`, `uuid`, `reference_time`, `excluded_entity_types`, `custom_extraction_instructions`, `previous_episode_uuids`, `update_communities`, `saga`, `saga_previous_episode_uuid` | Эпизод в очереди на извлечение |
+| `add_triplet` | `source_node_name`, `edge_name`, `fact`, `target_node_name`, `group_id`, `source_node_uuid`, `target_node_uuid` | Факт напрямую, без извлечения |
+| `search_nodes` | `query`, `group_ids`, `max_nodes` (10), `entity_types`, `center_node_uuid` | Сущности с суммами |
+| `search_memory_facts` | `query`, `group_ids`, `max_facts` (10), `center_node_uuid`, `edge_types`, `valid_at_after`, `valid_at_before`, `invalid_at_after`, `invalid_at_before` | Факты с датами действия |
+| `summarize_saga` | `saga_name`, `group_id` | Сводка цепочки эпизодов |
+| `build_communities` | `group_ids` | Сообщества сущностей и их сводки |
+| `get_episode_entities` | `episode_uuids`, `group_id` | Сущности и факты, созданные эпизодом |
+| `get_entity_edge` | `uuid`, `group_id` | Один факт по UUID |
+| `get_episodes` | `group_ids`, `max_episodes` | Последние эпизоды |
+| `delete_entity_edge` | `uuid`, `group_id` | Удаление факта, требует подтверждения |
+| `delete_episode` | `uuid`, `group_id` | Удаление эпизода и созданных им сущностей, требует подтверждения |
+| `clear_graph` | `group_ids` | Очистка группы, требует подтверждения |
+
+`alwaysAllow` покрывает чтение, `add_memory` и `add_triplet`. Удаление и очистка
+требуют явного подтверждения пользователя.
+
+## Ошибки и границы
+
+- Сервер слушает только `127.0.0.1:8000/mcp/`, без аутентификации. Не публиковать
+  порт наружу и не проксировать во внешнюю сеть.
+- `add_memory` асинхронен: извлечение сущностей и фактов идёт в очереди. Сразу
+  после записи поиск может не найти новый факт.
+- Пустой результат поиска не доказывает, что данных нет: проверить `group_id` и
+  `get_episodes`. Запрос без `group_id` уходит в граф из `GRAPHITI_GROUP_ID`; если
+  переменная пуста, сервер возвращает ошибку вместо записи в чужой граф.
+- `SEMAPHORE_LIMIT` ограничивает параллельные эпизоды. При 429 от провайдера
+  снизить его, а не повторять запись.
+- LLM и эмбеддинги - внешние зависимости. Если они недоступны, `get_status`
+  покажет ошибку подключения, а запись останется в очереди.
+- Сервер - reference-реализация без авторизации. Данные одного проекта не
+  считать защищёнными от других локальных процессов.
+
+## Проверка
+
+```bash
+curl http://127.0.0.1:8000/health
+docker run --rm --network host python:3.12-slim python3 -c "
+import json, urllib.request
+url='http://127.0.0.1:8000/mcp'
+headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream'}
+req=urllib.request.Request(url, data=json.dumps({'jsonrpc':'2.0','id':1,'method':'initialize','params':{'protocolVersion':'2024-11-05','capabilities':{},'clientInfo':{'name':'test','version':'1'}}}).encode(), headers=headers)
+with urllib.request.urlopen(req, timeout=10) as r:
+    sid = r.headers.get('mcp-session-id')
+headers2 = dict(headers); headers2['Mcp-Session-Id'] = sid
+req=urllib.request.Request(url, data=json.dumps({'jsonrpc':'2.0','id':2,'method':'tools/call','params':{'name':'get_status','arguments':{}}}).encode(), headers=headers2)
+with urllib.request.urlopen(req, timeout=10) as r:
+    print(r.read()[:500].decode())
+"
+node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=graphiti
+```
+
+Ожидаемый результат: контейнер `graphiti` в состоянии running, `health` отвечает,
+`tools/list` возвращает 13 инструментов, `get_status` показывает подключение к FalkorDB.
+
+## Связи
+
+- Документ сервера: [graphiti.md](../../../.agents/skills/graphiti/docs/mcp/graphiti.md)
+- Карта MCP: [mcp.mdc](../mcp.mdc)
+- Стек: [15-mcp-stack.md](../../../.doc/harnes/state/15-mcp-stack.md)
+- Состояние: [04-mcp.md](../../../.doc/harnes/state/04-mcp.md)

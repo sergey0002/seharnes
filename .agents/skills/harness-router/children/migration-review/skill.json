@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "name": "migration-review",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/review_migration.py"
+    ],
+    "references": [
+      "references/review.md"
+    ],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_review_migration.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

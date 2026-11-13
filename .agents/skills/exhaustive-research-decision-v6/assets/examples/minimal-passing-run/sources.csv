@@ -1,0 +1,3 @@
+source_id,url,document_name,type,tier,date,version,location,excerpt,independence_group,claim_ids,method_ids,retrieval_date
+S001,https://arxiv.org/abs/2605.18684,Reversa paper,paper,T0,2026-05-18,2026.05,abstract+results,"517 claims, 53 Gherkin parity scenarios",authors,CL001,M017|M050,2026-11-10
+S002,https://example.org/spec-suite-case,Spec Suite case,case_study,T1,2026-09-02,2.4,section 4,operational contracts and delta archive,vendor+customer,CL002,M017|M050,2026-11-10

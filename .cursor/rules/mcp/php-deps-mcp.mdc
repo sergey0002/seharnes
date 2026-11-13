@@ -1,0 +1,39 @@
+---
+description: "MCP php-deps-mcp: граф зависимостей и вызовов PHP. Триггеры: phpda, phpcallgraph, blast radius PHP, зависимости классов."
+alwaysApply: false
+---
+
+# MCP: php-deps-mcp
+
+## Когда
+
+Blast radius после codegraph и перед рефакторингом общих PHP-компонентов:
+зависимости классов, граф вызовов, нарушения слоев.
+
+## Инструменты
+
+| Инструмент | Параметры | Зачем |
+|---|---|---|
+| `phpcallgraph_generate` | `sourcePath`, `outputFile`, `format` `svg` / `png` / `dot`, `ignorePattern` | граф вызовов |
+| `phpda_analyze` | `configFile`, по умолчанию `phpda.xml` | зависимости классов и нарушения |
+
+## Ошибки и границы
+
+- `phpda.xml` должен существовать в корне или быть передан явно.
+- Графы и картинки складывать в рабочий каталог, не в `.doc`.
+- Инструмент статический: runtime-поведение и DI-контейнер он не видит.
+- Для символов использовать [serena](./serena.mdc), для связей
+  [codegraph](./codegraph.mdc).
+
+## Проверка
+
+```bash
+node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=php-deps-mcp
+```
+
+## Связи
+
+- [Полное описание](../../../.agents/skills/php-deps-mcp/docs/mcp/php-deps-mcp.md)
+- [Подготовка плана](../prepare-plan.mdc)
+- [codegraph](./codegraph.mdc)
+- [Карта MCP](../mcp.mdc) - порядок всех серверов и ссылки

@@ -1,0 +1,15 @@
+{
+  "name": "cursor/portable-php-toolchain",
+  "description": "PHPStan and phpda shipped with .cursor kit (not the application under analysis)",
+  "license": "MIT",
+  "require-dev": {
+    "phpstan/phpstan": "^2.0",
+    "mamuz/php-dependency-analysis": "^2.0"
+  },
+  "config": {
+    "sort-packages": true,
+    "bin-dir": "vendor/bin"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

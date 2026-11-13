@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "name": "testing-router",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [
+    "children/test-task",
+    "children/prepare-task-test",
+    "children/browser-verify"
+  ],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Harness Mirror</title>
+<style>
+  :root {
+    --bg:#0f1419; --panel:#161d24; --line:#26313b; --text:#d7e0e8; --muted:#8b9aa8;
+    --accent:#4aa3df; --ok:#98c379; --warn:#e5c07b; --bad:#e06c75;
+    --left:300px; --right:470px;
+  }
+  * { box-sizing:border-box; }
+  html, body { height:100%; }
+  body { margin:0; font:13px/1.4 -apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); overflow:hidden; }
+  header { padding:7px 12px; border-bottom:1px solid var(--line); display:flex; gap:12px; align-items:center; flex-wrap:wrap; min-height:44px; }
+  header b { font-size:14px; white-space:nowrap; }
+  header .stats { color:var(--muted); font-size:12px; }
+  header label { color:var(--muted); font-size:12px; display:flex; gap:5px; align-items:center; }
+  #focusChip { display:none; }
+  #focusChip.on { display:inline-flex; gap:6px; align-items:center; background:#1c3a52; border:1px solid #2b5878; color:#cfe6f7; border-radius:12px; padding:2px 9px; font-size:11px; cursor:pointer; }
+  main { display:flex; height:calc(100vh - 45px); align-items:stretch; }
+  #side { width:var(--left); flex:0 0 auto; min-width:180px; border-right:1px solid var(--line); overflow:auto; padding:8px 8px 14px; }
+  #canvas { flex:1 1 auto; min-width:240px; overflow:hidden; position:relative; cursor:grab; }
+  #canvas.drag { cursor:grabbing; }
+  #rightCol { width:var(--right); flex:0 0 auto; min-width:320px; border-left:1px solid var(--line); display:flex; flex-direction:column; }
+  #detail { flex:1 1 auto; min-height:0; overflow:auto; padding:10px 14px; }
+  #jobPanel { flex:0 0 auto; height:38%; min-height:110px; max-height:65%; display:flex; flex-direction:column;
+    padding:6px 10px 10px; border-top:1px solid var(--line); background:#0c1218; }
+  #jobPanel[hidden] { display:none; }
+  #jobPanel h2 { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin:0 0 6px;
+    display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  #jobPanel .jsonview { flex:1 1 auto; min-height:0; max-height:none; margin:0; }
+  .splitter { flex:0 0 5px; cursor:col-resize; background:var(--line); opacity:.5; }
+  .splitter:hover { background:var(--accent); opacity:1; }
+  #side input, #side select { width:100%; padding:5px 7px; background:var(--panel); border:1px solid var(--line); color:var(--text); border-radius:4px; margin-bottom:6px; font-size:12px; }
+  .group { color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.07em; margin:10px 3px 3px; display:flex; justify-content:space-between; }
+  .trow { display:flex; align-items:center; gap:4px; padding:2px 6px; border-radius:4px; cursor:pointer; font-size:12px; line-height:1.5; min-height:20px; }
+  .trow:hover { background:var(--panel); }
+  .trow.active { background:#1d2a36; }
+  .trow.focused { outline:1px solid #2b5878; }
+  .trow .caret { width:11px; flex:0 0 11px; color:var(--muted); font-size:10px; }
+  .trow .mark { width:13px; height:13px; flex:0 0 13px; border-radius:3px; color:#0f1419; font-size:9px;
+    font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .trow .fname { flex:0 0 auto; max-width:44%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px; }
+  .trow .deg { flex:0 0 auto; color:var(--accent); font-size:10px; min-width:12px; text-align:right; opacity:.9; }
+  .trow .deg.zero { color:var(--muted); opacity:.6; }
+  label.check { display:flex; align-items:center; gap:5px; color:var(--muted); font-size:11px; margin:0 2px 6px; }
+  .trow .title { flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .trow .file { flex:0 0 auto; max-width:50%; color:var(--muted); font-size:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .trow.folder { font-weight:600; }
+  .trow.router .title { color:#c678dd; }
+  .trow.router .file { color:#c678dd; }
+  .trow.folder .file { font-weight:400; }
+  .trow.drift .file { color:var(--bad); }
+  .trow.stray .fname, .trow.stray .title, .trow.stray .file { color:var(--warn); }
+  .trow.stray .mark { box-shadow:0 0 0 1px var(--warn) inset; }
+  .group.warn { color:var(--warn); }
+  .legend { padding:8px 4px; }
+  .legrow { display:flex; align-items:center; gap:6px; font-size:10px; color:var(--muted); padding:1px 0; }
+  .legrow .dot { width:8px; height:8px; border-radius:2px; flex:0 0 8px; }
+  .legrow .num { margin-left:auto; }
+  svg { width:100%; height:100%; display:block; }
+  .card rect.box { fill:#18212a; stroke:#2b3947; stroke-width:1; rx:6; }
+  .card.selected rect.box { stroke:var(--accent); stroke-width:2; }
+  .card:hover rect.box { stroke:#4b6076; }
+  .card text { fill:var(--text); font-size:11px; }
+  .card .title { font-size:12px; font-weight:600; }
+  .card .sub { fill:var(--muted); font-size:10px; }
+  .card .count { fill:var(--muted); font-size:10px; }
+  .bar { width:4px; rx:2; }
+  .edge { fill:none; stroke-width:1.2; opacity:.5; marker-end:url(#arrow); }
+  .edge.hot { opacity:1; stroke-width:1.8; }
+  #detail h1 { font-size:16px; margin:0 0 3px; }
+  #detail h2 { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin:16px 0 6px; display:flex; justify-content:space-between; gap:8px; }
+  .kv { color:var(--muted); font-size:11px; margin:2px 0; }
+  code { background:#1d2a36; padding:1px 4px; border-radius:3px; font-size:11px; }
+  .badge { font-size:9px; padding:1px 5px; border-radius:3px; background:#1d2a36; color:var(--muted); }
+  .badge.drift { background:#4a2323; color:#ffb3b3; }
+  .badge.equal { background:#1d3323; color:#a6e3b0; }
+  .badge.env { background:#1b2b3a; color:#9cc7e8; }
+  .badge.edit { background:#1c3a52; color:#cfe6f7; }
+  .relrow { border-left:2px solid var(--line); padding:3px 7px; margin:3px 0; font-size:11px; }
+  .relrow b { color:var(--accent); font-weight:600; }
+  .relrow .lnk { color:var(--text); cursor:pointer; text-decoration:underline dotted; }
+  button { background:#1d2a36; color:var(--text); border:1px solid var(--line); border-radius:4px; padding:4px 9px; cursor:pointer; font-size:11px; }
+  button:hover { border-color:var(--accent); }
+  button.primary { background:#1c3a52; border-color:#2b5878; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin:6px 0; }
+  .status { font-size:11px; color:var(--muted); }
+  .status.err { color:var(--bad); }
+  .status.ok { color:var(--ok); }
+  .status.dirty { color:var(--warn); }
+  .edwrap { display:flex; height:34vh; min-height:170px; resize:vertical; border:1px solid var(--line);
+    border-radius:4px; background:#0c1218; overflow:hidden; }
+  .gutter { flex:0 0 44px; height:100%; padding:8px 6px 8px 0; text-align:right; color:#55626f;
+    font:12px/20px ui-monospace,Menlo,Consolas,monospace; background:#0a0f14;
+    border-right:1px solid var(--line); overflow:hidden; user-select:none; white-space:pre; }
+  #editor { flex:1 1 auto; height:100%; min-height:0; resize:none; background:#0c1218; color:var(--text);
+    border:0; outline:none; padding:8px 10px; font:12px/20px ui-monospace,Menlo,Consolas,monospace;
+    tab-size:2; white-space:pre; overflow:auto; }
+  #editor[readonly] { color:#9aa7b4; }
+  .outline { display:flex; flex-wrap:wrap; gap:4px; }
+  .outline button { padding:2px 7px; font-size:10px; }
+  .hint { color:var(--muted); font-size:10px; margin:2px 0 6px; }
+  .jsonview { max-height:36vh; overflow:auto; margin:0; padding:8px 10px; background:#0c1218;
+    border:1px solid var(--line); border-radius:4px; color:#c6d0da;
+    font:11px/1.5 ui-monospace,Menlo,Consolas,monospace; white-space:pre; }
+  #tip { position:fixed; z-index:20; display:none; max-width:420px; padding:5px 8px; border-radius:4px;
+    background:#0a0f14; border:1px solid var(--line); color:var(--text); font-size:11px; line-height:1.35;
+    pointer-events:none; box-shadow:0 4px 14px rgba(0,0,0,.5); }
+  #tip.on { display:block; }
+  path.edge:hover { opacity:.95; stroke-width:2.2; }
+</style>
+</head>
+<body>
+<header>
+  <b>Harness Mirror</b>
+  <span class="stats" id="stats">загрузка</span>
+  <button id="focusChip" title="снять фокус (Esc)"></button>
+  <label><input type="checkbox" id="showMirrors"> зеркала</label>
+  <label><input type="checkbox" id="showEdges" checked> связи</label>
+  <label><input type="checkbox" id="onlyLinked"> только связанные</label>
+  <span class="stats" id="api">проверка api</span>
+  <span class="row" id="harnessJobs" style="margin:0">
+    <button data-job="harness_build">Пересобрать граф харнеса</button>
+    <button data-job="harness_check">Проверить граф харнеса</button>
+    <button data-job="harness_structure_strict" title="Строгая проверка структуры и временных файлов, без сравнения с релизом">Проверить структуру и мусор</button>
+    <button data-job="sync_views" data-confirm="1">Синхронизировать зеркала</button>
+    <span class="status" id="jobStatus"></span>
+  </span>
+  <span class="row" style="margin:0">
+    <button id="zoomOut">-</button><button id="zoomIn">+</button><button id="fit">уместить</button>
+  </span>
+</header>
+<main>
+  <aside id="side">
+    <input id="filter" placeholder="поиск по названию или пути">
+    <select id="type"><option value="">все типы</option></select>
+    <label class="check"><input type="checkbox" id="onlyIsolated"> только без связей</label>
+    <div id="tree"></div>
+  </aside>
+  <div class="splitter" id="splitLeft" title="тянуть, двойной щелчок сбрасывает"></div>
+  <section id="canvas"><svg id="svg"></svg></section>
+  <div class="splitter" id="splitRight" title="тянуть, двойной щелчок сбрасывает"></div>
+  <div id="tip"></div>
+<div id="rightCol">
+<aside id="detail"><p class="kv">Выбери строку слева или карточку в графе.</p></aside>
+<section id="jobPanel" hidden>
+  <h2>Результат запуска <span class="badge" id="jobPanelTitle"></span><span class="row" style="margin:0"><button id="jobPanelCopy">копировать</button><button id="jobPanelClose">скрыть</button></span></h2>
+  <pre id="jobJson" class="jsonview"></pre>
+</section>
+</div>
+</main>
+<script>
+const COLORS = { skill:"#4aa3df", rule:"#e06c75", script:"#98c379", config:"#e5c07b", doc:"#a9b1ba", mcp:"#c678dd" };
+const TYPE_ORDER = ["rule", "skill", "mcp", "script", "doc", "config"];
+const EDGE = { invokes_tool:"#98c379", delegates_to:"#4aa3df", governed_by:"#e06c75", reads_context:"#a9b1ba", mirrors:"#e5c07b", synced_by:"#c678dd", enforces_gate:"#56b6c2", constrained_by:"#d19a66" };
+const EDITABLE = { skill:1, rule:1 };
+const GLYPH = { skill:"S", rule:"R", script:"P", config:"C", doc:"D", mcp:"M" };
+const FRIENDLY = {
+  "SKILL.md":"Скил", "README.md":"Описание", "ADAPTERS.local.md":"Адаптеры проекта",
+  "ADAPTERS.template.md":"Шаблон адаптеров", "config.json":"Конфиг", "plan.md":"План",
+  "package.json":"Манифест", "package-lock.json":"Замки зависимостей",
+  "harness-node.schema.json":"Схема узла", "viewer.html":"Просмотрщик",
+  "index.html":"Просмотрщик", "format.md":"Формат", "format-draft.txt":"Черновик формата",
+  "implementation.md":"Устройство", "panel-integration.md":"Интеграция панели",
+  "node-format.md":"Формат узла", "idea.txt":"Идея", "examples.md":"Примеры",
+  "sergey-style.md":"Стиль Сергея", "modes.md":"Режимы", "audit-gate-p7.md":"Аудит плана",
+  "output-contract.md":"Контракт вывода", "tool-routing.md":"Маршрут инструментов",
+  "plan.template.md":"Шаблон плана", "plan.meta.schema.json":"Схема плана"
+};
+let GRAPH = { nodes:[], edges:[], stats:{}, relation_types:{} };
+let VIEW = { nodes:[], edges:[] };
+let LAYOUT = new Map();
+let CLOSED = new Set();
+let REVEALED = new Set();
+let TREE_NODE_DIRS = new Map();
+let CURRENT = null;
+let FOCUS = null;
+let DETAIL = null;
+let EDIT = false;
+let PAN = { x:0, y:0, k:1 };
+let WIDTHS = { left:320, right:470 };
+let DEGREE = new Map();
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const byLabel = (a, b) => titleOf(a).localeCompare(titleOf(b));
+
+init();
+
+function cleanHeading(text) {
+  return String(text || "").replace(/^Skill:\s*/i, "").trim();
+}
+
+function folderOf(n) {
+  const m = String(n.path || "").match(/^\.(?:agents|cursor)\/skills\/([^/]+)\//);
+  return m ? m[1] : "";
+}
+
+function cardTitle(n) {
+  const generic = FRIENDLY[n.file] && (n.file === "SKILL.md" || n.file === "README.md");
+  if (generic) {
+    const heading = cleanHeading(n.heading);
+    if (heading && heading !== n.label) return heading;
+    const folder = folderOf(n);
+    if (folder) return FRIENDLY[n.file] + " · " + folder;
+  }
+  return titleOf(n);
+}
+
+function titleOf(n) {
+  if (FRIENDLY[n.file]) return FRIENDLY[n.file];
+  const heading = cleanHeading(n.heading);
+  const label = (n.label || n.file || "").trim();
+  if (heading && heading.toLowerCase() !== label.toLowerCase()) return heading;
+  if (n.type === "config" && /\.json$/.test(n.file || "")) return "Конфиг";
+  if (n.type === "script") return n.file || label;
+  return label || n.id;
+}
+
+function init() {
+  const params = new URLSearchParams(location.search);
+  if (params.get("linked") === "1") $("onlyLinked").checked = true;
+  const presetFilter = params.get("filter");
+  if (presetFilter) $("filter").value = presetFilter;
+  if (params.get("iso") === "1") $("onlyIsolated").checked = true;
+  loadClosed();
+  const saved = localStorage.getItem("harness-mirror.widths");
+  if (saved) { try { const w = JSON.parse(saved); if (w.left) WIDTHS.left = w.left; if (w.right) WIDTHS.right = w.right; } catch (e) {} }
+  applyWidths();
+  bindControls();
+  detectApi();
+  loadGraph();
+}
+
+function applyWidths() {
+  WIDTHS.right = Math.min(900, Math.max(320, WIDTHS.right));
+  const maxLeft = Math.max(180, Math.min(640, window.innerWidth - WIDTHS.right - 280));
+  WIDTHS.left = Math.min(maxLeft, Math.max(180, WIDTHS.left));
+  document.documentElement.style.setProperty("--left", WIDTHS.left + "px");
+  document.documentElement.style.setProperty("--right", WIDTHS.right + "px");
+}
+
+function computeDegrees() {
+  DEGREE = new Map();
+  GRAPH.edges.forEach(edge => {
+    if (edge.type === "mirrors") return;
+    DEGREE.set(edge.source, (DEGREE.get(edge.source) || 0) + 1);
+    DEGREE.set(edge.target, (DEGREE.get(edge.target) || 0) + 1);
+  });
+}
+
+function detectApi() {
+  fetch("api/health", { cache:"no-store" })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(d => { EDIT = !!d.writable; $("api").textContent = EDIT ? "api: запись доступна" : "api: только чтение"; $("api").style.color = EDIT ? "var(--ok)" : "var(--muted)"; })
+    .catch(() => { EDIT = false; $("api").textContent = "api: только чтение (запусти serve)"; });
+}
+
+function loadGraph(keepSelection) {
+  fetch("graph.json", { cache:"no-store" })
+    .then(r => r.json())
+    .then(g => {
+      GRAPH = g;
+      computeDegrees();
+      $("stats").textContent =
+        "карточек " + g.stats.canonical + ", зеркал " + g.stats.mirrors + ", связей " + g.stats.edges +
+        ", drift " + g.stats.drift + ", без анализа " + g.stats.pending_analysis;
+      fillTypes();
+      rebuildView();
+      renderTree();
+      if (!window.__fitted) { PAN.k = 0.85; PAN.x = 20; PAN.y = 16; applyTransform(); window.__fitted = true; }
+      if (keepSelection && CURRENT) { select(CURRENT.id, true); return; }
+      const m = location.hash.match(/node=([^&]+)/);
+      if (m) select(decodeURIComponent(m[1]));
+    })
+    .catch(err => {
+      console.error(err);
+      $("detail").innerHTML = GRAPH.nodes.length
+        ? "<p class='status err'>ошибка панели: " + esc(err.message) + "</p>"
+        : "<p class=kv>graph.json не найден. Запусти build.</p>";
+    });
+}
+
+function fitView() {
+  const rect = $("canvas").getBoundingClientRect();
+  const w = Math.max(320, rect.width), h = Math.max(320, rect.height);
+  PAN.k = Math.min(1.1, Math.max(0.2, Math.min(w / Math.max(1, LAYOUT.width), h / Math.max(1, LAYOUT.height))));
+  PAN.x = 16;
+  PAN.y = 16;
+  applyTransform();
+}
+
+function zoomBy(factor) {
+  PAN.k = Math.min(2.6, Math.max(0.15, PAN.k * factor));
+  applyTransform();
+}
+
+function bindControls() {
+  $("filter").oninput = () => { rebuildView(); renderTree(); };
+  $("type").onchange = () => { rebuildView(); renderTree(); };
+  $("showMirrors").onchange = () => { rebuildView(); renderTree(); };
+  $("showEdges").onchange = renderGraph;
+  $("onlyLinked").onchange = () => { rebuildView(); renderTree(); };
+  $("onlyIsolated").onchange = () => { rebuildView(); renderTree(); };
+  $("focusChip").onclick = () => setFocus(null);
+
+  let drag = null;
+  const canvas = $("canvas");
+  canvas.addEventListener("mousedown", e => {
+    if (e.target.closest(".card")) return;
+    drag = { x:e.clientX, y:e.clientY, px:PAN.x, py:PAN.y };
+    canvas.classList.add("drag");
+  });
+  window.addEventListener("mousemove", e => {
+    if (!drag) return;
+    PAN.x = drag.px + (e.clientX - drag.x);
+    PAN.y = drag.py + (e.clientY - drag.y);
+    applyTransform();
+  });
+  window.addEventListener("mouseup", e => {
+    if (drag && Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) <= 3) clearSelection();
+    drag = null;
+    canvas.classList.remove("drag");
+  });
+  canvas.addEventListener("wheel", e => {
+    e.preventDefault();
+    PAN.k = Math.min(2.4, Math.max(0.35, PAN.k * (e.deltaY < 0 ? 1.1 : 0.9)));
+    applyTransform();
+  }, { passive:false });
+  window.addEventListener("resize", () => { applyWidths(); renderGraph(); });
+  $("fit").onclick = fitView;
+  $("zoomIn").onclick = () => zoomBy(1.2);
+  $("zoomOut").onclick = () => zoomBy(1/1.2);
+  window.addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test((e.target && e.target.tagName) || "")) return;
+    if (FOCUS) setFocus(null); else clearSelection();
+  });
+
+  bindSplitter("splitLeft", "left");
+  bindSplitter("splitRight", "right");
+}
+
+function bindSplitter(id, which) {
+  const el = $(id);
+  let move = null, up = null, startX = 0, startW = 0;
+  el.addEventListener("mousedown", e => {
+    e.preventDefault();
+    startX = e.clientX;
+    startW = WIDTHS[which];
+    move = ev => {
+      const dx = ev.clientX - startX;
+      const value = startW + (which === "left" ? dx : -dx);
+      WIDTHS[which] = Math.min(which === "left" ? 640 : 900, Math.max(which === "left" ? 180 : 320, value));
+      applyWidths();
+      scheduleRender();
+    };
+    up = () => {
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", up);
+      localStorage.setItem("harness-mirror.widths", JSON.stringify(WIDTHS));
+      move = up = null;
+    };
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+  });
+  el.addEventListener("dblclick", () => {
+    WIDTHS[which] = which === "left" ? 320 : 470;
+    applyWidths();
+    localStorage.setItem("harness-mirror.widths", JSON.stringify(WIDTHS));
+    scheduleRender();
+  });
+}
+
+let renderTimer = null;
+function scheduleRender() {
+  if (renderTimer) return;
+  renderTimer = requestAnimationFrame(() => { renderTimer = null; renderGraph(); });
+}
+
+function fillTypes() {
+  const sel = $("type");
+  const types = Array.from(new Set(GRAPH.nodes.map(n => n.type))).sort();
+  sel.innerHTML = "<option value=''>все типы</option>" + types.map(t => "<option value='" + esc(t) + "'>" + esc(t) + "</option>").join("");
+}
+
+function matches(n) {
+  const q = $("filter").value.trim().toLowerCase();
+  const type = $("type").value;
+  if (type && n.type !== type) return false;
+  if (q) {
+    const hay = (n.id + " " + n.path + " " + (n.description || "") + " " + (n.summary || "") + " " + (n.heading || "") + " " + titleOf(n)).toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+function neighboursOf(id) {
+  const set = new Set([id]);
+  GRAPH.edges.forEach(e => {
+    if (e.type === "mirrors") return;
+    if (e.source === id) set.add(e.target);
+    if (e.target === id) set.add(e.source);
+  });
+  return set;
+}
+
+function rebuildView() {
+  const showMirrors = $("showMirrors").checked;
+  const isolated = $("onlyIsolated").checked;
+  let nodes = GRAPH.nodes.filter(n => (showMirrors || n.canonical)
+    && (FOCUS ? true : matches(n))
+    && (!isolated || !(DEGREE.get(n.id) || 0)));
+  if (FOCUS) {
+    const keep = neighboursOf(FOCUS);
+    nodes = nodes.filter(n => keep.has(n.id));
+    if (!nodes.some(n => n.id === FOCUS)) {
+      const self = GRAPH.nodes.find(n => n.id === FOCUS);
+      if (self) nodes.push(self);
+    }
+  }
+  const ids = new Set(nodes.map(n => n.id));
+  let edges = GRAPH.edges.filter(e => ids.has(e.source) && ids.has(e.target) && e.type !== "mirrors");
+  if ($("onlyLinked").checked && !FOCUS) {
+    const linked = new Set();
+    edges.forEach(e => { linked.add(e.source); linked.add(e.target); });
+    nodes = nodes.filter(n => linked.has(n.id));
+    const kept = new Set(nodes.map(n => n.id));
+    edges = edges.filter(e => kept.has(e.source) && kept.has(e.target));
+  }
+  VIEW.nodes = nodes;
+  VIEW.edges = edges;
+  LAYOUT = FOCUS ? layoutEgo(nodes) : layoutTypes(nodes);
+  renderGraph();
+}
+
+function setFocus(id) {
+  FOCUS = id && GRAPH.nodes.some(n => n.id === id) ? id : null;
+  const chip = $("focusChip");
+  if (FOCUS) {
+    const n = GRAPH.nodes.find(x => x.id === FOCUS);
+    chip.textContent = "фокус: " + (n ? cardTitle(n) : FOCUS) + " ×";
+    chip.classList.add("on");
+  } else {
+    chip.textContent = "";
+    chip.classList.remove("on");
+  }
+  rebuildView();
+  renderTree();
+  if (FOCUS) { select(FOCUS); fitView(); }
+}
+
+function layoutEgo(nodes) {
+  // Focus view reads left to right: what points at the node, the node itself,
+  // what it points at. No line crosses a card, unlike the type columns.
+  const incoming = [], outgoing = [];
+  const out = new Set(), inc = new Set();
+  VIEW.edges.forEach(e => {
+    if (e.source === FOCUS) out.add(e.target);
+    if (e.target === FOCUS) inc.add(e.source);
+  });
+  nodes.forEach(n => {
+    if (n.id === FOCUS) return;
+    if (out.has(n.id)) outgoing.push(n);
+    else if (inc.has(n.id)) incoming.push(n);
+  });
+  const sort = list => list.sort((a, b) => TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) || byLabel(a, b));
+  sort(incoming); sort(outgoing);
+  const W = 240, H = 58, GAP = 16, COL = W + 150;
+  const rows = Math.max(incoming.length, outgoing.length, 1);
+  const height = Math.max(220, rows * (H + GAP) + 96);
+  const centerY = (height - H) / 2;
+  const pos = new Map();
+  const place = (list, x) => {
+    const total = list.length * H + Math.max(0, list.length - 1) * GAP;
+    let y = Math.max(24, (height - total) / 2);
+    list.forEach(n => { pos.set(n.id, { x, y, w: W, h: H, node: n }); y += H + GAP; });
+  };
+  let x = 24;
+  if (incoming.length) { place(incoming, x); x += COL; }
+  const centerX = x;
+  x += COL;
+  if (outgoing.length) place(outgoing, x);
+  const focusNode = nodes.find(n => n.id === FOCUS);
+  if (focusNode) pos.set(FOCUS, { x: centerX, y: centerY, w: W, h: H, node: focusNode });
+  const columns = (incoming.length ? 1 : 0) + 1 + (outgoing.length ? 1 : 0);
+  return { pos, width: 24 + columns * COL, height };
+}
+
+function layoutTypes(nodes) {
+  const byType = {};
+  nodes.forEach(n => (byType[n.type] = byType[n.type] || []).push(n));
+  const columns = TYPE_ORDER.filter(t => byType[t]).map(t => ({
+    type: t,
+    list: byType[t].slice().sort(byLabel)
+  }));
+  const neighbours = new Map();
+  nodes.forEach(n => neighbours.set(n.id, new Set()));
+  VIEW.edges.forEach(e => {
+    if (neighbours.has(e.source) && neighbours.has(e.target)) {
+      neighbours.get(e.source).add(e.target);
+      neighbours.get(e.target).add(e.source);
+    }
+  });
+  const rowOf = () => {
+    const map = new Map();
+    columns.forEach(col => col.list.forEach((n, i) => map.set(n.id, i / Math.max(1, col.list.length - 1))));
+    return map;
+  };
+  for (let pass = 0; pass < 6; pass++) {
+    const rows = rowOf();
+    for (const col of columns) {
+      col.list = col.list.map((n, i) => {
+        const ys = Array.from(neighbours.get(n.id) || []).map(id => rows.get(id)).filter(v => v !== undefined);
+        const bary = ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : (i / Math.max(1, col.list.length - 1));
+        return { n, bary };
+      }).sort((a, b) => a.bary - b.bary).map(x => x.n);
+    }
+    for (const col of columns.slice().reverse()) {
+      const rows2 = rowOf();
+      col.list = col.list.map((n, i) => {
+        const ys = Array.from(neighbours.get(n.id) || []).map(id => rows2.get(id)).filter(v => v !== undefined);
+        const bary = ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : (i / Math.max(1, col.list.length - 1));
+        return { n, bary };
+      }).sort((a, b) => a.bary - b.bary).map(x => x.n);
+    }
+  }
+  const pos = new Map();
+  const COL = 274, ROW = 74;
+  let maxRows = 0;
+  columns.forEach((col, ci) => {
+    maxRows = Math.max(maxRows, col.list.length);
+    col.list.forEach((n, ri) => pos.set(n.id, { x: 24 + ci * COL, y: 48 + ri * ROW, w: 240, h: 58, node: n }));
+  });
+  return { pos, width: 24 + columns.length * COL, height: 80 + maxRows * ROW };
+}
+
+function applyTransform() {
+  const g = $("svg").querySelector("g.world");
+  if (g) g.setAttribute("transform", "translate(" + PAN.x + "," + PAN.y + ") scale(" + PAN.k + ")");
+}
+
+function renderGraph() {
+  const svg = $("svg");
+  const rect = $("canvas").getBoundingClientRect();
+  const w = Math.max(320, Math.round(rect.width)), h = Math.max(320, Math.round(rect.height));
+  svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+  svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
+
+  const parts = [];
+  parts.push("<defs><marker id='arrow' viewBox='0 0 8 8' refX='7' refY='4' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0,0 L8,4 L0,8 z' fill='#4d6273'/></marker></defs>");
+  parts.push("<g class='world' transform='translate(" + PAN.x + "," + PAN.y + ") scale(" + PAN.k + ")'>");
+
+  if ($("showEdges").checked) {
+    // One visual line per source-target-type: parallel blocks are folded into
+    // one edge with a counter, and the focus keeps only the lines of the
+    // selected node, so the picture stays readable.
+    const grouped = new Map();
+    VIEW.edges.forEach((e, i) => {
+      if (FOCUS && e.source !== FOCUS && e.target !== FOCUS) return;
+      const key = e.source + "\u0000" + e.target + "\u0000" + e.type;
+      const seen = grouped.get(key);
+      if (seen) { seen.count += e.blocks || 1; return; }
+      grouped.set(key, {
+        e, i,
+        count: e.blocks || 1,
+        anchors: e.anchors && e.anchors.length ? e.anchors.slice() : (e.anchor ? [e.anchor] : [])
+      });
+    });
+    const pairTotal = new Map();
+    grouped.forEach(item => {
+      const pair = item.e.source + ">" + item.e.target;
+      pairTotal.set(pair, (pairTotal.get(pair) || 0) + 1);
+    });
+    const pairSeen = new Map();
+    grouped.forEach(item => {
+      const e = item.e;
+      const a = LAYOUT.pos.get(e.source), b = LAYOUT.pos.get(e.target);
+      if (!a || !b) return;
+      const pair = e.source + ">" + e.target;
+      const index = pairSeen.get(pair) || 0;
+      pairSeen.set(pair, index + 1);
+      const total = pairTotal.get(pair) || 1;
+      const offset = total > 1 ? (index - (total - 1) / 2) * 5 : 0;
+      const aRight = b.x >= a.x;
+      const x1 = aRight ? a.x + a.w : a.x;
+      const y1 = a.y + a.h / 2 + offset;
+      const x2 = aRight ? b.x : b.x + b.w;
+      const y2 = b.y + b.h / 2 + offset;
+      const bend = Math.max(26, Math.abs(x2 - x1) * 0.45);
+      const c1 = x1 + (aRight ? bend : -bend);
+      const c2 = x2 + (aRight ? -bend : bend);
+      const color = EDGE[e.type] || "#8b9aa8";
+      const width = 1.1 + Math.min(3, item.count - 1) * 0.35;
+      const label = e.type + (item.count > 1 ? " ×" + item.count : "") + " · " + labelOf(e.source) + " → " + labelOf(e.target)
+        + (item.anchors[0] ? " · " + item.anchors[0].slice(0, 90) : "");
+      parts.push("<path class='edge' data-i='" + item.i + "' data-tip='" + esc(label) + "' d='M" + x1 + "," + y1 +
+        " C" + c1 + "," + y1 + " " + c2 + "," + y2 + " " + x2 + "," + y2 +
+        "' stroke='" + color + "' stroke-width='" + width.toFixed(2) + "'/>");
+    });
+  }
+
+  const entries = Array.from(LAYOUT.pos.entries()).sort((a, b) => a[1].y - b[1].y);
+  entries.forEach(([id, p]) => {
+    const n = p.node;
+    const stateBadge = n.state === "drift" ? "<tspan class='badge'> drift</tspan>" : "";
+    const focused = FOCUS === n.id ? " <tspan class='count'>фокус</tspan>" : "";
+    const sub = n.path.replace(/^\.(cursor|codex|kilo|antigravity|gemini|agents|dsh)\//, "");
+    const title = (n.summary || "").trim() || cardTitle(n);
+    parts.push("<g class='card' data-id='" + esc(n.id) + "'>" +
+      "<rect class='box' x='" + p.x + "' y='" + p.y + "' width='" + p.w + "' height='" + p.h + "'/>" +
+      "<rect class='bar' x='" + p.x + "' y='" + (p.y + 6) + "' width='4' height='" + (p.h - 12) + "' fill='" + (COLORS[n.type] || "#888") + "'/>" +
+      "<rect x='" + (p.x + 12) + "' y='" + (p.y + 8) + "' width='13' height='13' rx='3' fill='" + (COLORS[n.type] || "#888") + "'/>" +
+      "<text x='" + (p.x + 15.5) + "' y='" + (p.y + 18) + "' fill='#0f1419' font-size='9' font-weight='700'>" + (GLYPH[n.type] || "?") + "</text>" +
+      "<text class='title' x='" + (p.x + 32) + "' y='" + (p.y + 19) + "'>" + esc(title.length > 26 ? title.slice(0, 25) + "…" : title) + "</text>" +
+      "<text class='sub' x='" + (p.x + 14) + "' y='" + (p.y + 32) + "'>" + esc(sub.length > 34 ? "…" + sub.slice(-33) : sub) + "</text>" +
+      "<text class='count' x='" + (p.x + 14) + "' y='" + (p.y + 47) + "'>" + esc(n.type) + " · " + esc(n.environment) + " · " + esc(n.analysis) + focused + stateBadge + "</text>" +
+      "</g>");
+  });
+  parts.push("</g>");
+  svg.innerHTML = parts.join("");
+
+  svg.querySelectorAll("path.edge").forEach(el => {
+    el.onmouseenter = ev => showTip(ev, el.getAttribute("data-tip"));
+    el.onmousemove = ev => moveTip(ev);
+    el.onmouseleave = hideTip;
+  });
+  svg.querySelectorAll(".card[data-id]").forEach(el => {
+    const id = el.getAttribute("data-id");
+    el.onclick = () => select(id);
+    el.onmouseenter = () => highlight(id);
+    el.onmouseleave = () => highlight(null);
+    if (CURRENT && CURRENT.id === id) el.classList.add("selected");
+  });
+  applyTransform();
+}
+
+function showTip(ev, text) {
+  if (!text) return;
+  const tip = $("tip");
+  tip.textContent = text;
+  tip.classList.add("on");
+  moveTip(ev);
+}
+
+function moveTip(ev) {
+  const tip = $("tip");
+  if (!tip.classList.contains("on")) return;
+  const pad = 12;
+  const rect = tip.getBoundingClientRect();
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if (x + rect.width > window.innerWidth - 8) x = ev.clientX - rect.width - pad;
+  if (y + rect.height > window.innerHeight - 8) y = ev.clientY - rect.height - pad;
+  tip.style.left = Math.max(4, x) + "px";
+  tip.style.top = Math.max(4, y) + "px";
+}
+
+function hideTip() {
+  $("tip").classList.remove("on");
+}
+
+function highlight(id) {
+  const nodes = $("svg").querySelectorAll(".card[data-id]");
+  const hot = new Set();
+  if (id) {
+    hot.add(id);
+    VIEW.edges.forEach(e => { if (e.source === id) hot.add(e.target); if (e.target === id) hot.add(e.source); });
+  }
+  nodes.forEach(el => {
+    const nid = el.getAttribute("data-id");
+    el.style.opacity = !id || hot.has(nid) ? "" : ".22";
+  });
+  $("svg").querySelectorAll(".edge").forEach(p => {
+    const e = VIEW.edges[+p.getAttribute("data-i")];
+    const on = !!id && (e.source === id || e.target === id);
+    p.classList.toggle("hot", on);
+    p.style.opacity = !id ? "" : (on ? "1" : ".06");
+  });
+}
+
+function markSelected() {
+  $("svg").querySelectorAll(".card[data-id]").forEach(el => {
+    el.classList.toggle("selected", !!CURRENT && el.getAttribute("data-id") === CURRENT.id);
+  });
+  $("tree").querySelectorAll(".trow[data-id]").forEach(el => {
+    el.classList.toggle("active", !!CURRENT && el.getAttribute("data-id") === CURRENT.id);
+    el.classList.toggle("focused", !!FOCUS && el.getAttribute("data-id") === FOCUS);
+  });
+}
+
+function isFiltering() {
+  return !!$("filter").value.trim() || !!$("type").value || $("onlyIsolated").checked;
+}
+
+const CLOSED_KEY = "harness-mirror.closed.v1";
+
+function skillPathOf(n) {
+  const m = String(n.path || "").match(/^\.agents\/skills\/(.+)$/);
+  if (!m) return null;
+  return { root: ".agents/skills", parts: m[1].split("/").filter(part => part !== "children") };
+}
+
+function rulePathOf(n) {
+  const m = String(n.path || "").match(/^\.(agents|cursor)\/rules\/(.+)$/);
+  if (!m) return null;
+  return { root: "." + m[1] + "/rules", parts: m[2].split("/") };
+}
+
+function envPathOf(n) {
+  const parts = String(n.path || "").split("/");
+  if (parts.length < 2 || parts[0].charAt(0) !== ".") return null;
+  return { root: parts[0], parts: parts.slice(1) };
+}
+
+function makeDir(name, path) {
+  return { name: name, path: path, files: [], dirs: new Map() };
+}
+
+function ensureDir(parent, name, path) {
+  if (!parent.dirs.has(name)) parent.dirs.set(name, makeDir(name, path));
+  return parent.dirs.get(name);
+}
+
+function buildFileTree(nodes, pathOf) {
+  const roots = new Map();
+  nodes.forEach(n => {
+    const info = pathOf(n);
+    if (!info || !info.parts.length) return;
+    if (!roots.has(info.root)) roots.set(info.root, makeDir(info.root, info.root));
+    let dir = roots.get(info.root);
+    const keys = [];
+    let key = info.root;
+    info.parts.slice(0, -1).forEach(part => {
+      key += "/" + part;
+      keys.push(key);
+      dir = ensureDir(dir, part, key);
+    });
+    dir.files.push(n);
+    TREE_NODE_DIRS.set(n.id, keys);
+  });
+  return Array.from(roots.values());
+}
+
+function fileRank(n) {
+  if (/\/SKILL\.md$/.test(n.path)) return 0;
+  if (/\/README\.md$/.test(n.path)) return 1;
+  return 2;
+}
+
+function byFile(a, b) {
+  return fileRank(a) - fileRank(b) || titleOf(a).localeCompare(titleOf(b));
+}
+
+function dirsOf(dir) {
+  return Array.from(dir.dirs.values()).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function filesOf(dir) {
+  return dir.files.slice().sort(byFile);
+}
+
+function countFiles(dir) {
+  let total = dir.files.length;
+  dir.dirs.forEach(sub => { total += countFiles(sub); });
+  return total;
+}
+
+function isStray(n) {
+  return !n.canonical && !n.projection_of && !n.synthetic;
+}
+
+function isDirOpen(path) {
+  return isFiltering() || !CLOSED.has(path) || REVEALED.has(path);
+}
+
+function loadClosed() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CLOSED_KEY) || "[]");
+    CLOSED = new Set(Array.isArray(saved) ? saved : []);
+  } catch (e) {
+    CLOSED = new Set();
+  }
+}
+
+function saveClosed() {
+  try { localStorage.setItem(CLOSED_KEY, JSON.stringify(Array.from(CLOSED))); } catch (e) {}
+}
+
+function toggleDir(path) {
+  if (REVEALED.has(path)) {
+    REVEALED.delete(path);
+    CLOSED.add(path);
+  } else if (CLOSED.has(path)) {
+    CLOSED.delete(path);
+  } else {
+    CLOSED.add(path);
+  }
+  saveClosed();
+  renderTree();
+}
+
+function revealSelection(n) {
+  const next = new Set((TREE_NODE_DIRS.get(n.id) || []).filter(key => CLOSED.has(key)));
+  const changed = next.size !== REVEALED.size || Array.from(next).some(key => !REVEALED.has(key));
+  REVEALED = next;
+  return changed;
+}
+
+function clearSelection() {
+  if (!CURRENT) return;
+  CURRENT = null;
+  REVEALED.clear();
+  history.replaceState(null, "", location.pathname + location.search);
+  renderTree();
+  $("detail").innerHTML = "<p class=kv>Выбери строку слева или карточку в графе.</p>";
+}
+
+function fileView(n) {
+  const stray = isStray(n);
+  const mcp = n.type === "mcp";
+  return {
+    className: "trow" + (n.state === "drift" ? " drift" : "") + (stray ? " stray" : ""),
+    color: stray ? "var(--warn)" : (COLORS[n.type] || "#8b9aa8"),
+    glyph: GLYPH[n.type] || "?",
+    name: mcp ? n.label : (n.file || n.label),
+    right: mcp ? ((n.mcp && n.mcp.transport) || "mcp") : ((n.summary || "").trim() || titleOf(n)),
+    tip: n.path + (n.heading ? "\n" + n.heading : "") + (stray ? "\nлишний файл: нет канона и проекции" : "")
+  };
+}
+
+function dirView(dir, stray) {
+  const main = dir.files.find(f => /\/SKILL\.md$/.test(f.path));
+  const title = main ? (cleanHeading(main.heading) || dir.name) : dir.name;
+  const router = !stray && /(^|\/)[^/]+-router$/.test(dir.path);
+  return {
+    className: "trow folder" + (router ? " router" : "") + (stray ? " stray" : ""),
+    title: title,
+    note: router ? "router · " : (title !== dir.name ? dir.name + " · " : ""),
+    total: countFiles(dir),
+    tip: dir.path + (title !== dir.name ? "\n" + dir.name : "")
+  };
+}
+
+function renderTree() {
+  const box = $("tree");
+  box.innerHTML = "";
+  TREE_NODE_DIRS = new Map();
+  const canon = GRAPH.nodes.filter(n => n.canonical);
+  const keep = n => matches(n) && (!$("onlyIsolated").checked || !(DEGREE.get(n.id) || 0));
+  const skillRoots = buildFileTree(canon.filter(n => n.path.startsWith(".agents/skills/") && keep(n)), skillPathOf);
+  const ruleRoots = buildFileTree(canon.filter(n => n.type === "rule" && keep(n)), rulePathOf);
+  const mcps = canon.filter(n => n.type === "mcp" && keep(n)).sort(byLabel);
+
+  box.appendChild(groupHeader("скилы", skillRoots.reduce((sum, root) => sum + root.dirs.size, 0)));
+  skillRoots.sort((a, b) => a.name.localeCompare(b.name)).forEach(root => renderRoot(box, root, 10));
+
+  box.appendChild(groupHeader("правила", ruleRoots.reduce((sum, root) => sum + countFiles(root), 0)));
+  ruleRoots.sort((a, b) => a.name.localeCompare(b.name)).forEach(root => renderRoot(box, root, 14));
+
+  box.appendChild(groupHeader("mcp", mcps.length));
+  mcps.forEach(n => box.appendChild(fileRow(n, 14)));
+
+  const otherRoots = buildFileTree(canon.filter(n => !n.path.startsWith(".agents/skills/") && n.type !== "rule" && n.type !== "mcp" && keep(n)), envPathOf);
+  box.appendChild(groupHeader("прочее", otherRoots.reduce((sum, root) => sum + countFiles(root), 0)));
+  otherRoots.sort((a, b) => a.name.localeCompare(b.name)).forEach(root => box.appendChild(dirRow(root, 14, false)));
+
+  if ($("showMirrors").checked) {
+    const strayNodes = GRAPH.nodes.filter(n => isStray(n) && keep(n));
+    if (strayNodes.length) {
+      const strayRoots = buildFileTree(strayNodes, envPathOf);
+      box.appendChild(groupHeader("лишние файлы", strayNodes.length, "warn"));
+      strayRoots.sort((a, b) => a.name.localeCompare(b.name)).forEach(root => box.appendChild(dirRow(root, 14, true)));
+    }
+  }
+
+  const counts = {};
+  GRAPH.edges.forEach(e => { if (e.type !== "mirrors") counts[e.type] = (counts[e.type] || 0) + 1; });
+  const legend = document.createElement("div");
+  legend.className = "legend";
+  Object.keys(counts).sort().forEach(kind => {
+    const row = document.createElement("div");
+    row.className = "legrow";
+    row.innerHTML = "<span class=dot style='background:" + (EDGE[kind] || "#8b9aa8") + "'></span>" +
+      "<span>" + esc(kind) + "</span><span class=num>" + counts[kind] + "</span>";
+    legend.appendChild(row);
+  });
+  box.appendChild(legend);
+  markSelected();
+}
+
+function groupHeader(text, count, tone) {
+  const d = document.createElement("div");
+  d.className = "group" + (tone ? " " + tone : "");
+  d.innerHTML = "<span>" + esc(text) + "</span><span>" + count + "</span>";
+  return d;
+}
+
+function renderRoot(box, root, depth) {
+  dirsOf(root).forEach(dir => box.appendChild(dirRow(dir, depth, false)));
+  filesOf(root).forEach(n => box.appendChild(fileRow(n, depth)));
+}
+
+function dirRow(dir, depth, stray) {
+  const open = isDirOpen(dir.path);
+  const view = dirView(dir, stray);
+  const row = document.createElement("div");
+  row.className = view.className;
+  row.style.paddingLeft = depth + "px";
+  row.title = view.tip;
+  row.innerHTML = "<span class=caret>" + (open ? "▾" : "▸") + "</span>" +
+    "<span class=title>" + esc(view.title) + "</span>" +
+    "<span class=file>" + esc(view.note) + view.total + "</span>";
+  row.onclick = () => toggleDir(dir.path);
+  const frag = document.createDocumentFragment();
+  frag.appendChild(row);
+  if (!open) return frag;
+  dirsOf(dir).forEach(sub => frag.appendChild(dirRow(sub, depth + 12, stray)));
+  filesOf(dir).forEach(n => frag.appendChild(fileRow(n, depth + 12)));
+  return frag;
+}
+
+function fileRow(n, depth) {
+  const view = fileView(n);
+  const degree = DEGREE.get(n.id) || 0;
+  const row = document.createElement("div");
+  row.className = view.className;
+  row.setAttribute("data-id", n.id);
+  row.style.paddingLeft = depth + "px";
+  row.title = view.tip;
+  row.innerHTML = "<span class=caret></span>" +
+    "<span class=mark style='background:" + view.color + "'>" + view.glyph + "</span>" +
+    "<span class=fname>" + esc(view.name) + "</span>" +
+    "<span class='deg" + (degree ? "" : " zero") + "' title='связей: " + degree + "'>" + degree + "</span>" +
+    (view.right && view.right !== view.name ? "<span class=file>" + esc(view.right) + "</span>" : "");
+  row.onclick = () => setFocus(n.id);
+  row.onmouseenter = () => highlight(n.id);
+  row.onmouseleave = () => highlight(null);
+  return row;
+}
+
+function select(id, quiet) {
+  const n = VIEW.nodes.find(x => x.id === id) || GRAPH.nodes.find(x => x.id === id);
+  if (!n) return;
+  CURRENT = n;
+  const revealed = revealSelection(n);
+  if (revealed) renderTree(); else markSelected();
+  const active = $("tree").querySelector(".trow.active");
+  if (active) active.scrollIntoView({ block: "nearest" });
+  history.replaceState(null, "", "#node=" + encodeURIComponent(id));
+  if (!quiet) highlight(null);
+  const box = $("detail");
+  if (!n.json) { renderSynthetic(n); return; }
+  box.innerHTML = "<p class=kv>загрузка…</p>";
+  fetch("nodes/" + n.json.split("/").pop(), { cache:"no-store" })
+    .then(r => r.json())
+    .then(node => { DETAIL = node; renderDetail(node, n); })
+    .catch(() => { box.innerHTML = "<p class='status err'>не удалось прочитать " + esc(n.json) + "</p>"; });
+}
+
+function renderSynthetic(n) {
+  const out = GRAPH.edges.filter(e => e.source === n.id && e.type !== "mirrors");
+  const inc = GRAPH.edges.filter(e => e.target === n.id && e.type !== "mirrors");
+  const info = n.mcp || {};
+  let html = "<h1>" + esc(n.label) + "</h1>";
+  html += "<div class=kv>" + esc(n.id) + " · mcp · " + esc(n.environment) + "</div>";
+  html += "<div class=kv>источник: <code>" + esc(n.path) + "</code>, синтетический узел без файла</div>";
+  html += "<div class=kv>транспорт: " + esc(info.transport || "?") + " · команда: <code>" + esc(info.command || "?") + "</code> · аргументов " + (info.args || 0) + "</div>";
+  if ((info.env_keys || []).length) html += "<div class=kv>переменные окружения по именам: " + esc(info.env_keys.join(", ")) + "</div>";
+  html += "<div class=kv>значения переменных в граф не попадают</div>";
+  html += "<div class=row><button onclick=\"navigator.clipboard.writeText('" + esc(n.id) + "')\">копировать id</button><button id='focusBtn'>только это и связи</button></div>";
+  const nodeJson = JSON.stringify(n, null, 2);
+  html += "<h2>json узла, только чтение <span class=row style='margin:0;gap:4px'><button id=jsonToggle>скрыть</button><button id=jsonCopy>копировать</button><span class=kv>" + Math.max(1, Math.round(new TextEncoder().encode(nodeJson).length / 1024)) + " КБ</span></span></h2>";
+  html += "<div class=hint>Синтетический узел без файла. Это его запись из graph.json, только для чтения.</div>";
+  html += "<pre id=nodejson class=jsonview></pre>";
+  html += "<h2>используют (" + inc.length + ")</h2>" + (inc.map(e => linkRow(e, "source")).join("") || "<div class=kv>нет</div>");
+  html += "<h2>исходящие (" + out.length + ")</h2>" + (out.map(e => linkRow(e, "target")).join("") || "<div class=kv>нет</div>");
+  $("detail").innerHTML = html;
+  $("focusBtn").onclick = () => setFocus(n.id);
+  bindRelationLinks();
+  const jsonBox = $("nodejson");
+  jsonBox.textContent = nodeJson;
+  $("jsonToggle").onclick = () => {
+    jsonBox.hidden = !jsonBox.hidden;
+    $("jsonToggle").textContent = jsonBox.hidden ? "показать" : "скрыть";
+  };
+  $("jsonCopy").onclick = () => navigator.clipboard.writeText(jsonBox.textContent);
+}
+
+function linkRow(e, side) {
+  const id = e[side];
+  return "<div class=relrow><b>" + esc(e.type) + "</b> <span class=lnk data-go='" + esc(id) + "'>" + esc(labelOf(id)) + "</span></div>";
+}
+
+function labelOf(id) {
+  const n = GRAPH.nodes.find(x => x.id === id);
+  return n ? cardTitle(n) : id;
+}
+
+function bindRelationLinks() {
+  $("detail").querySelectorAll("[data-go]").forEach(el => {
+    el.onclick = () => { const id = el.getAttribute("data-go"); setFocus(id); };
+  });
+}
+
+function renderDetail(node, summary) {
+  const meta = node.meta;
+  const key = node.content_blocks ? "content_blocks" : "code_blocks";
+  const field = key === "content_blocks" ? "raw_content" : "raw_code";
+  const blocks = node[key].slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+  const text = blocks.map(b => b[field] || "").join("");
+  const editable = !!meta.canonical && !!EDITABLE[meta.type];
+  const out = GRAPH.edges.filter(e => e.source === meta.node_id && e.type !== "mirrors");
+  const inc = GRAPH.edges.filter(e => e.target === meta.node_id && e.type !== "mirrors");
+  const mirrors = GRAPH.nodes.filter(n => n.logical_id === summary.logical_id && !n.canonical);
+
+  let html = "<h1>" + esc(summary.summary || summary.heading || meta.name) + "</h1>";
+  html += "<div class=kv>" + esc(meta.node_id) + " · " + esc(meta.type) + " · " + esc(meta.environment) +
+    (editable ? " <span class='badge edit'>правится</span>" : "") + "</div>";
+  html += "<div class=kv>файл: <code>" + esc(meta.source_file_path) + "</code></div>";
+  if (!meta.canonical) html += "<div class=kv>зеркало от <code>" + esc(meta.projection_of) + "</code> <span class='badge " + (summary.state === "drift" ? "drift" : "equal") + "'>" + esc(summary.state || "equal") + "</span></div>";
+  if (mirrors.length) html += "<div class=kv>зеркала: " + mirrors.map(m => "<span class='badge env'>" + esc(m.environment) + "</span>").join(" ") + "</div>";
+  html += "<div class=kv>блоков " + node.reconstruction_meta.total_blocks + " · окончания " +
+    esc(node.reconstruction_meta.line_ending === "\n" ? "LF" : node.reconstruction_meta.line_ending === "\r\n" ? "CRLF" : "mixed") +
+    " · BOM " + (node.reconstruction_meta.bom ? "да" : "нет") + "</div>";
+  const details = (summary.details || meta.description || "").trim();
+  html += "<p>" + (details ? esc(details) : "<span class=kv>описание не заполнено</span>") + "</p>";
+  html += "<div class=row><button onclick=\"navigator.clipboard.writeText('" + esc(meta.node_id) + "')\">копировать id</button>";
+  html += "<button id='focusBtn'>только это и связи</button>";
+  html += "<button onclick=\"navigator.clipboard.writeText('" + esc(meta.source_file_path) + "')\">копировать путь</button></div>";
+
+  if ((node.sources_of_truth || []).length) {
+    html += "<h2>источники правды</h2>";
+    node.sources_of_truth.forEach(s => { html += "<div class=kv>" + esc(s.name) + " · " + esc(s.scope) + (s.path ? " · <code>" + esc(s.path) + "</code>" : "") + "</div>"; });
+  }
+
+  html += "<h2>файл" + (editable ? "" : " <span class=badge>только просмотр</span>") + "<span class=badge id='dirty'></span></h2>";
+  if (!editable) html += "<div class=hint>Правка доступна только для канонических скилов и правил. Остальные файлы меняются генераторами и синхронизацией.</div>";
+  html += "<div class=edwrap><div class=gutter id=gutter></div><textarea id=editor spellcheck=false " + (editable ? "" : "readonly") + "></textarea></div>";
+  html += "<div class=row><button class=primary id=save " + (editable ? "" : "disabled") + ">сохранить (Ctrl+S)</button>" +
+    "<button id=reset " + (editable ? "" : "disabled") + ">отменить</button><button id=reload>перечитать</button><span class=status id=saveStatus></span></div>";
+  if (editable) {
+    const heads = blocks.filter(b => b.block_type === "section" && b.header_text);
+    if (heads.length) {
+      html += "<div class=outline>" + heads.map((b, i) => "<button data-jump='" + i + "'>" + esc(b.header_text) + "</button>").join("") + "</div>";
+    }
+  }
+  const jsonText = JSON.stringify(node, null, 2);
+  const jsonKb = Math.max(1, Math.round(new TextEncoder().encode(jsonText).length / 1024));
+  html += "<h2>json узла, только чтение <span class=row style='margin:0;gap:4px'><button id=jsonToggle>скрыть</button><button id=jsonCopy>копировать</button><span class=kv>" + jsonKb + " КБ</span></span></h2>";
+  html += "<div class=hint>Это JSON узла из индекса. Поле только для чтения, в файл не пишется.</div>";
+  html += "<pre id=nodejson class=jsonview></pre>";
+
+  html += "<h2>связи исходящие (" + out.length + ")</h2>" + (out.map(e => linkRow(e, "target")).join("") || "<div class=kv>нет</div>");
+  html += "<h2>связи входящие (" + inc.length + ")</h2>" + (inc.map(e => linkRow(e, "source")).join("") || "<div class=kv>нет</div>");
+
+  $("detail").innerHTML = html;
+  $("focusBtn").onclick = () => setFocus(meta.node_id);
+  bindRelationLinks();
+
+  const editor = $("editor");
+  const gutter = $("gutter");
+  const status = $("saveStatus");
+  const dirty = $("dirty");
+  const baseline = text;
+  editor.value = baseline;
+  const paintGutter = () => {
+    const count = editor.value.split("\n").length;
+    let out = "";
+    for (let i = 1; i <= count; i++) out += i + "\n";
+    gutter.textContent = out;
+    gutter.scrollTop = editor.scrollTop;
+    if (editable) {
+      const changed = editor.value !== baseline;
+      dirty.textContent = changed ? "изменено" : "";
+      dirty.className = "badge" + (changed ? " edit" : "");
+      if (!changed && status.className !== "status err") { status.textContent = ""; status.className = "status"; }
+    }
+  };
+  editor.addEventListener("scroll", () => { gutter.scrollTop = editor.scrollTop; });
+  editor.addEventListener("input", paintGutter);
+  editor.addEventListener("keydown", e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); if (editable) save(); }
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const s = editor.selectionStart, t = editor.selectionEnd;
+      editor.setRangeText("  ", s, t, "end");
+      paintGutter();
+    }
+  });
+  paintGutter();
+
+  const jump = target => {
+    const idx = editor.value.indexOf(target);
+    if (idx < 0) return;
+    const line = editor.value.slice(0, idx).split("\n").length;
+    editor.focus();
+    editor.setSelectionRange(idx, idx + target.length);
+    editor.scrollTop = Math.max(0, (line - 3) * 20);
+    gutter.scrollTop = editor.scrollTop;
+  };
+  $("detail").querySelectorAll("[data-jump]").forEach(btn => {
+    const b = blocks.filter(x => x.block_type === "section" && x.header_text)[+btn.getAttribute("data-jump")];
+    btn.onclick = () => { if (b) jump((b[field] || "").slice(0, 60).split("\n")[0]); };
+  });
+
+  $("reset").onclick = () => {
+    editor.value = baseline;
+    paintGutter();
+    status.textContent = "изменения отменены";
+    status.className = "status";
+  };
+  $("reload").onclick = () => select(summary.id);
+  const jsonBox = $("nodejson");
+  jsonBox.textContent = jsonText;
+  $("jsonToggle").onclick = () => {
+    if (jsonBox.hidden) {
+      jsonBox.hidden = false;
+      $("jsonToggle").textContent = "скрыть";
+    } else {
+      jsonBox.hidden = true;
+      $("jsonToggle").textContent = "показать";
+    }
+  };
+  $("jsonCopy").onclick = () => navigator.clipboard.writeText(jsonBox.textContent);
+
+  function save() {
+    if (!EDIT) { status.textContent = "запись недоступна: запусти serve"; status.className = "status err"; return; }
+    if (!editable) { status.textContent = "править можно только скилы и правила"; status.className = "status err"; return; }
+    status.textContent = "сохранение…"; status.className = "status";
+    fetch("api/node?id=" + encodeURIComponent(meta.node_id), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ raw_file: editor.value })
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (res.status !== "ok") throw new Error(res.error || "ошибка сохранения");
+        DETAIL = res.node;
+        status.textContent = "сохранено, граф пересобран";
+        status.className = "status ok";
+        loadGraph(true);
+      })
+      .catch(err => { status.textContent = String(err.message || err); status.className = "status err"; });
+  }
+  $("save").onclick = save;
+}
+</script>
+<script>
+(function () {
+  var buttons = document.querySelectorAll('#harnessJobs [data-job]');
+  var status = document.getElementById('jobStatus');
+  var panel = document.getElementById('jobPanel');
+  var panelTitle = document.getElementById('jobPanelTitle');
+  var panelJson = document.getElementById('jobJson');
+  var storedKey = 'harness-mirror.lastJob';
+  var current = null;
+  var currentAction = '';
+  var timer = null;
+  var terminal = ['ok', 'failed', 'cancelled', 'timeout'];
+
+  function setBusy(busy) {
+    for (var i = 0; i < buttons.length; i++) buttons[i].disabled = busy;
+  }
+  function show(text, cls) {
+    status.textContent = text || '';
+    status.className = 'status' + (cls ? ' ' + cls : '');
+  }
+  function render(payload, label) {
+    if (!payload) return;
+    panel.hidden = false;
+    if (label) panelTitle.textContent = label;
+    panelJson.textContent = JSON.stringify(payload, null, 2);
+    try { localStorage.setItem(storedKey, JSON.stringify({ label: label || '', payload: payload })); } catch (e) {}
+  }
+  function restore() {
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem(storedKey) || 'null'); } catch (e) {}
+    if (saved && saved.payload) render(saved.payload, saved.label);
+  }
+  function copy() {
+    var text = panelJson.textContent || '';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { show('json скопирован', 'ok'); });
+      return;
+    }
+    var area = document.createElement('textarea');
+    area.value = text;
+    document.body.appendChild(area);
+    area.select();
+    try { document.execCommand('copy'); show('json скопирован', 'ok'); } catch (e) { show('копирование недоступно', 'err'); }
+    document.body.removeChild(area);
+  }
+  function poll() {
+    if (!current) return;
+    fetch('/jobs/status?id=' + encodeURIComponent(current), {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      credentials: 'same-origin'
+    }).then(function (r) { return r.json(); }).then(function (s) {
+      show((s.label || 'job') + ': ' + (s.status || 'unknown'), s.status === 'ok' ? 'ok' : (terminal.indexOf(s.status) >= 0 ? 'err' : ''));
+      render(s, s.label || currentAction);
+      if (terminal.indexOf(s.status) >= 0) {
+        current = null;
+        setBusy(false);
+        if (s.status === 'ok' && s.action === 'harness_build') location.reload();
+        return;
+      }
+      timer = setTimeout(poll, 1000);
+    }).catch(function () { timer = setTimeout(poll, 3000); });
+  }
+  function start(action, confirmIt) {
+    if (confirmIt && !window.confirm('Запустить ' + action + '?')) return;
+    if (timer) clearTimeout(timer);
+    setBusy(true);
+    currentAction = action;
+    show(action + ': отправка', '');
+    render({ action: action, status: 'sending' }, action);
+    fetch('/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ action: action, params: {} })
+    }).then(function (r) { return r.json().then(function (b) { return { code: r.status, body: b }; }); }).then(function (result) {
+      if ((result.code === 202 || result.code === 409) && result.body.id) {
+        current = result.body.id;
+        poll();
+        return;
+      }
+      setBusy(false);
+      show(result.body.error || 'ошибка запуска', 'err');
+      render(result.body, action);
+    }).catch(function (e) { setBusy(false); show(String(e.message || e), 'err'); });
+  }
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function () {
+      start(this.getAttribute('data-job'), this.getAttribute('data-confirm') === '1');
+    });
+  }
+  document.getElementById('jobPanelCopy').addEventListener('click', copy);
+  document.getElementById('jobPanelClose').addEventListener('click', function () { panel.hidden = true; });
+  window.harnessShowJob = render;
+  restore();
+})();
+</script>
+</body>
+</html>

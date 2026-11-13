@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "name": "improvement",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/runtime_registration.py",
+      "scripts/validate_docs.py",
+      "scripts/validate_registry.py",
+      "scripts/validate_rules.py",
+      "scripts/validate_skills.py",
+      "scripts/validate_structure.py"
+    ],
+    "references": [],
+    "assets": [
+      "assets/skill.schema.json"
+    ]
+  },
+  "tests": [
+    "tests/test_harness_improvement.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": [
+      {
+        "path": ".agents/skills/harness-router/children/environment-sync/scripts/verify_parity.py",
+        "owner": "cursor-harness",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh",
+        "owner": "synh",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      }
+    ]
+  },
+  "generated": []
+}

@@ -1,0 +1,97 @@
+---
+name: "Project Documentation"
+description: "Документирование проекта: инициализация, анализ карты, разделы, аудит. Экономия токенов через скрипты-коллекторы."
+alwaysApply: false
+---
+
+# Скил: Документирование проекта
+
+> Перед работой с `.doc/` соблюдай [правило doc-rules](./doc-rules.mdc): порядок чтения и записи.
+
+## Активация
+
+| Триггер | Действие |
+|---------|----------|
+| «задокументируй проект» / «bootstrap documentation» | Задай вопросы → создай index.md, _context-base.md, _priority.md |
+| «проанализируй карту проекта» + вывод скрипта | Анализ без чтения файлов → заполни _priority.md, добавь разделы в index.md |
+| «задокументируй раздел [name]» | Index Gate → **CBM Gate** → SECTION-запись → .md → index.md |
+| «проанализируй аудит» + вывод скрипта | Исправь ссылки → план по gaps |
+
+Для деталей — читай и следуй `.agents/skills/documentation-router/children/project-doc/SKILL.md`.
+
+В каждом новом SECTION-доке после раздела `## Суть` обязателен блок
+`> **AI:** читай этот doc если ...` и строка `Сначала:` / `См. также:`.
+Для многих файлов сразу: `python .agents/skills/documentation-router/children/project-doc/scripts/_batch-ai-links.py`.
+
+---
+
+## CBM + codegraph при индексации
+
+Существующую документацию искать через jdocmunch ([mcp-jdocmunch](./mcp/jdocmunch.mdc)), CBM и codegraph использовать для кода. Если MCP подключён:
+1. [codebase-memory](./mcp/codebase-memory-mcp.mdc): `list_projects` → `search_graph` → `trace_path`
+2. [codegraph](./mcp/codegraph.mdc): `explore` по паттерну раздела, `search`, `callers`, `impact`; каждый вызов с `projectPath=<root>`. Литералы и `.js`/`.tpl` — `multi-search.sh` / `rg`
+3. Заполнить `## Связи` в architecture/*.md
+
+Skill: S4.6 | CBM: [правило](./mcp/codebase-memory-mcp.mdc) и [документация](../../.agents/skills/codebase-memory-mcp/docs/mcp/codebase-memory-mcp.md) | codegraph: [правило](./mcp/codegraph.mdc) и [документация](../../.agents/skills/codegraph/docs/mcp/codegraph.md)
+
+Сообщества, god nodes и shortest path из старого graphify в codegraph не заменяются.
+Если такой вопрос действительно нужен, использовать CBM `trace_path` и `search_graph`,
+а не возвращать legacy graphify в обязательный маршрут.
+
+---
+
+## Index Gate и index.md (индексация)
+
+При индексации (project-doc SECTION/MAP):
+
+1. **Перед** созданием architecture/*.md — прочитать index.md, найти наиболее подходящий существующий doc (order ↔ orders).
+2. **После** создания или дополнения — **обязательно** записать документ в index.md (не опционально).
+3. Исключение из запрета «не писать в index без команды» — режим индексации project-doc.
+
+Полный порядок цикла: `.agents/skills/documentation-router/children/project-doc/SKILL.md` (S4.5, S6).
+
+---
+
+```powershell
+# Полная карта проекта (первый запуск)
+powershell .agents/skills/documentation-router/children/project-doc/scripts/map-project.ps1
+
+# Данные конкретного раздела проверяй через Index Gate (doc-index.tsv),
+# сборка разделов идет батчами get-indexing-batch (см. project-doc-indexing).
+
+# Аудит gaps и устаревших документов
+powershell .agents/skills/documentation-router/children/project-doc/scripts/audit-docs.ps1
+
+# Валидация структуры документов
+powershell .agents/skills/documentation-router/children/project-doc/scripts/validate-docs.ps1
+
+# Найти документы устаревшие после изменений кода
+powershell .agents/skills/documentation-router/children/project-doc/scripts/sync-docs.ps1
+
+# Сверка architecture/*.md с кодом (очередь, см. скил doc-verify)
+powershell .agents/skills/documentation-router/children/doc-verify/scripts/get-verify-batch.ps1 -Init
+powershell .agents/skills/documentation-router/children/doc-verify/scripts/get-verify-batch.ps1 -Status
+powershell .agents/skills/documentation-router/children/doc-verify/scripts/get-verify-batch.ps1 -Count 1
+```
+
+Скил сверки: [`.agents/skills/documentation-router/children/doc-verify/SKILL.md`](../skills/documentation-router/children/doc-verify/SKILL.md),
+правило [`.cursor/rules/doc-verify.mdc`](./doc-verify.mdc).
+
+---
+
+## Правила экономии токенов
+
+```
+✓ Скрипты дают структуру — не сканируй файлы сам
+✓ CBM Gate при индексации — search_graph / trace_path вместо mass Read
+✓ Один раздел = один диалог
+✗ Не читай vendor/ node_modules/ cache/
+✗ Не документируй CRUD без бизнес-логики
+```
+
+## Связи
+
+- [Правило doc-rules](./doc-rules.mdc) — порядок записи в `.doc/`
+- [`.agents/skills/documentation-router/children/project-doc/SKILL.md`](../../.agents/skills/documentation-router/children/project-doc/SKILL.md) — полный скил
+- [mcp-codebase-memory](./mcp/codebase-memory-mcp.mdc) — CBM при индексации, методы и аргументы
+- [`.cursor/rules/mcp/codegraph.mdc`](./mcp/codegraph.mdc) — codegraph при индексации; legacy graphify выведен из маршрута

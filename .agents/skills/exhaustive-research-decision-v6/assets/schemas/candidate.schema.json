@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Candidate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_id", "candidate_type", "name", "version", "proven_use", "source_ids", "method_ids", "status"],
+  "properties": {
+    "candidate_id": {"type": "string", "pattern": "^C[0-9]{3,}$"},
+    "candidate_type": {"type": "string", "enum": ["oss", "commercial", "saas", "managed", "hardware", "standard", "methodology", "process", "framework", "library", "model", "vendor", "hybrid", "internal_legacy"]},
+    "name": {"type": "string", "minLength": 2},
+    "version": {"type": "string", "minLength": 1},
+    "proven_use": {"type": "string", "minLength": 3},
+    "source_ids": {"type": "string"},
+    "method_ids": {"type": "string"},
+    "status": {"type": "string", "enum": ["longlist", "shortlisted", "excluded", "selected"]}
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "name": "codegraph",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/codegraph-mcp.sh",
+      "scripts/codegraph-ui.sh"
+    ],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

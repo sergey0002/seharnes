@@ -1,0 +1,181 @@
+---
+description: "MCP codebase-memory-mcp: поиск по кодовой базе через граф кода. Все 17 методов, аргументы и когда применять. Триггеры: карта модуля, кто вызывает, blast radius по коду, поиск символа, индекс графа, codebase-memory, CBM."
+alwaysApply: false
+---
+
+# MCP: codebase-memory-mcp (CBM)
+
+## Когда
+
+Основной маршрут поиска по кодовой базе. Граф знаний: классы, методы, функции,
+вызовы, импорты, маршруты, SQL-таблицы, межсервисные связи плюс векторный индекс
+для смыслового поиска. Берется до codegraph и Serena.
+
+Брать CBM, когда нужно:
+
+- найти класс, метод, функцию, маршрут или таблицу и получить qualified name;
+- узнать, кто вызывает символ и что вызывает он (blast radius по коду);
+- понять, что затронул текущий git diff;
+- получить обзор модуля: языки, пакеты, entry points, структура каталогов;
+- найти переиспользуемый код перед написанием нового.
+
+Не брать CBM, когда нужно:
+
+- документация и её разделы, там [mcp-jdocmunch](./jdocmunch.mdc);
+- реальная схема БД и колонки, там [mcp-mysql](./mysql.mdc);
+- точные строки шаблонов, `.tpl`, минифицированные библиотеки, литералы и regex,
+  там `multi-search.sh` / `rg` и [codegraph](./codegraph.mdc);
+- правка символа по LSP и диагностика PHP, там [serena](./serena.mdc).
+
+## Подключение и общие правила вызова
+
+- Транспорт HTTP, `http://127.0.0.1:9131/mcp`, служба `mcp-codebase-memory.service`.
+- `project` - имя из `list_projects`, не путь и не догадка. Чужой проект не запрашивать.
+- Все методы возвращают текст: `format: tree` (по умолчанию) или `json`. Шапка
+  ответа содержит `total`, `returned`, `has_more`, `next_offset` или `next_cursor`.
+- Пагинация: `limit` и `offset`, у части методов сквозной `cursor`.
+- Таймаут вызова 90 с на холодном старте, 60 с на прогретом.
+
+## Порядок вызова
+
+1. `list_projects` с `detail: stats` - взять имя проекта.
+2. `get_graph_schema` - какие метки узлов и типы рёбер есть в этом проекте.
+3. `get_architecture` - языки, пакеты, entry points.
+4. `search_graph` - найти сущность и qualified name.
+5. `trace_path` - входящие и исходящие связи.
+6. `get_code_snippet` или `get_file_outline` - исходник.
+7. `detect_changes` - impact по незакоммиченному diff.
+
+`get_code_snippet` без `search_graph` дает неточный qualified name. Пустой
+`search_graph` чаще всего означает, что проект не проиндексирован.
+
+## Инструменты
+
+### Поиск и чтение кода
+
+| Метод | Обязательные аргументы | Основные необязательные | Что возвращает |
+|---|---|---|---|
+| `search_graph` | `project` | `query`, `name_pattern`, `qn_pattern`, `label`, `file_pattern`, `semantic_query`, `semantic_limit`, `limit` (50), `offset`, `max_output_tokens` (3200), `format`, `fields`, `detail` | строки `qn / label / file / lines / rank` плюс входящие и исходящие степени |
+| `search_code` | `pattern`, `project` | `mode` `compact` / `full` / `files`, `regex`, `context`, `file_pattern`, `path_filter`, `limit`, `source_max_lines` | совпадения, ранжированные по графу; `files` дает только пути |
+| `get_code_snippet` | `qualified_name`, `project` | `source_mode` `auto` / `full` / `outline`, `include_neighbors`, `start_line`, `max_lines`, `member_limit`, `member_offset` | исходник символа или оглавление контейнера |
+| `get_file_outline` | `project`, `file_path` | `labels`, `limit` (100), `offset` | объявления одного файла в порядке исходника |
+| `trace_path` | `function_name`, `project` | `direction` `inbound` / `outbound` / `both`, `depth` (3), `mode`, `limit` (100), `parameter_name`, `edge_types`, `risk_labels`, `include_tests`, `include_evidence` | цепочки с номером шага, отношением и продолжением |
+| `query_graph` | `query`, `project` | `graph` `code` / `missed`, `max_rows` (200), `offset`, `cursor`, `format` | read-only Cypher: строки с точными итогами и признаком усечения |
+
+Как выбирать режим поиска в `search_graph`:
+
+- `query` - обычный текст, BM25 по именам и путям;
+- `name_pattern`, `qn_pattern`, `file_pattern` - регулярное выражение;
+- `semantic_query` - массив строк, смысловой поиск, нужен индекс `full` или `moderate`;
+- `label` - сузить до `Class`, `Method`, `Function`, `Route`, `Table` и прочих;
+- `min_degree` / `max_degree` - отсечь мелкие или наоборот слишком общие узлы;
+- `exclude_entry_points` - убрать entry points, когда нужны внутренние символы.
+
+Режимы `trace_path`:
+
+- `calls` (по умолчанию) - кто вызывает и кого вызывает;
+- `data_flow` - поток аргументов, фильтр `parameter_name`;
+- `cross_service` - связи между сервисами;
+- `topology` - инфраструктура, маршруты, контроллеры от узла `Resource` или `Route`;
+- `deploy` - что запускают CI-задачи и скрипты;
+- `run` - путь выполнения.
+
+Для сложных запросов `query_graph` принимает Cypher. Второй режим
+`graph: missed` возвращает дерево файлов, которые не попали в индекс: это
+подсказка о пробелах покрытия, а не доказательство полноты.
+
+### Обзор проекта и состояния индекса
+
+| Метод | Обязательные аргументы | Основные необязательные | Что возвращает |
+|---|---|---|---|
+| `list_projects` | - | `detail` `identity` / `stats`, `limit`, `offset`, `metadata_only` | имя, root, ветка; при `stats` узлы, рёбра, размер БД |
+| `index_status` | `project` | `verbose`, `diagnostics` `none` / `summary` / `full` | готовность, счётчики, root, git-ветка и head, coverage gaps, doc_links |
+| `index_repository` | `repo_path` | `mode`, `name`, `persistence`, `doc_candidates`, `async`, `status` | отчёт индексации: файлы, узлы, рёбра, пробелы покрытия |
+| `check_index_coverage` | `project` | `paths`, `scopes`, `path_limit`, `scope_limit`, `diagnostics` | по каждому пути и каталогу: проиндексирован или причина пропуска |
+| `get_graph_schema` | `project` | `diagnostics` `full`, `limit`, `offset` | счётчики меток и типов рёбер; при `full` список свойств для запросов |
+| `get_architecture` | `project` | `aspects`, `path`, `include_behavior_evidence`, `entry_node_id`, `target_node_id` | языки, пакеты, entry points, дерево файлов, циклы |
+| `compare_graphs` | `base_project`, `target_project` | `limit` (200), `scan_limit` | добавленные и удалённые узлы и рёбра двух снимков |
+| `delete_project` | `project` | - | удаление индекса проекта |
+
+Аспекты `get_architecture`: по умолчанию `languages`, `packages`, `entry_points`;
+`overview` добавляет дерево файлов; `cycles` и `system_structure` включаются явно.
+
+### Diff, память и runtime
+
+| Метод | Обязательные аргументы | Основные необязательные | Что возвращает |
+|---|---|---|---|
+| `detect_changes` | `project` | `scope` `impact` / `files` / `tests`, `direction`, `depth` (2), `edge_types`, `fixpoint`, `via`, `seeds` `none` / `list`, `seed_filter`, `base_branch`, `since` | затронутые символы, файлы и impact по git diff |
+| `manage_adr` | `project` | `mode` `outline` / `get` / `update` / `set_sections` / `sections`, `content`, `section_updates` | ADR проекта: оглавление, чтение, замена целиком или по секциям |
+| `ingest_traces` | `traces`, `project` | `label` | записывает наблюдаемые вызовы, отчёт о неразрешённых именах |
+
+`detect_changes`: `scope: impact` (по умолчанию) отдает последствия по графу,
+`files` - только затронутые файлы, `tests` - предполагаемые тесты. `seeds: list`
+показывает изменённые символы отдельной пагинацией. `fixpoint: true` идет до
+замыкания без ограничения глубины. `via: true` добавляет `via_qn` и `via_edge`.
+
+`manage_adr` не второй источник правды: решения живут в `.doc/`.
+`ingest_traces` нужен только для runtime-трейсов, обычно не используется.
+
+## Индекс: режимы и обновление
+
+Режимы `index_repository`:
+
+| Режим | Что делает | Когда |
+|---|---|---|
+| `fast` | только структура, без семантики | перед `git push` |
+| `moderate` | структура плюс семантика с фильтрацией | нужен `semantic_query`, но полный прогон дорог |
+| `full` | все проходы плюс семантика | после крупного рефакторинга |
+| `cross-repo-intelligence` | связывает сервисы, `target_projects` | межпроектные связи |
+
+Механика обновления:
+
+- `auto_index=false`: при подключении клиента полная переиндексация не стартует.
+- Наблюдатель (`auto_watch=true`, `watcher_enabled=true`, только git-репозитории)
+  ловит изменения файлов и запускает обновление сам. Наблюдатель не гарантирует
+  свежесть: прогон может упасть, тогда `indexed_at` стареет.
+- `indexed_at` из `index_status` - единственный признак свежести. Перед работой,
+  где важна актуальность графа, сверить его с текущим временем.
+- Инкремент идет по `file_hashes` (`sha256`, `mtime_ns`, `size`) и `lsp_surface`
+  (`surface_sha`): неизменённые файлы не переразбираются.
+- Долгий прогон: `async: true`, затем `status: true` с тем же `repo_path` и `name`
+  до состояния `succeeded`, `failed` или `cancelled`.
+- `persistence: true` пишет снимок в `.codebase-memory/graph.db.zst`.
+
+Порядок перед `git push`: тесты, commit, `index_repository(mode="fast")`, push.
+Полный свод: [cbm-index-before-push](../cbm-index-before-push.mdc).
+
+## Ошибки и границы
+
+- `project` только из `list_projects`. Для этого репозитория имя
+  `home-newuser-projects-copytrust-testdeploydocker`.
+- Ответ можно усечь по бюджету токенов: смотреть `truncated` и
+  `truncation_reason`, продолжать через `next_offset` или `next_cursor`.
+- `.doc/` в индекс не входит. Документация ищется через
+  [mcp-jdocmunch](./jdocmunch.mdc).
+- Smarty `.tpl` и часть старых PHP-страниц разбираются частично или не
+  разбираются совсем: для них `search_code` по литералам надежнее, чем символы.
+- Тяжелые минифицированные библиотеки могут обрывать индексацию по
+  `parse_timeout`, поэтому каталоги вроде `scripts/plugins/` стоит держать в
+  `.cbmignore`.
+- codegraph не заменяет `search_graph` и `get_code_snippet`: другой граф и другие
+  ответы.
+- Сниппет из CBM не доказательство. Перед правкой файл читается целиком, как
+  требует [code-editing](../code-editing.mdc).
+
+## Проверка
+
+```bash
+node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=codebase-memory-mcp
+codebase-memory-mcp cli --project home-newuser-projects-copytrust-testdeploydocker index_status
+```
+
+## Связи
+
+- [Документация сервера, эксплуатация и установка](../../../.agents/skills/codebase-memory-mcp/docs/mcp/codebase-memory-mcp.md)
+- [Индексация перед push](../cbm-index-before-push.mdc)
+- [codegraph](./codegraph.mdc) - исходник, вызывающие, blast radius и тесты
+- [serena](./serena.mdc) - символы, references, диагностика
+- [mysql](./mysql.mdc) - схема БД вместо графа
+- [Правка кода](../code-editing.mdc) - выбор инструмента по языку
+- [Подготовка плана](../../../.agents/skills/prepare-plan/SKILL.md) - Tier 0 blast radius
+- [Карта MCP](../mcp.mdc) - порядок всех серверов и ссылки

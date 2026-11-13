@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "name": "doc-verify",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/find-related-tasks.ps1",
+      "scripts/get-verify-batch.ps1",
+      "scripts/mark-verify-done.ps1"
+    ],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

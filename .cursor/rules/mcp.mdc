@@ -1,0 +1,82 @@
+---
+name: "MCP: карта и порядок"
+description: "Карта MCP-серверов: назначение, порядок вызова и ссылки на отдельные правила по каждому серверу. Триггеры: какой MCP, выбор MCP, порядок MCP, mcp, подключение MCP."
+alwaysApply: false
+---
+
+# MCP: карта и порядок
+
+Активный сервер имеет скил с README. Правило `.cursor/rules/mcp/{server}.mdc`
+хранит поверхность вызова: методы, аргументы и границы. Документ
+`{skill}/docs/mcp/{server}.md` хранит установку, перенос, работу с несколькими
+проектами, эксплуатацию и ограничения. Канон конфигурации один:
+`.cursor/mcp.json`; клиентские файлы генерируются синком.
+
+## Порядок в задачах
+
+Ниже ориентир. В конкретной задаче порядок задают [bitbucket-tasks](./bitbucket-tasks.mdc)
+и [prepare-plan](./prepare-plan.mdc); расхождений с их маршрутом быть не должно.
+
+1. `jdocmunch` для документации `.doc/`.
+2. `codebase-memory-mcp` для структуры кода, вызовов и blast radius.
+3. `codegraph` для одного вызова по готовому индексу PHP и JS: исходник, путь вызовов и blast radius.
+4. `codeprism` для метрик JS, TS и Vue: сложность, дубли, неиспользуемый код, security.
+5. `php-deps-mcp` для зависимостей и вызовов PHP, если нужен blast radius.
+6. `serena` для символов, ссылок и точечных правок.
+7. `mysql` для схемы и данных стенда.
+8. `context7` для внешних библиотек и API.
+9. `playwright` для UI-веток без Cest, только после Codeception и по правилу [mcp-playwright](../../.cursor/rules/mcp/playwright.mdc).
+10. `phpstan-mcp` и `semgrep` перед коммитом рисковых правок.
+11. `jira-task` только через `gototask` и `task-intake`.
+12. `git` для чтения; мутации через скилы.
+13. `graphiti` для долговременной памяти: что решали раньше и почему. Не заменяет документацию и граф кода.
+
+## Серверы
+
+| Сервер | Назначение | Правило | Документ |
+|---|---|---|---|
+| `codebase-memory-mcp` | граф кода: классы, вызовы, blast radius, индекс | [правило](../../.cursor/rules/mcp/codebase-memory-mcp.mdc) | [документ](../../.agents/skills/codebase-memory-mcp/docs/mcp/codebase-memory-mcp.md) |
+| `codegraph` | готовый индекс PHP и JS: один вызов с исходником, путем вызовов и blast radius | [правило](./mcp/codegraph.mdc) | [документ](../../.agents/skills/codegraph/docs/mcp/codegraph.md) |
+| `codeprism` | метрики JS, TS и Vue: сложность, дубли, неиспользуемый код, security | [правило](./mcp/codeprism.mdc) | [документ](../../.agents/skills/codeprism/docs/mcp/codeprism.md) |
+| `serena` | символы, ссылки, диагностика, правки PHP | [правило](../../.cursor/rules/mcp/serena.mdc) | [документ](../../.agents/skills/serena/docs/mcp/serena.md) |
+| `mysql` | схема и данные dev-стенда | [правило](../../.cursor/rules/mcp/mysql.mdc) | [документ](../../.agents/skills/mysql/docs/mcp/mysql.md) |
+| `git` | чтение git, мутации через скилы | [правило](../../.cursor/rules/mcp/git.mdc) | [документ](../../.agents/skills/git/docs/mcp/git.md) |
+| `jira-task` | экспорт `task.md` из Jira | [правило](../../.cursor/rules/mcp/jira-task.mdc) | [документ](../../.agents/skills/task-router/children/jira/docs/mcp/jira-task.md) |
+| `context7` | документация внешних библиотек и API | [правило](./mcp/context7.mdc) | [документ](../../.agents/skills/context7/docs/mcp/context7.md) |
+| `playwright` | проверка UI в браузере | [правило](../../.cursor/rules/mcp/playwright.mdc) | [документ](../../.agents/skills/playwright/docs/mcp/playwright.md) |
+| `phpstan-mcp` | статический анализ PHP | [правило](../../.cursor/rules/mcp/phpstan-mcp.mdc) | [документ](../../.agents/skills/phpstan-mcp/docs/mcp/phpstan-mcp.md) |
+| `php-deps-mcp` | зависимости и вызовы PHP | [правило](../../.cursor/rules/mcp/php-deps-mcp.mdc) | [документ](../../.agents/skills/php-deps-mcp/docs/mcp/php-deps-mcp.md) |
+| `semgrep` | security-сканы кода | [правило](../../.cursor/rules/mcp/semgrep.mdc) | [документ](../../.agents/skills/semgrep/docs/mcp/semgrep.md) |
+| `jdocmunch` | поиск и чтение документации `.doc/` | [правило](../../.cursor/rules/mcp/jdocmunch.mdc) | [документ](../../.agents/skills/jdocmunch/docs/mcp/jdocmunch.md) |
+| `graphiti` | память между сессиями: временной граф эпизодов, сущностей и фактов | [правило](./mcp/graphiti.mdc) | [документ](../../.agents/skills/graphiti/docs/mcp/graphiti.md) |
+| `sourcegraph` | отключен, legacy полнотекст | [правило](../../.cursor/rules/mcp/sourcegraph.mdc) | [документ](../../.doc/harnes/mcp/sourcegraph.md) |
+| `xdebug` | отключен, runtime-отладка PHP | [правило](../../.cursor/rules/mcp/xdebug.mdc) | [документ](../../.doc/harnes/mcp/xdebug.md) |
+| `deepwiki` | отключен, внешняя документация | [правило](../../.cursor/rules/mcp/deepwiki.mdc) | [документ](../../.doc/harnes/mcp/deepwiki.md) |
+| `bitbucket-task` | отключен, legacy трекер | [правило](../../.cursor/rules/mcp/bitbucket-task.mdc) | [документ](../../.doc/harnes/mcp/bitbucket-task.md) |
+
+`graphify` выведен из активного маршрута 2026-11-02. Его место занимает
+`codegraph`; правило [mcp/codegraph.mdc](./mcp/codegraph.mdc) описывает вызов и
+CLI-сценарии. Правило graphify удалено, документ
+`.doc/harnes/mcp/graphify.md` сохранен как legacy для истории.
+
+## Правила ведения
+
+- Активный сервер имеет скил и документ `{skill}/docs/mcp/{server}.md`.
+  Имя файла совпадает с ключом в `.cursor/mcp.json`; правило лежит в `mcp/{server}.mdc`.
+  Документы отключенных серверов остаются в `.doc/harnes/mcp/`.
+- Новый сервер: запись в `.cursor/mcp.json`, скил, правило, документ, строка в таблице
+  выше и в [state/04-mcp.md](../../.doc/harnes/state/04-mcp.md), затем
+  `bash .agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh` и smoke-проверка.
+- Секреты хранятся в `.cursor/mcp.env` и в env-файлах серверов, в документацию
+  и чат не попадают.
+- Отключенный сервер не удаляется из карты: правило и документ фиксируют причину
+  отключения и замену.
+- Правило сервера не дублирует документ: вызов и аргументы здесь, установка,
+  перенос, несколько проектов и эксплуатация в документе.
+
+## Связи
+
+- [Карта MCP](../../.doc/harnes/mcp/README.md) - конвенция и состав
+- [MCP-серверы](../../.doc/harnes/state/04-mcp.md) - состояние, порядок, Kilo-адаптация
+- [MCP-стек](../../.doc/harnes/state/15-mcp-stack.md) - общий HTTP-стек и порты
+- [Правила документации](./doc-rules.mdc) - маршрут по `.doc/`

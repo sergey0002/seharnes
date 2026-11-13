@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "name": "task-diff",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/task-diff.ps1"
+    ],
+    "references": [],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_task_diff_legacy_url.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "name": "gototask",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/find-task-branch.ps1",
+      "scripts/gototask.ps1"
+    ],
+    "references": [
+      "references/comment-triage.md"
+    ],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": [
+      {
+        "path": ".agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs",
+        "owner": "cursor-harness",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/jira/scripts/server.php",
+        "owner": "jira",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/analytics/scripts/task-analytics.py",
+        "owner": "task-analytics",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      }
+    ]
+  },
+  "generated": []
+}

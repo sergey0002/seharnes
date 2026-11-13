@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "name": "skill-authoring",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/audit_skill.py",
+      "scripts/create_skill.py"
+    ],
+    "references": [
+      "references/audit.md",
+      "references/create.md"
+    ],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_skill_authoring.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

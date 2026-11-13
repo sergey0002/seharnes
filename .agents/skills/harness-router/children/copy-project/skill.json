@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "name": "copy-project",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/copy-project.sh"
+    ],
+    "references": [
+      "references/how-it-works.md"
+    ],
+    "assets": [
+      "assets/startup-checklist.md"
+    ]
+  },
+  "tests": [
+    "tests/run-tests.sh"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

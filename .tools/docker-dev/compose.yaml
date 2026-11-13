@@ -1,0 +1,48 @@
+services:
+  php-apache:
+    build:
+      context: ./php-apache
+    restart: unless-stopped
+    volumes:
+      - ../../:/var/www/html
+      - ../../../.config:/var/www/.config:ro
+    user: "${UID}:${GID}"
+    ports:
+      - ${APACHE_PORT}:80
+    environment:
+      APP_ENV: development
+    depends_on:
+      - mysql
+
+  mysql:
+    build:
+      context: ./mysql
+    restart: unless-stopped
+    command: --max_allowed_packet=107374182
+    volumes:
+      - mysql:/var/lib/mysql
+    ports:
+      - ${MYSQL_PORT}:3306
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+  php7.1-cli:
+    build:
+      context: ./php7.1-cli
+    volumes:
+      - ../../:/var/www/html
+      - ../../../.config:/var/www/.config:ro
+    depends_on:
+      - mysql
+
+  node-cli:
+    image: node:12-alpine
+    working_dir: /app
+    volumes:
+      - ../../:/app
+
+volumes:
+  mysql:

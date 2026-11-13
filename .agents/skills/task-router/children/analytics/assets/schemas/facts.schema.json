@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:task-analytics:facts:1.0",
+  "type": "object",
+  "required": ["schema_version", "session_id", "events", "messages", "final"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "session_id": {"type": "string", "minLength": 1},
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_id", "kind", "t"],
+        "properties": {
+          "event_id": {"type": "string", "pattern": "^[0-9a-f]{12}$"},
+          "kind": {"enum": ["tool", "text", "patch", "file", "step-start", "step-finish", "compaction"]},
+          "t": {"type": "integer"}
+        }
+      }
+    },
+    "final": {"type": "boolean"},
+    "db_lag_seconds": {"type": "integer", "minimum": 0}
+  }
+}

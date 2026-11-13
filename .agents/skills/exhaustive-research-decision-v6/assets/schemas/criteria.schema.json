@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Criterion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["criterion_id", "name", "origin", "type", "unit", "direction", "applies_to_all", "na_policy", "formula", "input_feature_ids", "weight", "hard_gate", "source_ids", "method_ids", "decision_critical", "synthetic", "owner", "status"],
+  "properties": {
+    "criterion_id": {"type": "string", "pattern": "^K[0-9]{3,}$"},
+    "name": {"type": "string", "minLength": 2},
+    "origin": {"type": "string", "enum": ["brief", "domain_standard", "candidate_union", "synthetic"]},
+    "type": {"type": "string", "enum": ["factual", "hard_gate", "weighted", "synthetic"]},
+    "unit": {"type": "string", "minLength": 1},
+    "direction": {"type": "string", "enum": ["maximize", "minimize", "target", "hard_gate"]},
+    "applies_to_all": {"type": "string", "enum": ["yes", "no"]},
+    "na_policy": {"type": "string", "minLength": 2},
+    "formula": {"type": "string"},
+    "input_feature_ids": {"type": "string"},
+    "weight": {"type": "string"},
+    "hard_gate": {"type": "string", "enum": ["yes", "no"]},
+    "source_ids": {"type": "string"},
+    "method_ids": {"type": "string"},
+    "decision_critical": {"type": "string", "enum": ["yes", "no"]},
+    "synthetic": {"type": "string", "enum": ["yes", "no"]},
+    "owner": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "enum": ["draft", "verified", "disputed", "deprecated"]}
+  }
+}

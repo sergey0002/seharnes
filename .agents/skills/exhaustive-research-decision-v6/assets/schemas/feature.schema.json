@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Feature",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["feature_id", "canonical_name", "aliases", "definition", "unit", "direction", "source_ids", "method_ids", "version_scope"],
+  "properties": {
+    "feature_id": {"type": "string", "pattern": "^FTR[0-9]{3,}$"},
+    "canonical_name": {"type": "string", "minLength": 2},
+    "aliases": {"type": "string"},
+    "definition": {"type": "string", "minLength": 5},
+    "unit": {"type": "string", "minLength": 1},
+    "direction": {"type": "string", "enum": ["maximize", "minimize", "target", "hard_gate"]},
+    "source_ids": {"type": "string"},
+    "method_ids": {"type": "string"},
+    "version_scope": {"type": "string", "minLength": 4}
+  }
+}

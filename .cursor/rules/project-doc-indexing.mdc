@@ -1,0 +1,62 @@
+---
+description: "Автономная пакетная индексация проекта. Активируется по команде: продолжи индексацию, continue indexing, индексируй проект."
+globs:
+  - ".doc/architecture/**/*.md"
+  - ".agents/skills/documentation-router/children/project-doc/scripts/**"
+attach: glob
+alwaysApply: false
+---
+
+# Пакетная индексация проекта (Cursor)
+
+## Перед началом работы
+1. Прочитай `.doc/harnes/doc_rules.md` (только если ещё не читал в этой сессии).
+   Документацию ищи через jdocmunch ([правило mcp-jdocmunch](./mcp/jdocmunch.mdc)).
+2. НЕ читай все файлы проекта. Работай только с тем, что выдаст скрипт.
+
+## Рабочий цикл (повторяй до команды "стоп")
+
+### Шаг 1 — Получить батч
+```
+powershell -ExecutionPolicy Bypass -File .agents/skills/documentation-router/children/project-doc/scripts/get-indexing-batch.ps1 -Count 15
+```
+Скрипт выдаст 15 файлов, сгруппированных по директории, и сохранит в `current-batch.txt`.
+
+### Шаг 2 — Фильтрация шума
+Просмотри список. Если видишь плагин, библиотеку, минифицированный файл — помечай:
+```
+powershell -ExecutionPolicy Bypass -File .agents/skills/documentation-router/children/project-doc/scripts/mark-noise.ps1 -Paths "path1","path2"
+```
+
+### Шаг 3 — Анализ кода
+Для оставшихся файлов:
+1. Прочитай код (хватит сигнатур классов, методов, routes).
+2. Определи бизнес-процесс (orders, payments, tariffs...).
+
+### Шаг 4 — Index Gate
+Прочитай `.doc/architecture/_map/doc-index.tsv`.
+Найди подходящий документ. НЕ создавай новый, если существующий подходит.
+
+### Шаг 5 — Запись
+Допиши в `architecture/[процесс].md`. ОБЯЗАТЕЛЬНО вставь ссылки на файлы в бектиках:
+```markdown
+`admin/lib/Objects/Item/AdminItemController.php`
+```
+
+### Шаг 6 — Обновить карту
+```
+powershell -ExecutionPolicy Bypass -File .agents/skills/documentation-router/children/project-doc/scripts/map-project.ps1
+```
+
+### Шаг 7 — Отчёт
+```
+✅ Батч обработан: 15 файлов → [название документа].md
+Покрытие: N% (было M%)
+Напишите "продолжи" для следующего батча.
+```
+
+## Правила
+- Один документ = один бизнес-процесс (НЕ один файл = один документ)
+- В бектиках — только реальные пути файлов проекта
+- Обновляй index.md при создании нового документа
+- Размер батча для CSS/TPL/SQL можно увеличить до 30 (-Count 30 -Kind css)

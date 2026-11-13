@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "name": "neiroslop",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [
+      "references/examples.md",
+      "references/research.md"
+    ],
+    "assets": []
+  },
+  "tests": [
+    "tests/evals/evals.json",
+    "tests/evals/trigger_evals.json"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

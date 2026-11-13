@@ -1,0 +1,56 @@
+---
+name: "Audit Plan — in-place plan review and fixes"
+description: "Audits a plan, rebuilds evidence, fixes the plan in place and marks every change with the audit pass and date. Criteria C1-C6, pass/fail/blocked. Triggers: проведи аудит плана / аудит плана / audit the plan / audit plan / проверь план."
+alwaysApply: false
+---
+
+# Audit Plan
+
+## Activation
+
+- «проведи аудит плана» / «аудит плана» / audit the plan / audit plan
+- «проверь план перед реализацией», повторный аудит после правок плана
+
+## Action
+
+Идти по [`SKILL.md`](../../.agents/skills/task-router/children/audit-plan/SKILL.md).
+Критерии: [`criteria.md`](../../.agents/skills/task-router/children/audit-plan/references/criteria.md).
+Формат прохода и меток:
+[`workflow.md`](../../.agents/skills/task-router/children/audit-plan/references/workflow.md).
+
+**Hard rules:**
+
+- аудит правит только `plan.md`. Продуктовый код, тесты и канон не меняются;
+- отдельный `plan-audit.md`, `plan_hash` и хеши источников не создаются;
+- каждый проход получает номер `A1`, `A2` и дату;
+- каждая правка помечается видимой меткой рядом с блоком, но не внутри
+  Before или After: номер прохода, дата, критерий, что изменено;
+- старые метки и строки журнала не удаляются и не переписываются;
+- журнал `## Аудит плана` получает одну строку на проход: номер, дата, аудитор,
+  `plan_rev`, что изменено, открытые находки, вердикт;
+- пересобрать радиус по уровням 0, 0b, 1, 2, 3, 4 плюс 5-7 по теме, свежесть
+  графа по `indexed_at`;
+- повторно запустить `find-related-tasks` по доменным документам и
+  `git-task-blame` по каждому файлу патчей;
+- файлы до 300 строк читать целиком; крупнее по `content_hash` и digest;
+- документация и бриф не доказывают поведение кода, доказательство это чтение
+  исходника целиком;
+- каждый критерий C1-C6 получает pass, fail или blocked с доказательством;
+- `pass` ставит `audit_status: passed` и `status: ready`; `fail` и `blocked`
+  оставляют draft;
+- автор плана не аудирует свой план; без отдельного аудитора вердикт `blocked`;
+- проходы последовательные, одновременно план не правится;
+- содержательная правка автора после прохода поднимает `plan_rev` и требует
+  нового прохода; правки аудита версию не меняют;
+- максимум две автоматические итерации на нерешенную находку, затем
+  `needs_design_review`.
+
+## Связи
+
+- автор плана: [`prepare-plan`](../../.agents/skills/prepare-plan/SKILL.md)
+- история строк: [`git-task-blame`](../../.agents/skills/task-router/children/git-task-blame/SKILL.md)
+
+## История изменений
+
+- 2026-11-10: аудит правит план на месте, ведет журнал проходов и метки; удалены `plan_hash` и `plan-audit.md`.
+- 2026-11-10: скил выделен из `prepare-plan`, режим P7.4a стал отдельным аудитом.

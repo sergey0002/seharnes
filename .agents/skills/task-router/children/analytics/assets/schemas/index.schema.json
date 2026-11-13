@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:task-analytics:index:1.0",
+  "type": "object",
+  "required": ["schema_version", "task", "sessions"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "task": {"type": "string"},
+    "updated_at": {"type": ["string", "null"]},
+    "sessions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["session_id", "analysis"],
+        "additionalProperties": false,
+        "properties": {
+          "session_id": {"type": "string"},
+          "date": {"type": "string"},
+          "role": {"type": "string"},
+          "model": {"type": ["string", "null"]},
+          "cost": {"type": "number"},
+          "tokens": {"type": "integer"},
+          "tokens_in": {"type": "integer"},
+          "tokens_out": {"type": "integer"},
+          "tokens_reasoning": {"type": "integer"},
+          "cache_read": {"type": "integer"},
+          "cache_write": {"type": "integer"},
+          "cache_hit_ratio": {"type": "number"},
+          "requests": {"type": "integer"},
+          "active_ms": {"type": "integer"},
+          "duration_ms": {"type": "integer"},
+          "final": {"type": "boolean"},
+          "analysis": {"type": "string"},
+          "audits": {"type": "array"}
+        }
+      }
+    }
+  }
+}

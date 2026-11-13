@@ -1,0 +1,53 @@
+---
+name: "Prepare Plan — plan authoring"
+description: "Whole-file Read + docs via jdocmunch + blast radius; authored plan.md with T/AC/R/S and per-file Before/After. Plan audit is a separate skill audit-plan. Triggers: подготовь план / prepare plan / plan.md / stage2 plan."
+alwaysApply: false
+---
+
+# Prepare Plan
+
+## Activation
+
+- «подготовь план» / «составь план» / prepare plan / plan.md / stage2 plan / план этапа
+- «проведи аудит плана» / «аудит плана» / audit the plan
+  → **другой скил** [`audit-plan`](../../.agents/skills/task-router/children/audit-plan/SKILL.md), не этот
+
+## Action
+
+Идти по [`SKILL.md`](../../.agents/skills/prepare-plan/SKILL.md). Адаптеры и команды:
+[`ADAPTERS.local.md`](../../.agents/skills/prepare-plan/ADAPTERS.local.md).
+Самопроверка: [`self-check.md`](../../.agents/skills/prepare-plan/references/self-check.md).
+
+| Фаза | Документация | MCP | Код |
+|---|---|---|---|
+| P0-P5 | домен через индекс, затем `jdocmunch search_sections` с `path_glob`; P0.5a `find-related-tasks`; P0.6 docs≠code | все зеленые для темы | файлы целиком, не окно ±30 строк |
+| P5 | авторский `plan.md` по шаблону | доказательства из инструментов | Before из чтения, After полный |
+| Передача | `status: draft`, `audit_status: pending`, `plan_rev: 1` | n/a | `audit-plan` правит план на месте |
+
+**Hard rules:**
+
+- документы ищутся по домену через индекс и `jdocmunch`, номера задач через
+  `find-related-tasks.ps1`, не поиском `#N` по `.doc`;
+- файлы до 300 строк читать целиком всегда; крупнее читать целиком на первом
+  проходе, затем digest с `content_hash`;
+- радиус: уровни 0, 0b, 1, 2, 3, 4 плюс 5-7 по теме; вызывающие читаются целиком;
+  в плане таблица IN/OUT для общего кода;
+- `git-task-blame` обязателен по каждому файлу с историей, и при повторном аудите;
+- общий код: opt-in вместо смены поведения по умолчанию без покрытия OUT;
+- у каждой причины R есть сценарий S с литеральным результатом; `php -l` и
+  `no errors` не результат поведения;
+- таблица T-id, AC-ID, связанные задачи со ссылкой на `task.md`;
+- минимальность по `ponytail`, архитектурный гейт P4.1, `scope_size` по P3.5;
+- план это авторский Markdown. JSON-модели, механического валидатора и
+  research-ledger нет;
+- `status: ready` только после прохода `audit-plan` с вердиктом `pass`; аудит
+  правит план на месте, метки и журнал живут в `plan.md`;
+- продуктовый код без явной просьбы не менять.
+
+Стиль: [`text-style.mdc`](text-style.mdc).
+
+## История изменений
+
+- 2026-11-10: аудит вынесен в отдельный скил `audit-plan`; правило стало триггером автора плана.
+- 2026-11-10: карта инструментов обновлена: `jdocmunch`, `codeprism`, `context7`; `graphiti` не используется.
+- 2026-11-10: отключены механический валидатор плана, JSON-модель и research-ledger.

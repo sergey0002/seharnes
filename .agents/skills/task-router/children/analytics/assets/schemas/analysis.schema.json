@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:task-analytics:analysis:1.0",
+  "type": "object",
+  "required": ["schema_version", "session_id", "tools", "findings", "windows", "token_ledger", "slices"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "session_id": {"type": "string", "minLength": 1},
+    "task": {"type": ["string", "null"]},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "tools": {"type": "array"},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "count", "event_ids"],
+        "properties": {
+          "code": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+          "count": {"type": "integer", "minimum": 0},
+          "event_ids": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "windows": {"type": "array"},
+    "token_ledger": {
+      "type": "object",
+      "required": ["input_total", "output", "reasoning", "cost"],
+      "properties": {
+        "input_total": {"type": "integer", "minimum": 0},
+        "input_fresh": {"type": "integer", "minimum": 0},
+        "incoming_total": {"type": "integer", "minimum": 0},
+        "cache_read": {"type": "integer", "minimum": 0},
+        "cache_write": {"type": "integer", "minimum": 0},
+        "output": {"type": "integer", "minimum": 0},
+        "reasoning": {"type": "integer", "minimum": 0},
+        "requests": {"type": "integer", "minimum": 0},
+        "cost": {"type": "number", "minimum": 0}
+      }
+    },
+    "slices": {"type": "array"}
+  }
+}

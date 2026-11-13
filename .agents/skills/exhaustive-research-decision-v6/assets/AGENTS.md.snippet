@@ -1,0 +1,14 @@
+# Repository instructions (fallback for agents without Agent Skills support)
+
+## Deep research / comparison / rebuild tasks
+
+1. Read `.agents/skills/exhaustive-research-decision-v6/SKILL.md` first and follow its G1-G9 guardrails.
+2. Do not invent a new methodology, format or framework before `reuse-decision.md`. Prefer adopt / adapt / extend / compose of existing solutions with proven use.
+3. Materialise interim artifacts as real files under `research/<task-id>/` using `assets/templates/`; never keep them only in chat.
+4. Reference artifacts by `path + hash + stable_id`, not by chat section numbers.
+5. Build one `criteria.csv` (brief + domain_standard + candidate_union + synthetic), separate `unknown / n/a / not_supported / 0`, and give every synthetic metric a formula plus sensitivity.
+6. Fill the complete candidate x criterion matrix; run a second research pass for missing cells.
+7. Run `python3 .agents/skills/exhaustive-research-decision-v6/scripts/check_gates.py research/<task-id>` before claiming PASS.
+8. Keep `residual_unknowns`; never claim absolute completeness or zero errors. In high-risk domains produce a dossier and human gate, not a diagnosis or work authorisation.
+
+If this repository uses a different skills directory, replace the path above accordingly.

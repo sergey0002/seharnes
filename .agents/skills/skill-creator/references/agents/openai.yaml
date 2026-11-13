@@ -1,0 +1,6 @@
+interface:
+  display_name: "Skill Creator"
+  short_description: "Design, scaffold, test, and package portable 17-agent skills"
+  default_prompt: "Use $skill-creator to turn this workflow or requirement into a lean, portable Agent Skill package with validated structure, evals, and cross-agent compatibility."
+policy:
+  allow_implicit_invocation: true

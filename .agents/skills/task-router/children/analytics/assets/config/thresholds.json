@@ -1,0 +1,11 @@
+{
+  "timeout_ms": 120000,
+  "batchable_min_run": 3,
+  "retry_window_ms": 120000,
+  "reasoning_share": 0.5,
+  "token_spike_ratio": 2.0,
+  "token_spike_min_count": 10,
+  "idle_gap_ms": 900000,
+  "token_spike_min_delta": 50000,
+  "windows_max_share": 0.2
+}

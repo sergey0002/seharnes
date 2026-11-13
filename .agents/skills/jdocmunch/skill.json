@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "name": "jdocmunch",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/jdocmunch-mcp.sh"
+    ],
+    "references": ["docs/mcp/jdocmunch.md"],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {"skills": [], "project": []},
+  "generated": []
+}

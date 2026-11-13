@@ -1,0 +1,54 @@
+---
+description: "MCP git: локальные операции репозитория. Триггеры: git status, история, diff, blame, коммит."
+alwaysApply: false
+---
+
+# MCP: git
+
+## Когда
+
+Чтение состояния репозитория и подготовка изменений: статус, история, diff,
+show, blame. Мутации только через скилы и после подтверждения.
+
+## Инструменты
+
+| Инструмент | Параметры | Зачем |
+|---|---|---|
+| `git_status` | `repo_path` | состояние рабочей копии |
+| `git_log` | `repo_path`, `max_count`, `start_timestamp`, `end_timestamp` | история коммитов |
+| `git_diff` | `repo_path`, `target`, `context_lines` | разница веток и коммитов |
+| `git_diff_unstaged` / `git_diff_staged` | `repo_path`, `context_lines` | локальные правки |
+| `git_show` | `repo_path`, `revision` | содержимое коммита или файла |
+| `git_blame` | `repo_path`, `file_path` | автор строк |
+| `git_branch` | `repo_path`, `branch_type`, `contains`, `not_contains` | список локальных и удаленных веток |
+| `git_add` | `repo_path`, `files` | подготовить файлы |
+| `git_commit` | `repo_path`, `message` | локальный коммит |
+| `git_checkout` | `repo_path`, `branch_name` | переключение ветки |
+| `git_create_branch` | `repo_path`, `branch_name`, `base_branch` | создать ветку |
+| `git_reset` | `repo_path` | снять staged |
+
+Все вызовы передают `repo_path` корнем репозитория, не подкаталогом.
+
+## Ошибки и границы
+
+- Чтение свободно, мутации только через скилы `gototask`, `send-to-git`,
+  `task-diff`.
+- MCP не делает push. Push только по явной просьбе, через скил `send-to-git`.
+- Subject коммита начинается с `{N}` или `#{N}`, иначе коммит не попадет в diff
+  задачи.
+- Не коммитить локальный агентский setup: `.cursor/`, `.dsh/`, `.doc/`.
+- Ветки с `#` передавать в кавычках.
+
+## Проверка
+
+```bash
+node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=git
+```
+
+## Связи
+
+- [Полное описание](../../../.agents/skills/git/docs/mcp/git.md)
+- [Задачи Jira и git](../bitbucket-tasks.mdc)
+- [Отправка в git](../../../.agents/skills/send-to-git/SKILL.md)
+- [Индексация перед push](../cbm-index-before-push.mdc)
+- [Карта MCP](../mcp.mdc) - порядок всех серверов и ссылки

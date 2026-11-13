@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "name": "skill-creator",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/package_and_verify.py",
+      "scripts/scaffold_skill.py",
+      "scripts/self_test.py"
+    ],
+    "references": [
+      "references/README-upstream.md",
+      "references/agents/openai.yaml",
+      "references/agents/skill-reviewer.md",
+      "references/authoring-methodology.md",
+      "references/evals-and-trigger-guide.md",
+      "references/portability-and-packaging-17.md"
+    ],
+    "assets": [
+      "assets/skill-md-blueprints.md"
+    ]
+  },
+  "tests": [
+    "tests/evals/evals.json",
+    "tests/evals/trigger_evals.json"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

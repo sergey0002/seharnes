@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Code Review"
+  short_description: "Review task code by commits and diff files"
+  default_prompt: "Review a task strictly by its own commits and diff files; verify hunk ownership before conclusions or cleanup."

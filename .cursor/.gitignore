@@ -1,0 +1,4 @@
+mcp.env
+tools/vendor/
+tools/composer.lock
+artifacts/

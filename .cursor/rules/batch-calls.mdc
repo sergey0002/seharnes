@@ -1,0 +1,60 @@
+---
+description: Пакетные вызовы - поиски и команды пачкой через multi-search.sh и multi-exec.sh, не по одному. Триггеры: 2+ независимых поиска или чтения, 2+ read-only команд.
+alwaysApply: false
+---
+
+# Пакетные вызовы
+
+Каждый вызов инструмента заново шлет весь контекст. Серия из N вызовов стоит N пересылок. Пачка стоит 1 вызов. Экономия 8-18% input по истории (`kilo.db` 131 сессия, раздел 9 плана).
+
+
+## Триггеры
+
+2+ независимых поиска или чтения. 2+ независимых read-only команд (`git log`, `php -l`, `rg`, `cat`, `ls`).
+
+## Пакуй
+
+- 3+ поисков по `.doc/`: сначала jdocmunch ([mcp-jdocmunch](./mcp/jdocmunch.mdc)). Если нужен literal, regex или не-Markdown, один вызов `.tools/scripts/multi-search.sh` (паттерны через `--pattern`, лимиты по умолчанию).
+- Открытие задачи (`task.md` + `doc.md` + `diff.files.md` + `plan.md`): один вызов `.tools/scripts/multi-exec.sh` с четырьмя `--read`.
+- Чтения с офсетом (2+ файла со срезом): один вызов `multi-exec.sh` через повторяемый `--read "id=x :: path +offset limit"`. Срезы считает скрипт, модель арифметику не делает.
+- Git-тройка (`status` + `log` + `diff --stat`): один вызов `multi-exec.sh`.
+- Линт-серия (`php -l` по N файлам): один `for` в `multi-exec.sh`.
+- 3+ поисков по коду в git: один `execute` с `Promise.all` по `serena`/`codegraph` или один `bash` с `rg --json`.
+- MCP-вызовы без зависимости друг от друга: несколько в одном блоке ответа.
+
+## Не пакуй
+
+- Правки (`edit`, `apply_patch`, `write`) - только по одному.
+- Зависимые цепочки (второй шаг читает вывод первого): `grep->read`, `read->edit`, `glob->read` с неизвестным именем.
+- Долгие команды (стенд, `task-test.sh`, вотчеры) и необратимые записи (`push`, миграции `down()`).
+
+## Пороги
+
+- 1-2 независимых вызова: обычные инструменты, обертка не окупается.
+- 3+: обертка обязательна.
+- Dependent имеет приоритет над batch: сначала зависимость, потом пачка остатка.
+
+## Примеры
+
+Поиск по задачам:
+
+```bash
+.tools/scripts/multi-search.sh --root .doc/tasks \
+  --pattern "2233" --pattern "Yandex" --include "task.md" --include "doc.md" --include "plan.md"
+```
+
+Чтения с офсетом одним вызовом:
+
+```bash
+.tools/scripts/multi-exec.sh \
+  --read "id=a :: lib/Objects/Oauth/OauthController.php +445 25" \
+  --read "id=b :: templates/m_login_redirect.tpl +1 100" \
+  --truncate 2000
+```
+
+## Связи
+
+- [prepare-plan](../../.agents/skills/prepare-plan/SKILL.md) - P1.1 blast-radius лестница
+- [task-doc](../skills/documentation-router/children/task-doc/SKILL.md) - B2.5/B2.6 Reuse/Impact Gate
+- [bitbucket-tasks](./bitbucket-tasks.mdc) - порядок чтения задач
+- [test-priority](./test-priority.mdc) - режим этапа

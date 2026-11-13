@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "name": "ponytail",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [
+      "references/attribution.md",
+      "references/audit.md",
+      "references/review.md"
+    ],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

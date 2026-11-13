@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "name": "project-doc",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/_batch-ai-links.py",
+      "scripts/_fix_indexed_files_order.py",
+      "scripts/_lib.ps1",
+      "scripts/_restore_cicd_from_transcript.py",
+      "scripts/audit-docs.ps1",
+      "scripts/build-tasks-index.ps1",
+      "scripts/check-doc-text.py",
+      "scripts/check-links.py",
+      "scripts/generate-doc-index.ps1",
+      "scripts/generate-file-registry.ps1",
+      "scripts/get-indexing-batch.ps1",
+      "scripts/map-project.ps1",
+      "scripts/mark-noise.ps1",
+      "scripts/sync-docs.ps1",
+      "scripts/task-identity.py",
+      "scripts/validate-docs.ps1"
+    ],
+    "references": [
+      "references/cbm.md",
+      "references/indexing.md"
+    ],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_check_doc_text.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": [
+      {
+        "path": ".tools/scripts/multi-search.sh",
+        "owner": "cursor-harness",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/get-indexing-batch.ps1",
+        "owner": "docscripts",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/doc-verify/scripts/get-verify-batch.ps1",
+        "owner": "docscripts",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/map-project.ps1",
+        "owner": "docscripts",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/mark-noise.ps1",
+        "owner": "docscripts",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/sync-docs.ps1",
+        "owner": "docscripts",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/validate-docs.ps1",
+        "owner": "docscripts",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      }
+    ]
+  },
+  "generated": []
+}

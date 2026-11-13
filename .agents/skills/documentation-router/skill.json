@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "name": "documentation-router",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [
+    "children/project-doc",
+    "children/doc-verify",
+    "children/task-doc"
+  ],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

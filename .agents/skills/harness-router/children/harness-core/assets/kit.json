@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "copy": [
+    ".cursor",
+    ".codex",
+    ".agents",
+    ".kilo",
+    ".qoder",
+    ".qwen",
+    ".dsh",
+    ".serena",
+    ".doc/harnes",
+    ".doc/web",
+    ".tools/codeception",
+    ".tools/mcp-servers",
+    ".tools/scripts"
+  ],
+  "rootFiles": [
+    "AGENTS.md",
+    "mcp.index.md",
+    ".codeprism.toml",
+    ".cbmignore",
+    ".doc/harnes/state/canon-paths.yaml",
+    ".doc/harnes/state/26-tools.md"
+  ],
+  "skipDirs": [
+    "node_modules",
+    "vendor",
+    "__pycache__",
+    ".venv",
+    ".venv-linux",
+    ".venv-win",
+    "cache",
+    "runs",
+    "work",
+    "state",
+    "reports",
+    "test-runs"
+  ],
+  "skipFiles": [
+    "mcp.env",
+    ".env",
+    "config.env",
+    "*.local.yaml",
+    "*.local.yml",
+    "*.log",
+    "*.token",
+    "*.pyc",
+    "*.fail.png",
+    "*.fail.html",
+    "*.phar",
+    "DSH-RULES.md"
+  ],
+  "stateDirs": [
+    ".doc/skil_data",
+    ".doc/temp",
+    ".doc/tmp",
+    ".doc/skil_data/jdocmunch"
+  ]
+}

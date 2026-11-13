@@ -1,0 +1,7 @@
+candidate_id,criterion_id,raw_value,normalized,score,source_ids,method_ids,status,notes
+C001,K001,true,1.0,0.5,S001,M015|M017,verified,hard gate passed
+C001,K002,false,0.0,0.0,S001,M060|M017,verified,not_supported
+C001,K003,0.69,0.69,0.207,S001|S002,M015|M060,verified,formula applied
+C002,K001,true,1.0,0.5,S002,M015|M017,verified,hard gate passed
+C002,K002,0.8,0.8,0.16,S002,M060|M017,verified,archive present
+C002,K003,0.91,0.91,0.273,S001|S002,M015|M060,verified,formula applied

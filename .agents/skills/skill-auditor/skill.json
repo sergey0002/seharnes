@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "name": "skill-auditor",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/eval_runner.py",
+      "scripts/score_aggregator.py",
+      "scripts/self_test.py",
+      "scripts/static_audit.py"
+    ],
+    "references": [
+      "references/README-upstream.md",
+      "references/agents/execution-evaluator.md",
+      "references/agents/orchestration-subagent-auditor.md",
+      "references/agents/security-safety-auditor.md",
+      "references/agents/synthesizer-judge.md",
+      "references/agents/tools-mcp-resources-auditor.md",
+      "references/agents/trigger-context-auditor.md",
+      "references/agents/workflow-reliability-auditor.md",
+      "references/eval-ab-and-runtime-guide.md",
+      "references/extending-criteria-ru.md",
+      "references/improve-loop-protocol.md",
+      "references/mast-and-smells-catalog.md",
+      "references/platform-compatibility-matrix.md",
+      "references/rubric-criteria.md",
+      "references/schemas.md"
+    ],
+    "assets": [
+      "assets/audit-report-template.md"
+    ]
+  },
+  "tests": [
+    "tests/evals/evals.json",
+    "tests/evals/trigger_evals.json"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

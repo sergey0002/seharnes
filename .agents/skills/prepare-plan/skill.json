@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "name": "prepare-plan",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [
+      "references/blast-radius.md",
+      "references/modes.md",
+      "references/options.md",
+      "references/output-contract.md",
+      "references/plan-writing.md",
+      "references/problem-synthesis.md",
+      "references/quality.md",
+      "references/research.md",
+      "references/scope-sizing.md",
+      "references/self-check.md",
+      "references/skill-links.md",
+      "references/tool-routing.md"
+    ],
+    "assets": [
+      "assets/plan.meta.schema.json",
+      "assets/plan.template.md"
+    ]
+  },
+  "tests": [
+    "tests/behavioral-cases.json"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [
+      {
+        "name": "jdocmunch",
+        "required": false,
+        "reason": "поиск доменной документации перед чтением"
+      },
+      {
+        "name": "ponytail",
+        "required": false,
+        "reason": "лестница минимальной полной правки P4.0"
+      },
+      {
+        "name": "task-router",
+        "required": false,
+        "reason": "маршрутизация к audit-plan, git-task-blame и gototask"
+      }
+    ],
+    "project": [
+      {
+        "path": ".agents/skills/documentation-router/children/doc-verify/scripts/find-related-tasks.ps1",
+        "owner": "documentation",
+        "required": false,
+        "reason": "связанные задачи по доменному документу"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/build-tasks-index.ps1",
+        "owner": "documentation",
+        "required": false,
+        "reason": "пересборка индекса файл-задача"
+      },
+      {
+        "path": ".agents/skills/task-router/children/gototask/scripts/gototask.ps1",
+        "owner": "task-lifecycle",
+        "required": false,
+        "reason": "экспорт task.md и переход к ветке задачи"
+      }
+    ]
+  },
+  "generated": []
+}

@@ -1,0 +1,13 @@
+{
+  "name": "mcp-php-toolchain",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "mcp-php-toolchain": "./server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^3.24.2"
+  }
+}

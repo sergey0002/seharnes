@@ -1,0 +1,129 @@
+---
+description: Задачи Jira + git — architecture, task.md, diff, ветки, скилы gototask и task-diff
+alwaysApply: true
+---
+
+# Задачи Jira, git и документация проекта
+
+> Трекер задач: **Jira** (`CT-{N}`). Экспорт `task.md` — `.doc/skil_data/jira/` (MCP `jira-task`). Git: `origin` = GitVerse (`gitverse.ru/realant/copytrust.ru`); remote `bitbucket` запасной.
+
+## Перед работой над задачей #{N}
+
+**Обязательный порядок чтения:**
+
+0. [Правило doc-rules](./doc-rules.mdc) — порядок чтения и записи в `.doc/`
+0a. [Правило mcp-jdocmunch](./mcp/jdocmunch.mdc) — поиск и чтение документации
+1. `.doc/architecture/index.md` — документация проекта (архитектура, домены)
+2. `.doc/tasks/{N}/task.md` — описание, комментарии, договорённости из Jira
+3. `.doc/tasks/{N}/doc.md` — если есть: статус, этапы, решения, целевые и исключённые файлы
+4. `.doc/tasks/{N}/diff.files.md` — если есть: какие файлы уже менялись (компактно)
+5. `.doc/tasks/{N}/diff.md` — если есть: читать относящиеся к правке фрагменты, особенно для этапа с уже внедрённым кодом
+
+Пункты 2-5 одной пачкой через `multi-exec.sh --read` (4 файла в 1 вызов, см. правило `batch-calls`).
+6. Исходники в репо — Serena / Read; сверить текущий код с документами и diff
+
+**Гейт личности задачи (обязательно, машинный):** `python3 .agents/skills/documentation-router/children/project-doc/scripts/task-identity.py {N}`.
+Проверяет структурные идентификаторы и согласованность экспорта Jira. `metadata.title` может
+отличаться от названия Jira: такое отличие выводится как предупреждение и не является доказательством
+чужой задачи. При конфликте идентификаторов или неполных данных не планировать; проверить источник и
+результат экспорта и импорта, затем повторить проверку. Не перезаписывать `metadata.title` автоматически.
+
+До первой правки сверить `task.md` → `doc.md` → diff задачи → текущий код. Если файла нет, отметить отсутствие и продолжить по доступным источникам. При расхождении документации с текущим кодом не угадывать ветку реализации: установить фактический маршрут, затем выбрать файл. `gototask inspect` обновляет только `task.md` и не заменяет чтение `doc.md`/diff после перехода.
+
+Для UI-правки дополнительно открыть относящийся к задаче `.doc/qa/flows/*.md` через `.doc/qa/index.md`: выяснить роль, URL, ожидаемый блок и способ входа. Если стенд доступен и доступ к нужной роли разрешён, до CSS/шаблонных правок проверить в живой странице DOM и загруженные ассеты; иначе явно указать, что runtime-проверка недоступна. Скрин макета или вручную подставленного DOM не подтверждает исправление приложения. Подробный runtime-checkpoint: [browser-verify](../skills/task-router/children/testing-router/children/browser-verify/SKILL.md#runtime-checkpoint-для-ui-правок).
+
+### MCP-маршрут по задаче (минимум)
+
+После чтения task/diff:
+1. [codebase-memory](./mcp/codebase-memory-mcp.mdc) — карта модуля, поиск и вызовы
+2. [codegraph](./mcp/codegraph.mdc) — исходник, вызывающие и blast radius, если MCP зелёный
+3. [serena](./mcp/serena.mdc) — символы и references перед изменениями
+4. [mysql](./mcp/mysql.mdc) — если затронута модель данных или таблицы
+5. [git](./mcp/git.mdc) — сверить фактический diff с тем, что фиксируется в doc
+6. [context7](./mcp/context7.mdc) — только внешние API и библиотеки
+7. [mcp-jdocmunch](./mcp/jdocmunch.mdc) — документация; литералы и `.js`/`.tpl` — `multi-search.sh` / `rg`
+
+Документацию ищи через jdocmunch ([mcp-jdocmunch](./mcp/jdocmunch.mdc)); известные пути `task.md`, `doc.md`, diff читать напрямую. `multi-search.sh` только для точных литералов. В граф codegraph `.doc/` не входит.
+
+## Структура `.doc/tasks/{N}/`
+
+Плюс к перечисленным файлам: `task.json` (канон знаний JSONdoc, когда включён)
+и служебная зона `_jsondoc/` (receipt, tracker-снапшоты, транзакции) - читать
+через `python3 .agents/skills/documentation-router/children/task-doc/scripts/jsondoc.py get/batch`, не руками. Порядок
+чтения задачи: `task.md` -> `task.json --keys` (или doc.md, если JSON нет) ->
+diff-артефакты.
+
+```
+.doc/tasks/1612/
+├── task.md          # Jira: описание + комментарии (авто, не править руками)
+├── doc.md           # если есть: решения и прогресс задачи
+├── diff.files.md    # git: список путей (+ по коммитам)
+└── diff.md          # git: полный diff по коммитам задачи
+```
+
+Папка `{N}` — только цифры номера задачи.
+
+## Скилы (использовать, не дублировать git/MCP вручную)
+
+| Скил | Триггер | Скрипт |
+|------|---------|--------|
+| **task-spec** | «постановка задачи», «собери требования», «сформулируй задачу» | `.agents/skills/task-router/children/task-spec/scripts/task_spec.py` |
+| **gototask** | «перейди к задаче 1612» | `.agents/skills/task-router/children/gototask/scripts/gototask.ps1` |
+| **task-diff** | «обнови диф задачи 1612» | `.agents/skills/task-router/children/task-diff/scripts/task-diff.ps1` |
+| **send-to-git** | «отправь в гит», «закоммить и запушь» | `.agents/skills/send-to-git/SKILL.md` (сначала согласование, потом commit/push) |
+
+- `task-spec` — собирает требования и скриншоты в `.doc/skil_data/task-spec/{id}`, по команде «сформулируй задачу» пишет `task.md`; Jira не заводит и ветку не переключает
+- `gototask` — обновляет `task.md`, переключает ветку; релиз из Jira; при существующей ветке всегда merge релиза
+- `task-diff` — генерирует `diff.md` + `diff.files.md`
+
+Подробности: `.cursor/README.md` (раздел «Задачи Jira»).
+
+## Git: ветки
+
+| Заголовок задачи | Ветка |
+|------------------|-------|
+| «доработка» | `features/#{N}` |
+| «ошибка» | `bugfixes/#{N}` |
+
+Бэкпорт: `bugfixes/#{N}_for5606`, `bugfixes/#{N}_for_5.6.0.6`.
+
+Релизная база: `.agents/skills/task-router/children/gototask/config.json` (`release/5.6.0.6`).
+
+**Коммиты:** subject **начинается** с `{N}` или `#{N}` — иначе не попадёт в diff.
+
+## Git: проверка веток на origin (обязательно)
+
+**Запрещено** утверждать «ветки нет на origin», опираясь только на `git branch -r` / `git branch -a` после `git fetch`. Локальный список remote-tracking refs может быть неполным или устаревшим; ветка могла быть удалена после merge и снова создана.
+
+### Порядок проверки
+
+1. `git fetch origin` (явно указать remote).
+2. **На сервере** — `git ls-remote origin "refs/heads/bugfixes/*{N}*"` (или точное имя в кавычках).
+3. **В истории** — `git log --oneline --all --grep "#{N}"` и merge-сообщения вида `Merged in bugfixes/#{N}_for5606`; наличие PR/merge **не означает**, что ref сейчас есть на origin, но **опровергает** вывод «ветки никогда не было».
+4. Только после п.2–3 — формулировка: «ref не виден локально» / «на ls-remote не найден» / «найден: …».
+
+### Имена бэкпорт-веток
+
+Проверять **оба** варианта, если в задаче не указано точно:
+
+- `bugfixes/#{N}_for5606`
+- `bugfixes/#{N}_for_5.6.0.6`
+
+### PowerShell
+
+- Ветки с `#` передавать в кавычках: `git checkout "bugfixes/#1612_for5606"`.
+- Не использовать `&&`; цепочки — `;` или отдельные вызовы Shell.
+- `Select-String` по одному фрагменту имени (`1612`, `5606`) — **дополнение**, не замена `ls-remote`.
+
+### Две целевые ветки (релиз + бэкпорт)
+
+Правки stage2 / hotfix часто нужны в **обеих**: `bugfixes/#{N}` (релиз 5.6.1) и `bugfixes/#{N}_for5606` (5.6.0.6). Сначала правки на основной ветке задачи, затем перенос в бэкпорт (`cherry-pick` или повтор правок) — после подтверждения ref через `ls-remote`, не по предположению об отсутствии ветки.
+
+## Ограничения
+
+- Перед create-branch / discard локальных правок — **AskQuestion**. Релиз всегда из Jira Version; если ветка задачи уже есть — всегда `merge-release` без AskQuestion (см. gototask).
+- После ответа пользователя передать соответствующий ключ: `-ConfirmCreateBranch`, `-ConfirmMerge` или `-ConfirmDiscard`. Без него скрипт возвращает exit 3 и не меняет рабочую копию.
+- **`git push` — только по явной просьбе** («сделай пуш», «запушь», «push»). Не пушить после commit/merge «заодно». AskQuestion про создание ветки **не** разрешает push. Push выполнять в `origin` (GitVerse); запасной remote `bitbucket` только если origin недоступен.
+- Коммит+пуш по задаче — скил **send-to-git** («отправь в гит»): сначала согласование текста/команд, выполнение только после «да»
+- Не вызывать MCP jira-task вручную — PS1-скрипты сами экспортируют task.md через `.agents/skills/task-router/children/jira/scripts/server.php`
+- После правок — обновить diff: «обнови диф задачи {N}»

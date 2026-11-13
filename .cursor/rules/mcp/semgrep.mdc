@@ -1,0 +1,49 @@
+---
+description: "MCP semgrep: security-сканы кода. Триггеры: semgrep, security проверка, AST, правила безопасности."
+alwaysApply: false
+---
+
+# MCP: semgrep
+
+## Когда
+
+При изменениях, связанных с security, SQL, XSS, доступом и обработкой
+пользовательских данных. Перед коммитом критичных правок.
+
+## Инструменты
+
+| Инструмент | Параметры | Зачем |
+|---|---|---|
+| `semgrep_scan` | `code_files`: массив абсолютных путей | локальный скан файлов правилами Semgrep |
+| `semgrep_scan_with_custom_rule` | `code_files`, `rule` (YAML) | скан своим правилом |
+| `semgrep_findings` | `issue_type`, `repos`, `status`, `severities`, `limit` | история находок из Semgrep AppSec, нужен токен |
+| `get_abstract_syntax_tree` | `code`, `language` | AST файла или фрагмента |
+| `semgrep_rule_schema` | - | схема правила |
+| `get_supported_languages` | - | поддерживаемые языки |
+| `semgrep_scan_supply_chain` | - | проверка зависимостей |
+| `semgrep_scan_remote` | - | удаленный скан, если сервер hosted |
+| `semgrep_whoami` | - | текущий аккаунт и токен |
+
+Для локальной проверки кода основной вызов - `semgrep_scan` с узким списком
+абсолютных путей. `semgrep_findings` не сканирует код, а читает прошлые
+результаты платформы и требует токен.
+
+## Ошибки и границы
+
+- Результаты проверять вручную, ложные срабатывания возможны.
+- Сужать пути и набор правил, иначе скан долгий.
+- Semgrep не заменяет PHPStan и тесты.
+- Не отправлять код во внешние сервисы без разрешения.
+
+## Проверка
+
+```bash
+node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=semgrep
+```
+
+## Связи
+
+- [Полное описание](../../../.agents/skills/semgrep/docs/mcp/semgrep.md)
+- [Правка кода](../code-editing.mdc)
+- [Проверка задачи](../test-task.mdc)
+- [Карта MCP](../mcp.mdc) - порядок всех серверов и ссылки

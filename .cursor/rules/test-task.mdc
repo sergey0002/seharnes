@@ -1,0 +1,45 @@
+---
+name: "Test Task — оркестратор проверки задачи"
+description: "Triggers: тестируй задачу / проверь этап R / test the task. Orchestrates prepare-task-test + browser-verify + login-as-user."
+alwaysApply: false
+---
+
+# Test Task
+
+## Activation
+
+- «тестируй задачу» / «тестируй задачу 2606» / «протестируй задачу» / test the task
+- «проверь этап R3» / «проверь только что сделанный этап» — режим одного S, не полный прогон
+
+## Action
+
+Follow [`.agents/skills/task-router/children/testing-router/children/test-task/SKILL.md`](../skills/task-router/children/testing-router/children/test-task/SKILL.md).
+
+Отчёт складывается в `.doc/tasks/{N}/test-runs/{stamp}/` вместе с `verdict.json`;
+порядок шагов и чек-лист - в скиле.
+Реестр флоу: [`.doc/qa/index.md`](../../.doc/qa/index.md).
+
+```
+resolve N → прочитать Decomposition
+→ режим этапа: только S этого R
+→ конец: таблица веток → нет Cest? prepare-task-test
+→ browser-verify (Codeception, [Playwright](./mcp/playwright.mdc) только строки без метода)
+→ отчёт в test-runs/ → gates.py (G13)
+```
+
+Не поднимать стенд (`:8030`) / selenium-docker без спроса.
+
+**Chromedriver:** бинарник на WSL обычно уже есть
+(`~/.local/chrome-for-testing/chromedriver-linux64/chromedriver`).
+Закрытый `:9515` = процесс не запущен, **не** "драйвера нет".
+Старт headed: `bash .agents/skills/task-router/children/testing-router/children/browser-verify/scripts/start-chromedriver-wsl.sh`
+(см. [test-task SKILL § Chromedriver](../skills/task-router/children/testing-router/children/test-task/SKILL.md#chromedriver-бинарник-vs-процесс)).
+Фразы «есть chromedriver» / «подними» / «гоняй» = сразу стартовать скрипт,
+не спорить. Проверку портов только с `required_permissions: ["all"]`.
+
+Не объявлять стенд мёртвым по sandbox-`curl` (`000` на `:8030`/`:9515`) -
+сначала проверка с `all`: sandbox часто не видит порт, хотя стенд жив.
+Не править templates ради теста.
+Не путать с prepare-plan.
+«тестируй все задачи» - не этот скил; полный Acceptance suite только по явной просьбе
+(живёт и запускается из `.tools/codeception/`, в CI нет).

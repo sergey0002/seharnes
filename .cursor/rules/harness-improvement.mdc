@@ -1,0 +1,24 @@
+---
+description: Универсальное улучшение skills, rules, scripts и agent harness
+alwaysApply: true
+---
+
+# Harness Improvement
+
+Если пользователь просит улучшить или исправить skill, rule, script, MCP-конфигурацию,
+adapter или workflow агента, используй `harness-router/children/improvement/SKILL.md` из каталога
+skills текущей среды.
+
+До первой правки:
+
+1. Определи канонический компонент и затронутые среды.
+2. Прочитай History планов, `doc.md` задач и state-доки, где менялся компонент.
+   Документацию ищи через jdocmunch ([правило mcp-jdocmunch](./mcp/jdocmunch.mdc)).
+3. Если подтверждённых случаев нет, зафиксируй `history: n/a`.
+4. Отличай наблюдение от разрешения на изменение.
+
+Правь только канонический источник, затем синхронизируй adapters и проверь parity.
+Синк обязан пройти `rule-visibility`: gate-правила inline во всех средах, path-правила
+сохраняют glob-trigger или generated glob-блок. Для независимой проверки используй
+`harness_mirror.py visibility --summary`. Для обычного продуктового кода этот workflow
+не применяется.

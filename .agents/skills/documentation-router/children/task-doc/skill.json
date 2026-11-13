@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "name": "task-doc",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/jsondoc.py",
+      "scripts/jsondoc/__init__.py",
+      "scripts/jsondoc/batch.py",
+      "scripts/jsondoc/contract.py",
+      "scripts/jsondoc/freshness.py",
+      "scripts/jsondoc/ingest.py",
+      "scripts/jsondoc/migrate.py",
+      "scripts/jsondoc/render.py",
+      "scripts/jsondoc/review.py",
+      "scripts/jsondoc/search.py",
+      "scripts/jsondoc/stages.py",
+      "scripts/jsondoc/store.py",
+      "scripts/jsondoc/tags_resolver.py",
+      "scripts/jsondoc/validate.py",
+      "scripts/jsondoc/verify.py"
+    ],
+    "references": [
+      "references/doc-template.md",
+      "references/post-step-report.md",
+      "references/universal-rules.md"
+    ],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_batch.py",
+    "tests/test_bootstrap.py",
+    "tests/test_compatibility.py",
+    "tests/test_contract.py",
+    "tests/test_diff.py",
+    "tests/test_freshness.py",
+    "tests/test_git.py",
+    "tests/test_migrate.py",
+    "tests/test_render.py",
+    "tests/test_review.py",
+    "tests/test_search.py",
+    "tests/test_stages.py",
+    "tests/test_store.py",
+    "tests/test_tracker.py",
+    "tests/test_cli_validate.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": [
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/build-tasks-index.ps1",
+        "owner": "docscripts",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/check-doc-text.py",
+        "owner": "docscripts",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/task-doc/scripts/jsondoc.py",
+        "owner": "jsondoc",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      }
+    ]
+  },
+  "generated": []
+}

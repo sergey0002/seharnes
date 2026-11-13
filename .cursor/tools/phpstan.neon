@@ -1,0 +1,12 @@
+parameters:
+	phpVersion: 70100
+	level: 0
+	bootstrapFiles:
+		- %currentWorkingDirectory%/.cursor/tools/phpstan-bootstrap.php
+	scanDirectories:
+		- %currentWorkingDirectory%/lib
+	scanFiles:
+		- %currentWorkingDirectory%/langManager.php
+		- %currentWorkingDirectory%/lang.php
+		- %currentWorkingDirectory%/maket.php
+		- %currentWorkingDirectory%/tests/TestHelper.php

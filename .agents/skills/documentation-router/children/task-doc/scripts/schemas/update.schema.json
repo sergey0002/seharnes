@@ -1,0 +1,50 @@
+{
+  "$schema": "internal:jsondoc#update",
+  "title": "JSONdoc update envelope v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "operation_id", "expected_revision",
+               "actor", "reason", "operations", "document"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "operation_id": {"type": "string", "minLength": 3},
+    "expected_revision": {"type": "integer", "minimum": 0},
+    "actor": {"enum": ["task-doc", "project-doc", "doc-verify", "migration",
+                       "user", "gototask", "task-diff", "send-to-git",
+                       "ingest", "agent-review", "prepare-plan", "jira-report", "business-analyst"]},
+    "reason": {"type": "string", "minLength": 3},
+    "operations": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object", "additionalProperties": false,
+            "required": ["op", "collection", "key", "value"],
+            "properties": {
+              "op": {"enum": ["set", "upsert"]},
+              "collection": {"type": "string", "minLength": 1},
+              "key": {"type": "string", "minLength": 1},
+              "value": {}
+            }
+          },
+          {
+            "type": "object", "additionalProperties": false,
+            "required": ["op", "collection", "key", "superseded_by"],
+            "properties": {
+              "op": {"const": "supersede"},
+              "collection": {"type": "string", "minLength": 1},
+              "key": {"type": "string", "minLength": 1},
+              "superseded_by": {"type": "string", "minLength": 1}
+            }
+          }
+        ]
+      }
+    },
+    "document": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object"}
+      ]
+    }
+  }
+}

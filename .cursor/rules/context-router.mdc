@@ -1,0 +1,249 @@
+---
+description: Старт диалога и маршрутизация первого вопроса: классификация сцены, дешёвый ориентир, бюджет контекста, типовые сценарии харнеса, документации, скилов, кода и задач. Use when: старт диалога, первый вопрос, с чего начать, как действовать, маршрут по харнесу, контекст-роутер.
+alwaysApply: true
+---
+
+# Контекст-роутер
+
+## Принцип
+
+Первый ответ строится по типу вопроса, а не по всему харнесу. Сначала дешёвый
+ориентир, затем расширение по доказательствам. Полный обзор без классификации
+вопроса запрещён: каждый лишний вызов пересылает весь контекст.
+
+Правило не заменяет тематические правила. `doc-rules` задаёт запись в `.doc/`,
+`batch-calls` задаёт пачки, `mcp` задаёт порядок серверов. Это правило решает,
+какое из них подключить первым.
+
+Ручные триггеры: старт диалога, первый вопрос, маршрут по харнесу, с чего начать,
+как действовать.
+
+---
+
+## Алгоритм старта
+
+### S0. Классификация
+
+Отнеси вопрос ровно к одной сцене из таблицы ниже. Если сцен две, веди по той,
+которая требует записи или правки, а вторую подключай как зависимость.
+
+### S1. Ориентир
+
+Сделай один дешёвый шаг сцены. Для поиска это 1-2 запроса, для задачи один
+`multi-exec.sh`, для кода один вызов графа.
+
+### S2. Ответ
+
+Верни маршрут и первые ссылки. Не выкладывай содержимое всех найденных файлов.
+Для вопроса "найди всё" отдай таблицу компонентов с путями и до 5 примеров.
+
+### S3. Расширение
+
+Читай файл целиком или запускай реализацию только если сработал триггер из
+раздела "Когда расширять".
+
+---
+
+## Бюджет ориентира
+
+| Ограничение | Значение |
+|---|---|
+| Поисковых вызовов до первого ответа | не больше 2 |
+| Объём контекста до первого ответа | до 4000 токенов |
+| `SKILL.md` целиком для ориентира | запрещён, если есть router-таблица, карточка или `bundle` |
+| Сырые дампы узлов, файлов и JSON | запрещены, только counts и до 5 примеров |
+| Повторное чтение файла с тем же `content_hash` | запрещено |
+| Независимые 3+ вызова | пачкой по `batch-calls` |
+
+---
+
+## Таблица сцен
+
+| Сцена | Первый шаг | Затем | Стоп |
+|---|---|---|---|
+| Харнес | `harness-router` или `.doc/harnes/index.md` | нужный дочерний скил | вопрос закрыт ссылкой на компонент |
+| Документация | `jdocmunch search_sections` с `path_glob` | `get_section_context` или `get_section` | найден раздел и якорь |
+| Скилы | карточка `.doc/harnes/skills/{name}.md` | `SKILL.md` по секциям | ясен триггер и шаги |
+| Кодовая база | CBM `list_projects` + `search_graph` | codegraph, serena | найден символ или файл |
+| Задача N | `multi-exec.sh --read` четырьмя файлами | `prepare-plan` или `test-task` | прочитан пакет задачи |
+| UI и тесты | `.doc/qa/index.md` | Codeception, затем Playwright | ветка покрыта методом |
+| Отчёты | карточка `reporting-router` | `task-report` или `task-change-report` | отчёт собран из фактов |
+
+---
+
+## Сцена 1. Работа с харнесом
+
+Вопрос про правила, скилы, скрипты, MCP, адаптеры, синхронизацию или зеркало.
+
+1. Точка входа: `.doc/harnes/index.md`, раздел `state/` или `skills/`.
+2. Что делает скил: `.doc/harnes/skills/{name}.md`, затем
+   `python3 .agents/skills/harness-router/children/mirror/scripts/harness_mirror.py bundle --skill {name}`.
+3. Карта связей: `python3 .agents/skills/harness-router/children/mirror/scripts/harness_mirror.py scan --include-mirrors`, затем `build`, `lint`.
+4. Правка правила или скила: только через `.agents/skills/harness-router/children/improvement/SKILL.md`.
+   Канон правится в `.cursor/rules` и `.agents/skills`, зеркала не правятся.
+5. Нормативные документы: `.doc/harnes/component-docs.md`, `.doc/harnes/skill-format.md`,
+   `.doc/harnes/state/01-canon-envs.md`, `.doc/harnes/state/03-rules.md`.
+6. Синхронизация: `.agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh`,
+   контроль `.agents/skills/harness-router/children/environment-sync/scripts/verify_parity.py`.
+7. Проверки:
+   `python3 .agents/skills/harness-router/children/improvement/scripts/validate_registry.py`,
+   `python3 .agents/skills/harness-router/children/improvement/scripts/validate_rules.py --rules-dir .cursor/rules --skills-dir .cursor/skills`,
+   `python3 .agents/skills/harness-router/children/improvement/scripts/validate_skills.py`,
+   `python3 .agents/skills/harness-router/children/improvement/scripts/validate_docs.py`.
+8. MCP-аудит: `node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only={server}`.
+9. Зеркало не содержит `.doc/` по `ADAPTERS.local.md`. Вопросы про документацию и очереди
+   решаются сценой 2, а не сборкой зеркала.
+
+---
+
+## Сцена 2. Документация
+
+Вопрос про `.doc/`, архитектуру, задачу, отчёт, панель или "подтяни контекст".
+
+1. Гейт: `jdocmunch search_sections`, repo из `doc_resolve_repo` текущего `.doc`.
+2. Корпус выбирается через `path_glob`:
+
+| Вопрос | `path_glob` |
+|---|---|
+| Архитектура и домен | `architecture/*` |
+| Харнес, правила, состояние | `harnes/*` |
+| MCP-сервер | `harnes/mcp/*` |
+| Карточка скила | `harnes/skills/*` |
+| Задача N | `tasks/{N}/*` |
+| Локальная панель | `web/*` |
+
+3. Чтение: `get_section_context` для ориентира, `get_section` для полного текста,
+   `get_document_outline` перед большим документом.
+4. Прямой `Read`, `Grep` или `multi-search.sh` по `.doc/` только после пустого результата MCP
+   или для известного пути, точного литерала, regex и не-Markdown файлов.
+5. Запись: сначала `.doc/harnes/doc_rules.md`. Генерируемые файлы не правятся:
+   `doc.md` идёт через `.agents/skills/documentation-router/children/task-doc/scripts/jsondoc.py`,
+   `architecture/*.md` с маркером generated идут через тот же файл с командой `render`.
+6. Очереди:
+
+| Очередь | Проверка |
+|---|---|
+| Индексация проекта | `powershell .agents/skills/documentation-router/children/project-doc/scripts/get-indexing-batch.ps1 -Status` |
+| Сверка архитектуры | `powershell .agents/skills/documentation-router/children/doc-verify/scripts/get-verify-batch.ps1 -Status` |
+
+7. Скилы сцены: `documentation-router` и дети `project-doc`, `doc-verify`, `task-doc`.
+
+---
+
+## Сцена 3. Скилы
+
+Вопрос "какой скил", "что делает скил", "как запустить" или "поправь скил".
+
+1. Выбор: маршрутизатор по теме.
+   `documentation-router`, `task-router`, `testing-router`, `reporting-router`,
+   `harness-router`.
+2. Описание: карточка `.doc/harnes/skills/{name}.md`.
+3. Устройство: `SKILL.md` по секциям, не целиком. Для компактного вида
+   `python3 .agents/skills/harness-router/children/mirror/scripts/harness_mirror.py bundle --skill {name}`.
+4. Дети и триггеры: таблица маршрутизации в `SKILL.md` родителя.
+5. Правка: только `harness-improvement`, затем
+   `.agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh` и parity.
+6. Зеркала `.codex/rules`, `.kilo/rules`, `.agents/rules`, `.qoder`, `.qwen`
+   не редактируются вручную.
+
+---
+
+## Сцена 4. Кодовая база
+
+Вопрос про поведение, символ, файл, связь, рефакторинг или данные.
+
+1. Проект: CBM `list_projects`, затем `index_status`. Имя проекта берётся из вывода,
+   не угадывается.
+2. Структура и связи: `search_graph`, `trace_path`.
+3. Исходник и blast radius: `codegraph_explore` с `projectPath` корня проекта.
+4. Символ и правка: `serena` по правилу `code-editing`. PHP полный набор, JS, Vue и TPL
+   только файловые инструменты.
+5. Данные: mysql `describe_table`. Колонки не выдумываются.
+6. Литералы, `.tpl` и минифицированные файлы: `multi-search.sh` или `rg`.
+7. Внешние API: `context7`, версия из `composer.json` или `package.json`.
+8. Свежесть графа: только `indexed_at`. Перед push `index_repository` режим `fast`.
+9. Перед правкой файл читается целиком. Сниппет графа не заменяет файл.
+
+---
+
+## Сцена 5. Задачи
+
+Вопрос с номером задачи, веткой, планом, дифом, тестом или отчётом.
+
+1. Пакет задачи: один `multi-exec.sh --read` для `task.md`, `doc.md` или `task.json`,
+   `diff.files.md`, `diff.md`.
+2. Ветка и экспорт: `gototask` по номеру. В Codex `.codex/go-task.ps1`.
+3. План: `prepare-plan`. Аудит плана это отдельный скил `audit-plan`.
+4. Диф: `task-diff`. Review: `task-code-review`.
+5. Тест: `test-task`, ветки по `testaudit.md` раздел 9.
+6. Отчёт: `task-report` для трекера, `task-change-report` для HTML.
+7. Git: `send-to-git`. Push только по явной просьбе.
+8. Jira: `jira-task` вручную не вызывается, экспорт идёт через `gototask`.
+
+---
+
+## Сцена 6. UI и тесты
+
+1. Флоу и селекторы: `.doc/qa/index.md`, затем `.doc/qa/flows/{flow}.md`.
+2. Codeception Acceptance первым. Playwright только для веток без Cest или PHPUnit метода.
+3. Стенд и chromedriver без спроса не поднимаются. Порядок в `test-task.mdc`.
+
+---
+
+## Сцена 7. Отчёты
+
+1. Короткий комментарий в трекер: `task-report`.
+2. HTML-отчёт изменений: `task-change-report`, вход `report-model.json`.
+3. Аналитика задач и диалогов: `analytics`.
+
+---
+
+## Когда расширять
+
+Расширение до полного чтения или реализации разрешено, если:
+
+- ориентир вернул пустой результат;
+- пользователь просит реализовать, исправить или проверить;
+- пользователь просит полный разбор или "найди всё";
+- найденный документ ссылается на обязательный канон, без которого шаг нельзя выполнить;
+- без файла нельзя дать точный ответ по коду или схеме.
+
+Во всех остальных случаях ответ остаётся на уровне маршрута и ссылок.
+
+---
+
+## Запреты
+
+- Начинать поиск по документации с обхода `.doc` через Grep или чтения всех файлов.
+- Собирать весь `harness_mirror` ради вопроса про документацию или очередь.
+- Читать все дочерние скилы "на всякий случай".
+- Сканировать весь репозиторий ради номера задачи.
+- Печатать полные списки узлов, файлов и JSON вместо агрегата.
+- Править зеркала и сгенерированные документы.
+- Вызывать все MCP подряд.
+
+---
+
+## Fallback
+
+| Инструмент | Если недоступен |
+|---|---|
+| `jdocmunch` | `.doc/architecture/index.md`, затем `rg --files .doc` и точечное чтение |
+| CBM | codegraph, затем serena, затем `rg` |
+| codegraph | CBM `search_graph`, затем чтение файла |
+| mysql | схема из `base_structure.sql`, факт отметить как неподтверждённый |
+| Playwright | Codeception или ручная проверка с явной пометкой |
+
+Недоступность инструмента фиксируется в ответе. Молчаливая замена запрещена.
+
+---
+
+## Связи
+
+- [Пакетные вызовы](./batch-calls.mdc) - как пачковать 3+ независимых вызова
+- [Правила документации](./doc-rules.mdc) - запись в `.doc/`
+- [MCP jdocmunch](./mcp/jdocmunch.mdc) - поиск по документации
+- [Карта MCP](./mcp.mdc) - порядок серверов
+- [Правка кода](./code-editing.mdc) - выбор инструмента по языку
+- [Задачи Jira и git](./bitbucket-tasks.mdc) - порядок работы с задачей
+- [Harness improvement](../../.agents/skills/harness-router/children/improvement/SKILL.md) - правка харнеса

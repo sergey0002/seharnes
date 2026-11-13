@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "name": "audit-plan",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [],
+    "references": [
+      "references/criteria.md",
+      "references/skill-links.md",
+      "references/workflow.md"
+    ],
+    "assets": []
+  },
+  "tests": [
+    "tests/behavioral-cases.json"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [
+      {
+        "name": "jdocmunch",
+        "required": false,
+        "reason": "поиск доменных документов перед повторной проверкой радиуса"
+      },
+      {
+        "name": "prepare-plan",
+        "required": true,
+        "reason": "аудит проверяет план, который пишет prepare-plan"
+      },
+      {
+        "name": "task-router",
+        "required": false,
+        "reason": "маршрутизация к git-task-blame и gototask"
+      }
+    ],
+    "project": [
+      {
+        "path": ".agents/skills/documentation-router/children/doc-verify/scripts/find-related-tasks.ps1",
+        "owner": "documentation",
+        "required": false,
+        "reason": "связанные задачи по доменному документу"
+      },
+      {
+        "path": ".agents/skills/documentation-router/children/project-doc/scripts/build-tasks-index.ps1",
+        "owner": "documentation",
+        "required": false,
+        "reason": "пересборка индекса файл-задача"
+      },
+      {
+        "path": ".agents/skills/task-router/children/gototask/scripts/gototask.ps1",
+        "owner": "task-lifecycle",
+        "required": false,
+        "reason": "свежий экспорт task.md без переключения ветки"
+      }
+    ]
+  },
+  "generated": []
+}

@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "name": "phpstan-mcp",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {"scripts": ["scripts/phpstan-docker.sh", "scripts/phpstan-task.sh"], "references": ["docs/mcp/phpstan-mcp.md"], "assets": []},
+  "tests": [],
+  "children": [],
+  "dependencies": {"skills": [], "project": []},
+  "generated": []
+}

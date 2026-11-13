@@ -1,0 +1,11 @@
+services:
+  web-panel:
+    image: copytrust-dev-php7.1-cli:latest
+    working_dir: /var/www/html
+    volumes:
+      # Корень репо нужен только на чтение: панель отдает .doc, хеширует источники отчетов.
+      - ../..:/var/www/html:ro
+    ports:
+      - "127.0.0.1:${WEB_PANEL_PORT:-8077}:8077"
+    command: php -S 0.0.0.0:8077 -t .doc/web .doc/web/router.php
+    restart: unless-stopped

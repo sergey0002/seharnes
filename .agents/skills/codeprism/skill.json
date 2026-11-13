@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "name": "codeprism",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/codeprism-mcp.sh",
+      "scripts/codeprism_serve.py"
+    ],
+    "references": [
+      "docs/mcp/codeprism.md",
+      "references/integrations.md"
+    ],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_codeprism_mcp.py",
+    "tests/test_codeprism_serve.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": [
+      {
+        "path": ".cursor/mcp.json",
+        "owner": "harness",
+        "required": true,
+        "reason": "запись MCP-сервера codeprism"
+      },
+      {
+        "path": ".codeprism.toml",
+        "owner": "project",
+        "required": false,
+        "reason": "локальный конфиг машины, в git не коммитится"
+      }
+    ]
+  },
+  "generated": []
+}

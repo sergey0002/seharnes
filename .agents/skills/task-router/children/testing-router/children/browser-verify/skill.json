@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "name": "browser-verify",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/chromedriver-host-relay.py",
+      "scripts/dev-login.php",
+      "scripts/start-chromedriver-wsl.sh"
+    ],
+    "references": [],
+    "assets": []
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [
+      {
+        "name": "login-as-user",
+        "required": true,
+        "reason": "вызывается по тексту скила"
+      }
+    ],
+    "project": [
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/browser-verify/scripts/start-chromedriver-wsl.sh",
+        "owner": "codeception",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/test-task/scripts/check-tests.sh",
+        "owner": "qa",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/test-task/scripts/gates.py",
+        "owner": "qa",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/test-task/scripts/qa-lint.py",
+        "owner": "qa",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/test-task/scripts/task-test.sh",
+        "owner": "qa",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/test-task/scripts/test-batch.sh",
+        "owner": "qa",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      }
+    ]
+  },
+  "generated": []
+}

@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "name": "analytics",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/lib/__init__.py",
+      "scripts/lib/attribute.py",
+      "scripts/lib/compliance.py",
+      "scripts/lib/corpus.py",
+      "scripts/lib/db.py",
+      "scripts/lib/facts.py",
+      "scripts/lib/metrics.py",
+      "scripts/lib/render.py",
+      "scripts/lib/slices.py",
+      "scripts/task-analytics.py"
+    ],
+    "references": [
+      "references/metrics.md"
+    ],
+    "assets": [
+      "assets/config/required-calls.json",
+      "assets/config/slices.json",
+      "assets/config/thresholds.json",
+      "assets/schemas/analysis.schema.json",
+      "assets/schemas/facts.schema.json",
+      "assets/schemas/index.schema.json"
+    ]
+  },
+  "tests": [],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "name": "environment-sync",
+  "kind": "leaf",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/compact_agent_views.py",
+      "scripts/generate-agent-configs.py",
+      "scripts/generate-antigravity-rules.py",
+      "scripts/generate-codex-mcp.py",
+      "scripts/generate-dsh-config.py",
+      "scripts/generate-mcp-config.py",
+      "scripts/generate-qoder-config.py",
+      "scripts/generate-qwen-config.py",
+      "scripts/render_agent_views.py",
+      "scripts/rule_model.py",
+      "scripts/sync-agent-views.sh",
+      "scripts/verify_generated_copies.py",
+      "scripts/verify_parity.py",
+      "scripts/verify_rule_triggers.py"
+    ],
+    "references": [],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_dsh_config.py",
+    "tests/test_dsh_kit.py",
+    "tests/test_generated_copies.py",
+    "tests/test_render_agent_views.py",
+    "tests/test_sync_views.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [],
+    "project": []
+  },
+  "generated": []
+}

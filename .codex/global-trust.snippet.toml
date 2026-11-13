@@ -1,0 +1,9 @@
+# Фрагмент для %USERPROFILE%\.codex\config.toml
+# Добавьте, если Codex не подхватывает проектный .codex/config.toml (виден только playwright-browser).
+
+[projects.'c:\projects\copytrust\testdeploydocker']
+trust_level = "trusted"
+
+# Если открываете репо из WSL в Cursor/Codex:
+[projects.'\\wsl.localhost\ubuntu/home/newuser/projects/seharnes']
+trust_level = "trusted"

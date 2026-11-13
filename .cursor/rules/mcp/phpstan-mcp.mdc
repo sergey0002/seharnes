@@ -1,0 +1,52 @@
+---
+description: "MCP phpstan-mcp: статический анализ PHP. Триггеры: phpstan, проверить типы, анализ PHP после правок."
+alwaysApply: false
+---
+
+# MCP: phpstan-mcp
+
+## Когда
+
+После правок PHP и перед коммитом, когда есть риск ошибок типов, неверных
+аргументов или сломанных сигнатур.
+
+## Инструменты
+
+| Инструмент | Параметры | Зачем |
+|---|---|---|
+| `phpstan_analyze` | `task` номер задачи, `paths` массив путей, `level` 0-9 | анализ файлов задачи или явных путей |
+
+`task` берет PHP-файлы из `.doc/tasks/{N}/diff.files.md` и незакоммиченных правок, поэтому проверяются только файлы задачи. `paths` оставлен для точечной проверки вне задачи. Без `task` и `paths` инструмент возвращает ошибку, а не запускает проект целиком.
+
+## Как запускать по задаче
+
+```text
+phpstan_analyze { "task": 2077, "level": 0 }
+.agents/skills/phpstan-mcp/scripts/phpstan-task.sh 2077 0
+```
+
+Уровень по умолчанию 0. Для рисковых правок поднимать до 2-5, но шум растет.
+
+Основной стенд работает на PHP 7.4, на хосте PHP нет, а phar PHPStan требует PHP 7.4 или новее. Анализ идет в образе стенда `copytrust-dev-php-apache:latest` через `.agents/skills/phpstan-mcp/scripts/phpstan-docker.sh`. Отдельный образ не нужен. Конфиг `.cursor/tools/phpstan.neon` задает `phpVersion: 70100` и находит legacy-классы через `scanDirectories` и `scanFiles`.
+
+## Ошибки и границы
+
+- Передавать `task` или узкие `paths`, не весь репозиторий.
+- Не анализировать `vendor/`, `node_modules/`, `templates_c/` и сгенерированные каталоги.
+- Высокий `level` медленнее и шумнее: поднимать точечно.
+- PHPStan не заменяет тесты и проверку поведения.
+- Если образа `copytrust-dev-php-apache:latest` нет, `phpstan-docker.sh` собирает его только из `.tools/docker-dev/php-apache`. Ручная сборка: `docker build -t copytrust-dev-php-apache:latest .tools/docker-dev/php-apache`. Отключить автосборку: `PHPSTAN_AUTO_BUILD=0`. Пользовательский тег из `PHPSTAN_DOCKER_IMAGE` автоматически не пересобирается: его нужно подготовить отдельно. Файлы `docs/` для локального запуска не меняются и не используются как резерв сборки.
+
+## Проверка
+
+```bash
+node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=phpstan-mcp
+.agents/skills/phpstan-mcp/scripts/phpstan-task.sh 2077 0
+```
+
+## Связи
+
+- [Полное описание](../../../.agents/skills/phpstan-mcp/docs/mcp/phpstan-mcp.md)
+- [Правка кода](../code-editing.mdc)
+- [Проверка задачи](../test-task.mdc)
+- [Карта MCP](../mcp.mdc) - порядок всех серверов и ссылки

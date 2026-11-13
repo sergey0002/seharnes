@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "name": "test-task",
+  "kind": "orchestrator",
+  "entry": "SKILL.md",
+  "readme": "README.md",
+  "resources": {
+    "scripts": [
+      "scripts/branch-audit.py",
+      "scripts/build-testanalyze.py",
+      "scripts/build-testanalyze.sh",
+      "scripts/check-ac-matrix.py",
+      "scripts/check-selectors.py",
+      "scripts/check-tests-load.php",
+      "scripts/check-tests.sh",
+      "scripts/cleanup-test-runs.py",
+      "scripts/collect-data-test.py",
+      "scripts/compare-runs.py",
+      "scripts/db-isolation.py",
+      "scripts/disposable-db.sh",
+      "scripts/doctor.py",
+      "scripts/gates.py",
+      "scripts/harness-selfcheck.sh",
+      "scripts/harness-selftest.py",
+      "scripts/lib.sh",
+      "scripts/llm-review.py",
+      "scripts/make-report.py",
+      "scripts/make-verdict.py",
+      "scripts/migrate-task-tests.py",
+      "scripts/preflight.sh",
+      "scripts/qa-lint.py",
+      "scripts/qa-manifest.py",
+      "scripts/record-history.py",
+      "scripts/resolve-neighbors.py",
+      "scripts/run-phpunit.py",
+      "scripts/static-on-diff.py",
+      "scripts/task-test.sh",
+      "scripts/test-batch.sh"
+    ],
+    "references": [],
+    "assets": []
+  },
+  "tests": [
+    "tests/test_cleanup_test_runs.py"
+  ],
+  "children": [],
+  "dependencies": {
+    "skills": [
+      {
+        "name": "prepare-task-test",
+        "required": true,
+        "reason": "вызывается по тексту скила"
+      },
+      {
+        "name": "browser-verify",
+        "required": true,
+        "reason": "вызывается по тексту скила"
+      },
+      {
+        "name": "login-as-user",
+        "required": true,
+        "reason": "вызывается по тексту скила"
+      }
+    ],
+    "project": [
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/browser-verify/scripts/start-chromedriver-wsl.sh",
+        "owner": "codeception",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/test-task/scripts/check-tests.sh",
+        "owner": "qa",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/test-task/scripts/gates.py",
+        "owner": "qa",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/test-task/scripts/qa-lint.py",
+        "owner": "qa",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/test-task/scripts/task-test.sh",
+        "owner": "qa",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      },
+      {
+        "path": ".agents/skills/task-router/children/testing-router/children/test-task/scripts/test-batch.sh",
+        "owner": "qa",
+        "required": true,
+        "reason": "проектный скрипт, используется скилом"
+      }
+    ]
+  },
+  "generated": []
+}

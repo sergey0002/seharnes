@@ -1,0 +1,47 @@
+# Preliminary policy. Strict skill validation consumes a safe subset without
+# allowing the policy to relax the installed trusted rules.
+schema_version: 1
+policy_id: "skill_format"
+self_path: ".agents/skills/harness-router/children/harness-core/assets/policies/skill-format.yaml"
+owner: "harness-core"
+rules:
+  SF01:
+    severity: "error"
+    enabled: true
+    scope: "skill"
+    required_files:
+      - "SKILL.md"
+      - "README.md"
+      - "skill.json"
+  SF02:
+    severity: "error"
+    enabled: true
+    scope: "skill"
+    allowed_directories:
+      - "scripts"
+      - "docs"
+      - "references"
+      - "assets"
+      - "tests"
+      - "children"
+    forbidden_directories:
+      - ".data"
+      - "templates"
+      - "agents"
+    name_pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    allowed_frontmatter:
+      - "name"
+      - "description"
+      - "license"
+      - "compatibility"
+      - "metadata"
+      - "allowed-tools"
+      - "argument-hint"
+  SF03:
+    severity: "error"
+    enabled: true
+    scope: "skill"
+    resource_keys:
+      - "scripts"
+      - "references"
+      - "assets"

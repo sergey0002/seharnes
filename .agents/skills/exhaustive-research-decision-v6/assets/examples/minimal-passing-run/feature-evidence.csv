@@ -1,0 +1,7 @@
+candidate_id,feature_id,value,normalized_value,status,source_ids,excerpt,location,date,version,contradiction_ids,method_ids
+C001,FTR001,true,1.0,verified,S001,executable specifications,https://arxiv.org/abs/2605.18684,2026-05-18,2026.05,—,M017|M060
+C001,FTR002,false,0.0,verified,S001,no native delta archive,https://arxiv.org/abs/2605.18684,2026-05-18,2026.05,D001,M017|M060
+C001,FTR003,0.9,0.9,verified,S001,source-free parity scenarios,https://arxiv.org/abs/2605.18684,2026-05-18,2026.05,—,M017|M060
+C002,FTR001,true,1.0,verified,S002,operational contracts,https://example.org/spec-suite-case,2026-09-02,2.4,—,M017|M060
+C002,FTR002,0.8,0.8,verified,S002,ADDED/MODIFIED/REMOVED archive,https://example.org/spec-suite-case,2026-09-02,2.4,D001,M017|M060
+C002,FTR003,0.7,0.7,verified,S002,clean-room profile available,https://example.org/spec-suite-case,2026-09-02,2.4,—,M017|M060

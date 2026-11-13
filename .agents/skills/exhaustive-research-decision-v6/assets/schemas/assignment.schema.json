@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResearchAssignment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assignment_id", "linked_ids", "objective", "scope_in", "scope_out", "method_ids", "assigned_agent", "input_files", "output_file", "stop_condition", "return_schema", "max_summary_tokens", "wave", "status"],
+  "properties": {
+    "assignment_id": {"type": "string", "pattern": "^A[0-9]{3,}$"},
+    "linked_ids": {"type": "string"},
+    "objective": {"type": "string", "minLength": 8},
+    "scope_in": {"type": "string"},
+    "scope_out": {"type": "string"},
+    "method_ids": {"type": "string"},
+    "assigned_agent": {"type": "string", "minLength": 2},
+    "input_files": {"type": "string"},
+    "output_file": {"type": "string", "minLength": 3},
+    "stop_condition": {"type": "string", "minLength": 5},
+    "return_schema": {"type": "string"},
+    "max_summary_tokens": {"type": "string"},
+    "wave": {"type": "string"},
+    "status": {"type": "string", "enum": ["open", "in_progress", "done", "blocked", "cancelled"]}
+  }
+}

