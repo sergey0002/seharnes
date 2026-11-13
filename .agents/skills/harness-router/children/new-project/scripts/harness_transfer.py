@@ -221,7 +221,7 @@ def _selection(args, roots: list[str], receipt: dict | None) -> tuple[list[str],
     return sorted(set(paths)), sorted(set(protected)), roots
 
 
-def _profile_selection(args) -> tuple[list[str], list[str]]:
+def _profile_selection(args) -> tuple[list[str], list[str], set[str]]:
     if args.source_kind != "local" or not args.source:
         raise ValueError("profile path selection requires a local source")
     files, _ = profile_manifest.build(Path(args.source), args.profile)
@@ -253,7 +253,7 @@ def _profile_selection(args) -> tuple[list[str], list[str]]:
                 ".doc/skil_data", ".doc/tasks", ".doc/architecture", ".doc/archive", ".doc/qa",
                 ".cursor/tools", ".codex/tools", ".kilo", ".qoder", ".qwen", ".dsh", ".codex", ".serena"]
     args.exclude = sorted(set(list(getattr(args, "exclude", None) or []) + defaults))
-    return sorted(roots), sorted(paths)
+    return sorted(roots), sorted(paths), set(files)
 
 
 def _base_state(args, paths: list[str], receipt: dict | None) -> tuple[dict | None, str]:
@@ -711,7 +711,7 @@ def _run_plan(args) -> tuple[int, dict]:
         raise ValueError("--use-receipt requires .doc/web/state/transfer/receipt.json")
     profile_selected = False
     if args.profile and not args.root and not args.path:
-        roots, root_paths = _profile_selection(args)
+        roots, root_paths, profile_paths = _profile_selection(args)
         args.root = roots
         args.path = root_paths
         profile_selected = True
@@ -720,6 +720,8 @@ def _run_plan(args) -> tuple[int, dict]:
         validate_paths(args.root)
         roots = list(args.root)
     paths, protected, roots = _selection(args, roots, receipt)
+    if profile_selected:
+        paths = [path for path in paths if path in profile_paths]
     if not paths:
         raise ValueError("no files found under selected roots")
     if len(paths) > 2000:

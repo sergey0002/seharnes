@@ -357,16 +357,22 @@ class HarnessTransferProfileTest(unittest.TestCase):
     def test_plan_can_select_profile_paths_without_explicit_roots(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            result = run('plan', '--source', str(REPO_ROOT), '--target', str(root / 'target'),
-                         '--profile', 'core', '--operation', 'install',
-                         '--state-dir', str(root / 'state'))
-            self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
-            payload = json.loads(result.stdout)
-            self.assertEqual(payload['profile_selection'], 'profile_manifest')
-            self.assertIn('.agents', payload['profile_roots'])
-            self.assertGreater(len(payload['files']), 100)
-            checks = {item['id']: item for item in payload['checks']}
-            self.assertEqual(checks['profile_manifest']['status'], 'passed')
+            counts = {}
+            for profile in ('core', 'developer', 'project'):
+                target = root / profile
+                result = run('plan', '--source', str(REPO_ROOT), '--target', str(target),
+                             '--profile', profile, '--operation', 'install',
+                             '--state-dir', str(root / ('state-' + profile)))
+                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                payload = json.loads(result.stdout)
+                self.assertEqual(payload['profile_selection'], 'profile_manifest')
+                self.assertIn('.agents', payload['profile_roots'])
+                self.assertGreater(len(payload['files']), 100)
+                checks = {item['id']: item for item in payload['checks']}
+                self.assertEqual(checks['profile_manifest']['status'], 'passed')
+                counts[profile] = len(payload['files'])
+            self.assertLess(counts['core'], counts['developer'])
+            self.assertGreaterEqual(counts['project'], counts['developer'])
 
 
 class HarnessTransferApproveTest(unittest.TestCase):
