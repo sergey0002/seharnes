@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "name": "copytrust-tools",
+  "version": "0.1.0",
+  "data_dir": ".doc/skil_data/mirror",
+  "state_dir": ".doc/web/state",
+  "writable": true,
+  "profile": "full",
+  "kilo_db": "/host-kilo/kilo.db"
+}

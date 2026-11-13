@@ -115,6 +115,45 @@ function harness_content_type($ext) {
     return isset($types[$ext]) ? $types[$ext] : 'application/octet-stream';
 }
 
+function harness_new_panel_banner() {
+    // Просмотрщик миррора — часть старого интерфейса. Плашка стоит в самом верху страницы,
+    // чтобы её нельзя было спутать с рабочим графом: у панели один дизайн — /panel/graph.
+    // Правка живёт здесь, а не в шаблоне харнеса, иначе чужая копия шаблона уехала бы
+    // со ссылкой на наш маршрут.
+    return '<div class="panel-legacy-banner" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;'
+        . 'justify-content:center;padding:8px 16px;background:#12b886;color:#08221a;'
+        . 'font:600 13px/1.4 system-ui,sans-serif">'
+        . '<span>Это старый просмотрщик зеркала — оставлен как образец, рабочая панель другая.</span>'
+        . '<a href="/panel/graph" style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;'
+        . 'border-radius:999px;background:#08221a;color:#8ce99a;text-decoration:none">Открыть граф панели →</a>'
+        . '</div>';
+}
+
+function harness_serve_viewer_index() {
+    $dir = harness_data_dir();
+    $file = $dir !== false ? realpath($dir . '/index.html') : false;
+    if ($file === false || !harness_contained($file) || !is_file($file)) {
+        http_response_code(404);
+        echo 'not found';
+        return true;
+    }
+    $html = (string) file_get_contents($file);
+    $banner = harness_new_panel_banner();
+    // Плашка вставляется сразу после <body>, а не в конец: внизу её не видно без прокрутки.
+    if (preg_match('~<body[^>]*>~i', $html, $match, PREG_OFFSET_CAPTURE)) {
+        $at = $match[0][1] + strlen($match[0][0]);
+        $html = substr($html, 0, $at) . $banner . substr($html, $at);
+    } else {
+        $html = $banner . $html;
+    }
+    header('Content-Type: text/html; charset=utf-8');
+    header('Content-Length: ' . strlen($html));
+    header('Cache-Control: no-store');
+    header('X-Content-Type-Options: nosniff');
+    echo $html;
+    return true;
+}
+
 function harness_serve_file($relative) {
     $relative = rawurldecode((string) $relative);
     if ($relative === '' || strpos($relative, '..') !== false || strpos($relative, "\0") !== false) {
@@ -166,9 +205,16 @@ function harness_origin_allowed() {
     if (function_exists('jobs_origin_allowed')) {
         return jobs_origin_allowed();
     }
-    $host = isset($_SERVER['HTTP_HOST']) ? (string) $_SERVER['HTTP_HOST'] : '';
-    $hostname = $host !== '' ? parse_url('http://' . $host, PHP_URL_HOST) : '';
-    return in_array($hostname, array('127.0.0.1', 'localhost', '::1'), true);
+    $origin = isset($_SERVER['HTTP_ORIGIN']) ? (string) $_SERVER['HTTP_ORIGIN'] : '';
+    if ($origin !== '') {
+        $origin_host = (string) parse_url($origin, PHP_URL_HOST);
+        $host = isset($_SERVER['HTTP_HOST']) ? (string) $_SERVER['HTTP_HOST'] : '';
+        $hostname = $host !== '' ? (string) parse_url('http://' . $host, PHP_URL_HOST) : '';
+        if ($hostname === '' || strcasecmp($origin_host, $hostname) !== 0) {
+            return false;
+        }
+    }
+    return true;
 }
 
 function harness_state_dir() {
@@ -332,7 +378,10 @@ function harness_serve($path) {
     $prefix = '/harness/';
     if (strpos($path, $prefix) === 0) {
         $relative = substr($path, strlen($prefix));
-        return harness_serve_file($relative === '' ? 'index.html' : $relative);
+        if ($relative === '' || $relative === 'index.html') {
+            return harness_serve_viewer_index();
+        }
+        return harness_serve_file($relative);
     }
     http_response_code(404);
     echo 'not found';

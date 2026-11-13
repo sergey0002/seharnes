@@ -42,17 +42,20 @@ function jobs_json($payload, $code = 200) {
     return true;
 }
 
-function jobs_origin_allowed() {
+function jobs_request_host() {
     $host = isset($_SERVER['HTTP_HOST']) ? (string) $_SERVER['HTTP_HOST'] : '';
-    $hostname = $host !== '' ? parse_url('http://' . $host, PHP_URL_HOST) : '';
-    $loopback = array('127.0.0.1', 'localhost', '::1');
-    if (!in_array($hostname, $loopback, true)) {
-        return false;
-    }
+    return $host !== '' ? (string) parse_url('http://' . $host, PHP_URL_HOST) : '';
+}
+
+function jobs_origin_allowed() {
+    // Хост запроса не ограничивается loopback: панель штатно работает за обратным прокси
+    // (проброс порта, предпросмотр), где HTTP_HOST — внешнее имя. Защита от CSRF ниже:
+    // не-GET требует X-Requested-With, при наличии Origin он обязан совпасть с хостом запроса.
     $origin = isset($_SERVER['HTTP_ORIGIN']) ? (string) $_SERVER['HTTP_ORIGIN'] : '';
     if ($origin !== '') {
-        $origin_host = parse_url($origin, PHP_URL_HOST);
-        if (!in_array($origin_host, $loopback, true)) {
+        $origin_host = (string) parse_url($origin, PHP_URL_HOST);
+        $hostname = jobs_request_host();
+        if ($hostname === '' || strcasecmp($origin_host, $hostname) !== 0) {
             return false;
         }
     }

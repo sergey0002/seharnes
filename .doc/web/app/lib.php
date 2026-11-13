@@ -5,6 +5,13 @@
 require_once __DIR__ . '/pricing.php';
 require_once __DIR__ . '/providers.php';
 
+// Новый каркас панели: PSR-4 автозагрузка Seharnes\Panel\ (src/). Нужна здесь, а не только
+// в router.php, чтобы старые страницы могли вызывать слои Domain/Support напрямую.
+if (!class_exists(\Seharnes\Panel\Autoload::class, false)) {
+    require_once __DIR__ . '/../src/Autoload.php';
+    \Seharnes\Panel\Autoload::register(__DIR__ . '/../src');
+}
+
 function doc_dir() {
     static $d = null;
     if ($d === null) {
@@ -371,40 +378,107 @@ function arch_meta_summary(array $d, $name) {
     );
 }
 
-function list_arch_docs() {
-    $out = array();
-    foreach (glob(doc_dir() . '/architecture/*.json') as $f) {
-        $name = basename($f, '.json');
-        if (strpos($name, '_') === 0) {
-            continue;
-        }
-        $d = read_json_file($f);
-        if ($d === null) {
-            continue;
-        }
-        $out[] = arch_meta_summary($d, $name);
+function panel_docs(): \Seharnes\Panel\Domain\Doc\DocRepository {
+    // Единственная реализация чтения документации — новый слой Domain/Doc.
+    static $repo = null;
+    if ($repo === null) {
+        $repo = new \Seharnes\Panel\Domain\Doc\DocRepository((string) doc_dir());
     }
-    usort($out, function ($a, $b) {
-        return strcmp($a['title'], $b['title']);
-    });
+    return $repo;
+}
+
+function doc_source_labels() {
+    return array('architecture' => 'Архитектура проекта', 'harnes' => 'Харнес');
+}
+
+function doc_sources() {
+    // Каноническая документация проекта: JSON-описания архитектуры и md-доки харнеса.
+    $labels = doc_source_labels();
+    $base = doc_dir();
+    $out = array();
+    if ($base === false) {
+        return $out;
+    }
+    foreach (panel_docs()->sources() as $code) {
+        $out[$code] = array(
+            'label' => isset($labels[$code]) ? $labels[$code] : $code,
+            'dir' => $base . '/' . $code,
+        );
+    }
     return $out;
 }
 
-function get_arch_doc($name) {
-    if (!valid_doc_name($name)) {
+function valid_doc_id($id) {
+    // id документа: путь внутри .doc без расширения, например architecture/index или harnes/state/14-project-migration.
+    return \Seharnes\Panel\Support\PathGuard::safeId((string) $id);
+}
+
+function doc_meta_parse($raw) {
+    return \Seharnes\Panel\Domain\Doc\FrontMatter::parse((string) $raw);
+}
+
+function md_plain($s) {
+    return \Seharnes\Panel\Support\Markdown::plain((string) $s);
+}
+
+function md_title($raw, $fallback) {
+    return \Seharnes\Panel\Support\Markdown::firstHeading((string) $raw, (string) $fallback);
+}
+
+function md_toc($raw) {
+    return \Seharnes\Panel\Support\Markdown::toc((string) $raw);
+}
+
+function arch_doc_row($abs, $id, $source, $source_label) {
+    foreach (panel_docs()->all() as $item) {
+        if ($item->absolutePath === $abs || $item->id === $id) {
+            $row = $item->toLegacyRow();
+            $row['source_label'] = $source_label;
+            $row['updated_fmt'] = $row['updated'] !== '' ? fmt_iso($row['updated']) : fmt_dt($item->mtime);
+            return $row;
+        }
+    }
+    return null;
+}
+
+function arch_doc_files() {
+    $labels = doc_source_labels();
+    $out = array();
+    foreach (panel_docs()->all() as $item) {
+        $row = $item->toLegacyRow();
+        $row['source_label'] = isset($labels[$item->source]) ? $labels[$item->source] : $item->source;
+        $row['updated_fmt'] = $row['updated'] !== '' ? fmt_iso($row['updated']) : fmt_dt($item->mtime);
+        $out[] = $row;
+    }
+    return $out;
+}
+
+function list_arch_docs() {
+    return arch_doc_files();
+}
+
+function arch_doc_abs($id) {
+    $item = panel_docs()->find((string) $id);
+    return $item === null ? null : $item->absolutePath;
+}
+
+function get_arch_doc($id) {
+    $item = panel_docs()->find((string) $id);
+    if ($item === null) {
         return null;
     }
-    $d = read_json_file(doc_dir() . '/architecture/' . $name . '.json');
-    if ($d === null) {
-        return null;
-    }
+    $labels = doc_source_labels();
+    $row = $item->toLegacyRow();
+    $row['source_label'] = isset($labels[$item->source]) ? $labels[$item->source] : $item->source;
+    $row['updated_fmt'] = $row['updated'] !== '' ? fmt_iso($row['updated']) : fmt_dt($item->mtime);
     return array(
-        'summary' => arch_meta_summary($d, $name),
-        'sections' => isset($d['sections']) && is_array($d['sections']) ? $d['sections'] : array(),
-        'files' => isset($d['files']) && is_array($d['files']) ? $d['files'] : array(),
-        'findings' => isset($d['findings']) && is_array($d['findings']) ? $d['findings'] : array(),
-        'decisions' => isset($d['decisions']) && is_array($d['decisions']) ? $d['decisions'] : array(),
-        'md_fallback' => read_text_file(doc_dir() . '/architecture/' . $name . '.md'),
+        'summary' => $row,
+        'sections' => $item->sections,
+        'toc' => $item->toc,
+        'files' => array(),
+        'findings' => $item->findings,
+        'decisions' => array(),
+        'md_fallback' => $item->markdown,
     );
 }
 

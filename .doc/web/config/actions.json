@@ -51,7 +51,13 @@
       "group": "harness",
       "interpreter": "python3",
       "script": ".agents/skills/harness-router/children/harness-core/scripts/harness_cli.py",
-      "args": ["doctor", "--mode", "strict", "--checks", "structure"],
+      "args": [
+        "doctor",
+        "--mode",
+        "strict",
+        "--checks",
+        "structure"
+      ],
       "cwd": ".",
       "timeout": 300,
       "write_scope": [],
@@ -117,6 +123,68 @@
       "progress_regex": "",
       "confirm": false,
       "profile": "full",
+      "enabled": true
+    },
+    {
+      "id": "harness_update",
+      "label": "Обновить харнес из Git",
+      "group": "harness",
+      "interpreter": "python3",
+      "script": ".agents/skills/harness-router/children/harness-core/scripts/harness_cli.py",
+      "args": [
+        "update",
+        "--from-config",
+        "--dry-run"
+      ],
+      "cwd": ".",
+      "timeout": 900,
+      "write_scope": [],
+      "progress_regex": "",
+      "confirm": true,
+      "profile": "core",
+      "enabled": true
+    },
+    {
+      "id": "harness_update_apply",
+      "label": "Обновить харнес из Git (применить)",
+      "group": "harness",
+      "interpreter": "python3",
+      "script": ".agents/skills/harness-router/children/harness-core/scripts/harness_cli.py",
+      "args": [
+        "update",
+        "--from-config"
+      ],
+      "cwd": ".",
+      "timeout": 1800,
+      "write_scope": [
+        ".agents",
+        ".cursor",
+        ".codex",
+        ".doc"
+      ],
+      "progress_regex": "",
+      "confirm": true,
+      "profile": "core",
+      "enabled": true
+    },
+    {
+      "id": "harness_audit",
+      "label": "Аудит харнеса (канон, ссылки, доки)",
+      "group": "harness",
+      "interpreter": "python3",
+      "script": ".agents/skills/harness-router/children/harness-core/scripts/harness_cli.py",
+      "args": [
+        "audit",
+        "--checks",
+        "canon,links,docs",
+        "--report-only"
+      ],
+      "cwd": ".",
+      "timeout": 300,
+      "write_scope": [],
+      "progress_regex": "",
+      "confirm": false,
+      "profile": "core",
       "enabled": true
     }
   ]

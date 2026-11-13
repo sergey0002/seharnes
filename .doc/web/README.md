@@ -1,5 +1,7 @@
 # Панель документации (.doc/web)
 
+> Архив (2026-11-13): PowerShell-экспорт удалён. Активный механизм `harness_transfer.py`, режимы `harness | harness-docs | project`; канон — `.doc/harnes/state/14-project-migration.md`. Ниже сохранена история старой процедуры.
+
 Сервис `copytrust-tools`: единая панель задач, документации, аналитики диалогов и просмотрщика харнеса. Один PHP-процесс на `127.0.0.1:8077`, без БД и без ИИ. Панель читает JSON/MD из `.doc` и `.cursor/.state`, а изменяющие действия запускает только через разрешённый список скриптов.
 
 ## Что показывает
@@ -8,7 +10,7 @@
 |---|---|---|
 | Задачи (правое меню) | `.doc/tasks/*/task.json` | список: id + title + release + счетчики; клик - страница задачи |
 | Страница задачи | `task.json` + `task.md` + `diff.files.md` + `reports/*/workflow-context.json` | секции из JSON (как отчет change-report: оглавление + рендер), файлы, находки, дифф, отчеты со свежестью |
-| Документация (правое меню) | `.doc/architecture/*.json` | список: title + имя; клик - документ: секции, файлы, находки |
+| Документация (правое меню) | `.doc/architecture/*.json`, `.doc/architecture/*.md`, `.doc/harnes/**/*.md` | список сгруппирован по источникам: title + путь; клик - документ: секции, файлы, находки, для md - оглавление по `##`/`###` и рендер тела |
 | Аналитика диалогов (на странице Задачи) | `.doc/tasks/*/dialogs/`, `.doc/task-analytics/out/` | KPI, графики Chart.js, токены по MCP-серверам и моделям, таблица задач с диалогами; подчиняется фильтрам правого меню |
 | Диалоги задачи | `dialogs/index.json` + `dialogs/ses_*.json` | KPI, графики токенов/инструментов/находок, MCP и модели по токенам, таблица сессий; блок сворачиваемый |
 | Лента активности | `task.json` -> `tracker.snapshot.comments/changelog` | таймлайн: комментарии и изменения полей Jira с датами и авторами |
@@ -34,6 +36,52 @@ Jira updated берется из `task.json` -> `tracker.snapshot.updated_at`; �
 источников (`fresh` / `stale` / `missing` / `no-hash` по сверке SHA-256 из
 `workflow-context.json` с текущими файлами на диске).
 
+## Новый каркас `/panel/`
+
+С 2026-11-13 у панели два контура. Старые маршруты (`/`, `/index.php?tab=docs`, `/harness/`,
+`/harness-admin/`, `/jobs`) работают без изменений, а раздел, перенесённый целиком, получает
+свой адрес под `/panel/`:
+
+| Маршрут | Раздел | Состояние |
+|---|---|---|
+| `/` | отдаёт граф нового каркаса без редиректа (один запрос, работает в предпросмотре) | новый каркас |
+| `/harness/` | старый просмотрщик зеркала — образец; сверху зелёная плашка со ссылкой на `/panel/graph` | старый интерфейс |
+| `/index.php`, `/tasks`, `/docs`, `/analytics`, `/task/{N}` | старая панель (образец), других путей у неё нет | старый интерфейс |
+| прочие адреса | 404 «Страница не найдена» со ссылкой на `/panel/graph` | роутер |
+
+Быстрая проверка, что открыта именно эта панель: `GET /panel/api/health` отдаёт
+`{"status":"ok","service":{"profile":"full","writable":true,"lang":"ru","php":"8.4.27"},"data":{"graph":true}}`.
+Панель не грузит ничего с внешних доменов (`google.com/gsi`, `cloudflare`, `datadoghq` и т.п.) и не
+делает запросов вида `/leaderboard?_rsc=…` — это признаки другого приложения в соседней вкладке.
+| `/panel` | редирект на `/panel/graph` | новый каркас |
+| `/panel/graph` | граф харнеса: SVG-карточки по типам, единое дерево файлов, карточка элемента с редактором, связи и JSON | новый каркас |
+| `/panel/docs` | документация `.doc/architecture` + `.doc/harnes` | новый каркас |
+| `/panel/docs/{id}` | документ по id, например `harnes/state/26-tools` | новый каркас |
+| `/panel/harness` | контроль харнеса: источник, квитанция, задания, сканы канона/ссылок/документации | новый каркас |
+| `/panel/api/*` | фрагменты HTML + данные для страниц | новый каркас |
+| `POST /panel/api/graph/node` | сохранение канонического файла узла (редактор в графе) | новый каркас |
+| `/index.php?tab=tasks`, `/index.php?tab=docs` | задачи и документация старой панели | старый UI |
+| `/analytics`, `/harness/` | аналитика и старый просмотрщик миррора (эталон дизайна) | старый UI |
+| `/harness-admin/` | старая админка контроля харнеса (оставлена как образец) | старый UI |
+| `/jobs`, `/harness/api/*` | задания и API просмотрщика | без изменений |
+
+Экран собирается по одному канону: верхнее меню разделов → панель кнопок раздела → рабочая
+область (левая панель, контент, правая панель из двух частей: элемент сверху, данные API снизу) →
+нижний док (терминал действий, JSON запросов, живой лог). Темы светлая и тёмная (системная по
+умолчанию), языки `ru` и `en`, на узком экране левая панель становится выдвижной.
+
+Устройство слоёв, контракт API и правила добавления раздела — в
+[27-panel-architecture.md](../harnes/state/27-panel-architecture.md).
+
+### Тесты
+
+```bash
+php tests/php/run.php              # 27 юнит-тестов слоёв, без composer
+python3 tests/test_panel_shell.py  # 14 проверок каркаса, фрагментов, API и старых роутов
+python3 tests/test_docs_tab.py     # вкладка документов старого UI
+python3 tests/test_origin_policy.py
+```
+
 ## Структура
 
 ```text
@@ -44,7 +92,7 @@ Jira updated берется из `task.json` -> `tracker.snapshot.updated_at`; �
   compose.tools.yml      <- сервис copytrust-tools, порт 8077
   start.sh, stop.sh      <- запуск и остановка через compose.tools.yml
   install.sh, install.ps1, verify.sh <- установка и проверки на Target
-  app/lib.php            <- слой данных: чтение JSON/MD, списки, детали, freshness
+  app/lib.php            <- старый слой данных; функции документации делегируют в src/Domain/Doc
   app/harness.php        <- просмотрщик и API харнес-миррора
   app/jobs.php           <- реестр действий, запуск, статус, отмена
   bin/job-runner.php     <- фоновый запуск одного задания
@@ -55,7 +103,13 @@ Jira updated берется из `task.json` -> `tracker.snapshot.updated_at`; �
   config/prices.local.json <- локальные цены, не переносится
   config/actions.json    <- разрешённые действия
   config/actions.schema.json
-  public/index.php       <- рендер: layout, правое меню, страницы, md_render
+  public/index.php       <- старый рендер: layout, правое меню, страницы, md_render
+  public/assets/css/     <- tokens, base, layout, components, graph (оформление каркаса /panel)
+  public/assets/js/      <- ES-модули без сборки: core/* и pages/*
+  resources/lang/        <- словари ru.json и en.json
+  src/                   <- ООП-каркас: Core, Support, Domain, Http, View, App.php, Autoload.php
+  tests/php/             <- юнит-тесты слоёв с мини-раннером run.php
+  tests/test_panel_shell.py <- E2E каркаса, фрагментов и API
   public/assets/style.css
   public/assets/app.js   <- фильтр и AJAX-кнопки с прогрессом
   state/                 <- задания и логи, не переносится
@@ -122,8 +176,9 @@ WEB_PANEL_PORT=8090 ./start.sh  # другой порт
 
 ## Безопасность
 
-- сервис слушает только `127.0.0.1`;
-- `Host` и `Origin` проверяются на loopback;
+- по умолчанию сервис слушает `127.0.0.1`; при работе за обратным прокси (проброс порта, предпросмотр) `Host` бывает внешним и не блокируется;
+- встроенный предпросмотр открывает панель в iframe с `sandbox="allow-scripts"` (источник `null`). Поэтому статика и API отдаются с `Access-Control-Allow-Origin: *`, а `OriginGuard` пропускает `Origin: null`; без этого ES-модули не грузятся и страница остаётся на «Загрузка…»;
+- `Origin` обязан совпадать с хостом запроса, если заголовок присутствует; чужой `Origin` отклоняется (`origin not allowed`, 403);
 - изменяющие запросы требуют `X-Requested-With` и идут только POST или PUT;
 - действия только из реестра, пути проверяются на выход за корень;
 - запись канона идёт через `harness_mirror.py` с историей и обратным чтением;
@@ -250,8 +305,11 @@ WEB_PANEL_PORT=8090 ./start.sh  # другой порт
   фильтром `no-release`. Релиз 5.7.3 - 6 задач, 5.7.4 - 5 задач.
 - Страница задачи дополнительно читает `task.md` (сырой Jira-экспорт),
   `diff.files.md` (плоский список файлов), `reports/*/workflow-context.json`.
-- Документация: `architecture/*.json` (файлы с `_` в начале пропускаются).
-  Сейчас: 50 документов.
+- Документация: `architecture/*.json` (файлы с `_` в начале пропускаются),
+  `architecture/*.md` и `harnes/**/*.md` (файлы и каталоги с `_` в начале пропускаются).
+  Сейчас: 72 документа, все из `.doc/harnes`, каталога `.doc/architecture` в эталоне нет.
+- Если манифест архитектуры (`architecture/*.json`) отсутствует, вкладка не пустая:
+  она показывает markdown-канон харнеса и подсказывает источники.
 - Отчеты со свежестью: сверка `sha256` из workflow-context с файлом на диске
   при каждом открытии страницы. `stale` значит исходник изменился после отчета.
 
@@ -261,7 +319,7 @@ WEB_PANEL_PORT=8090 ./start.sh  # другой порт
 На целевом проекте панель показывает его собственные `tasks/*/task.json`
 и `architecture/*.json`. `state`, `.env`, `ADAPTERS.local.md`,
 `actions.local.json`, `prices.local.json` и логи не переносятся.
-Канон переноса: `.doc/rebase_project.md`. Устройство сервиса: [state/22-panel-service.md](../harnes/state/22-panel-service.md).
+Канон переноса: `.doc/harnes/state/14-project-migration.md`. Устройство сервиса: [state/22-panel-service.md](../harnes/state/22-panel-service.md).
 
 ## Ограничения
 

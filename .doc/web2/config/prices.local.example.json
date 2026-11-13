@@ -1,0 +1,10 @@
+{
+  "providers": {
+    "ai-starimg-ru": {
+      "models": {
+        "deepseek-v4.1-flash": {"coefficient": 0.1},
+        "grok-4.7": {"coefficient": 0.5}
+      }
+    }
+  }
+}

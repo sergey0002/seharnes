@@ -1,0 +1,343 @@
+/*
+ * Раздел «Контроль харнеса».
+ *
+ * Карточки, факты, таблицы и результаты сканов. Всё опирается на токены, поэтому
+ * одинаково выглядит в светлой и тёмной теме; отдельный файл — чтобы не пухнуть
+ * components.css общими стилями одного раздела.
+ */
+
+.harnessview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  min-height: 100%;
+}
+
+/* ---------- Карточка раздела ---------- */
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  transition: border-color 140ms var(--ease), box-shadow 140ms var(--ease);
+}
+
+.card.is-flash {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.card__title {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.card__hint {
+  color: var(--text-dim);
+  font-size: var(--text-sm);
+}
+
+.card__state {
+  margin-left: auto;
+  font-size: var(--text-sm);
+  color: var(--text-dim);
+}
+
+.card__state--ok { color: var(--ok); }
+.card__state--bad { color: var(--danger); }
+.card__state--busy { color: var(--warn); }
+
+.card__body { padding: var(--space-4); }
+
+.card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+/* ---------- Факты: пары «термин — значение» ---------- */
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.facts__row {
+  display: grid;
+  grid-template-columns: minmax(140px, 210px) minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: baseline;
+}
+
+.facts__row dt {
+  color: var(--text-dim);
+  font-size: var(--text-sm);
+}
+
+.facts__row dd {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  font-size: var(--text-sm);
+}
+
+.facts--compact .facts__row { grid-template-columns: minmax(120px, 180px) minmax(0, 1fr); }
+
+/* ---------- Плашки состояний ---------- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--text-dim);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.pill--sm { padding: 1px 6px; font-size: 10.5px; }
+.pill--ok { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+.pill--bad { background: color-mix(in srgb, var(--danger) 18%, transparent); color: var(--danger); }
+.pill--warn { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn); }
+
+/* ---------- Действия ---------- */
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-3);
+}
+
+.action-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.action-block__title {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.action-block__note {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--text-sm);
+}
+
+.action-block__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: auto;
+}
+
+.ghost-btn--primary {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ---------- Таблицы ---------- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.table th,
+.table td {
+  padding: 6px var(--space-2);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table th {
+  color: var(--text-dim);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.table tbody tr:hover { background: var(--surface-2); }
+
+.table--compact th,
+.table--compact td { padding: 4px var(--space-2); }
+
+.table code { word-break: break-all; }
+
+/* ---------- Результаты сканов ---------- */
+.scan-out {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 72px;
+}
+
+.scan-out__lead {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.scan-out__pre {
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2);
+  max-height: 260px;
+  overflow: auto;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.scan-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.scan-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.scan-card__title {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.scan-card__body { padding: var(--space-3); }
+
+.scan-summary { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.scan-summary__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scan-summary__list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: var(--text-sm);
+}
+
+.scan-summary__list span { color: var(--text-dim); }
+
+.scan-summary__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-sm);
+}
+
+/* ---------- Список заданий в боковой панели ---------- */
+.joblist {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0 var(--space-2) var(--space-2);
+  list-style: none;
+}
+
+.joblist__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px var(--space-1);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+.joblist__item:hover { background: var(--surface-2); }
+
+.joblist__action {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.joblist__time {
+  color: var(--text-faint);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Навигационные ссылки боковой панели раздела */
+.tree__item--link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 5px var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-size: var(--text-sm);
+}
+
+.tree__item--link:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* Плашки состояния не сжимаются: в узком тулбаре подпись обрезалась до «кви…». */
+.toolbar .pill {
+  flex: 0 0 auto;
+}
+
+.toolbar__title {
+  color: var(--text-dim);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.sidebar__head--sub { margin-top: var(--space-3); }
+
+@media (max-width: 860px) {
+  .facts__row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .harnessview { padding: var(--space-3); }
+}

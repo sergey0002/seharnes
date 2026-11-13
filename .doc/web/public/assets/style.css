@@ -231,3 +231,19 @@ table.data.nested th { background: #f8fafc; }
 .detail-row td { padding: 0; background: #f8fafc; }
 
 .tcost { display: inline-block; margin-top: 6px; padding: 3px 8px; border-radius: 7px; background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 700; line-height: 1.2; }
+
+/* Ссылка в общий каркас /panel/: старая панель остаётся, но путь в новый дизайн виден сразу. */
+.new-panel-link {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #12b886;
+  color: #08221a;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.new-panel-link:hover { background: #0ca678; color: #04120d; }

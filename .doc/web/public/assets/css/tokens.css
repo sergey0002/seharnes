@@ -1,0 +1,139 @@
+/*
+ * Дизайн-токены панели.
+ *
+ * Все цвета, размеры и тени живут здесь; компоненты используют только переменные.
+ * Тема переключается атрибутом data-theme на <html>: light | dark, без перезагрузки.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Палитра */
+  --gray-0: #ffffff;
+  --gray-25: #fbfcfd;
+  --gray-50: #f5f7fa;
+  --gray-100: #eceff4;
+  --gray-200: #dde2ea;
+  --gray-300: #c6cedb;
+  --gray-400: #97a2b4;
+  --gray-500: #6c7789;
+  --gray-600: #4b5566;
+  --gray-700: #333d4d;
+  --gray-800: #212a37;
+  --gray-900: #151b24;
+  --gray-950: #0d1219;
+
+  --blue-400: #5b9cff;
+  --blue-500: #2f7bf6;
+  --blue-600: #1f63d6;
+  --blue-700: #17489c;
+
+  --green-500: #1f9d63;
+  --amber-500: #c98116;
+  --red-500: #d94a4a;
+  --violet-500: #7a5af8;
+
+  /* Семантика (светлая тема) */
+  --bg: var(--gray-50);
+  --bg-elevated: var(--gray-0);
+  --surface: var(--gray-0);
+  --surface-2: var(--gray-25);
+  --surface-3: var(--gray-100);
+  --border: var(--gray-200);
+  --border-strong: var(--gray-300);
+  --text: var(--gray-800);
+  --text-dim: var(--gray-500);
+  --text-faint: var(--gray-400);
+  --accent: var(--blue-500);
+  --accent-hover: var(--blue-600);
+  --accent-soft: color-mix(in srgb, var(--blue-500) 12%, transparent);
+  --accent-text: var(--gray-0);
+  --ok: var(--green-500);
+  --warn: var(--amber-500);
+  --danger: var(--red-500);
+
+  /* Типы узлов графа */
+  --kind-skill: #2f7bf6;
+  --kind-rule: #d94a4a;
+  --kind-doc: #7a5af8;
+  --kind-script: #1f9d63;
+  --kind-config: #c98116;
+  --kind-mcp: #0e97a8;
+
+  /* Размеры */
+  --topbar-h: 52px;
+  --toolbar-h: 52px;
+  --sidebar-w: 300px;
+  --rightpanel-w: 380px;
+  --dock-h: 240px;
+  --dock-collapsed-h: 40px;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Типографика */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+  --text-xs: 11px;
+  --text-sm: 12.5px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+
+  /* Тени и слои */
+  --shadow-xs: 0 1px 2px rgb(16 24 40 / 6%);
+  --shadow-sm: 0 2px 6px rgb(16 24 40 / 8%);
+  --shadow-md: 0 8px 24px rgb(16 24 40 / 10%);
+  --z-topbar: 30;
+  --z-dock: 25;
+  --z-popover: 60;
+  --focus-ring: 0 0 0 2px var(--bg-elevated), 0 0 0 4px color-mix(in srgb, var(--accent) 60%, transparent);
+  --ease: cubic-bezier(.2, .7, .3, 1);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: var(--gray-950);
+  --bg-elevated: #131a24;
+  --surface: #151d28;
+  --surface-2: #1a2330;
+  --surface-3: #202b3a;
+  --border: #26313f;
+  --border-strong: #33404f;
+  --text: #e6ecf4;
+  --text-dim: #9aa7b8;
+  --text-faint: #6c7a8c;
+  --accent: var(--blue-400);
+  --accent-hover: #7cb1ff;
+  --accent-soft: color-mix(in srgb, var(--blue-400) 18%, transparent);
+  --accent-text: #08111d;
+  --ok: #3ecf8e;
+  --warn: #e3a33c;
+  --danger: #f16a6a;
+
+  --kind-skill: #5b9cff;
+  --kind-rule: #f16a6a;
+  --kind-doc: #a78bfa;
+  --kind-script: #3ecf8e;
+  --kind-config: #e3a33c;
+  --kind-mcp: #34c8d9;
+
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 40%);
+  --shadow-sm: 0 2px 8px rgb(0 0 0 / 45%);
+  --shadow-md: 0 12px 32px rgb(0 0 0 / 55%);
+  --focus-ring: 0 0 0 2px var(--bg-elevated), 0 0 0 4px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ease: linear;
+  }
+}

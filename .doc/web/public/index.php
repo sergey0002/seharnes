@@ -26,6 +26,20 @@ function md_render($text) {
     return $out;
 }
 
+// Рендер документа md с якорями для оглавления.
+// md_block сдвигает уровни на +2, поэтому "##" становится h4, "###" - h5: якоря ставим на них,
+// порядок совпадает с md_toc().
+function md_render_doc($text) {
+    // Первый H1 дублирует заголовок страницы - убираем его из тела.
+    $text = preg_replace('/\A\s*#\s+.*(\n|$)/', '', (string)$text, 1);
+    $html = md_render($text);
+    $n = 0;
+    return preg_replace_callback('/<(h[45])>/', function ($m) use (&$n) {
+        $n++;
+        return '<' . $m[1] . ' id="sec-' . $n . '">';
+    }, $html);
+}
+
 function md_inline($s) {
     $s = h($s);
     $s = preg_replace('/`([^`]+)`/', '<code>$1</code>', $s);
@@ -558,7 +572,7 @@ if (isset($_GET['project'])) {
     $project_filter = trim((string)$_COOKIE[$project_cookie]);
 }
 $sel_task = isset($_GET['id']) && valid_task_id($_GET['id']) ? $_GET['id'] : '';
-$sel_doc = isset($_GET['doc']) && valid_doc_name($_GET['doc']) ? $_GET['doc'] : '';
+$sel_doc = isset($_GET['doc']) && valid_doc_id(trim((string) $_GET['doc'], '/')) ? trim((string) $_GET['doc'], '/') : '';
 $show_unassigned = isset($_GET['unassigned']) && (string)$_GET['unassigned'] === '1';
 $sel_session = isset($_GET['session']) && valid_session_id($_GET['session']) ? (string)$_GET['session'] : '';
 
@@ -807,7 +821,9 @@ $manifest = $analytics !== null ? read_json_file(doc_dir() . '/task-analytics/ou
       <a class="<?php echo $tab === 'tasks' ? 'active' : ''; ?>" href="<?php echo h(self_url(array('tab' => 'tasks'))); ?>">Задачи <span class="count"><?php echo count($tasks); ?></span></a>
       <a class="<?php echo $tab === 'docs' ? 'active' : ''; ?>" href="<?php echo h(self_url(array('tab' => 'docs'))); ?>">Документация <span class="count"><?php echo count($arch_list); ?></span></a>
       <a href="/harness/">Харнес</a>
+      <a href="/harness-admin/">Контроль харнеса</a>
     </nav>
+    <a class="new-panel-link" href="/panel/graph" title="Общий каркас панели: граф и документация">Открыть новый интерфейс&nbsp;&rarr;</a>
   </div>
 </header>
 <div class="layout">
@@ -843,7 +859,7 @@ $manifest = $analytics !== null ? read_json_file(doc_dir() . '/task-analytics/ou
     <?php endif; ?>
     <?php if ($tab === 'docs' && $arch_detail === null): ?>
       <h1>Архитектурная документация</h1>
-      <p class="muted">Справа список документов из architecture/*.json. Клик открывает документ: секции, файлы, подводные камни.</p>
+      <p class="muted">Справа документы из <code>.doc/architecture/</code> (JSON и md) и <code>.doc/harnes/</code> (md). Клик открывает документ: секции, файлы, подводные камни.</p>
     <?php endif; ?>
 
     <?php if ($analytics !== null): ?>
@@ -1398,32 +1414,45 @@ $manifest = $analytics !== null ? read_json_file(doc_dir() . '/task-analytics/ou
     <?php endif; ?>
 
     <?php if ($arch_detail !== null): $as = $arch_detail['summary']; ?>
-      <div class="crumbs"><a href="<?php echo h(self_url(array('tab' => 'docs'))); ?>">Документация</a> / <?php echo h($as['name']); ?></div>
+      <div class="crumbs"><a href="<?php echo h(self_url(array('tab' => 'docs'))); ?>">Документация</a> / <?php echo h($as['source_label']); ?> / <?php echo h(basename($as['path'])); ?></div>
       <h1><?php echo h($as['title']); ?></h1>
       <table class="meta">
-        <tr><th>Файл</th><td><code>architecture/<?php echo h($as['name']); ?>.json</code></td></tr>
-        <tr><th>Статус</th><td><?php echo h($as['status']); ?></td></tr>
-        <tr><th>Обновлено</th><td><?php echo h($as['updated']); ?></td></tr>
+        <tr><th>Файл</th><td><code><?php echo h($as['path']); ?></code></td></tr>
+        <tr><th>Раздел</th><td><?php echo h($as['source_label']); ?></td></tr>
+        <tr><th>Статус</th><td><?php echo h($as['status'] !== '' ? $as['status'] : 'не указан'); ?></td></tr>
+        <tr><th>Обновлено</th><td><?php echo h($as['updated'] !== '' ? $as['updated'] : $as['updated_fmt']); ?></td></tr>
+        <?php if ($as['ext'] === 'json'): ?>
         <tr><th>Счетчики</th><td>секций <?php echo (int)$as['n_sections']; ?>, находок <?php echo (int)$as['n_findings']; ?></td></tr>
+        <?php endif; ?>
       </table>
+      <?php if (!empty($arch_detail['toc'])): ?>
       <h2>Содержание</h2>
       <ul class="toc">
-        <?php foreach ($arch_detail['sections'] as $sec): ?>
-          <li><a href="#<?php echo h($sec['id']); ?>"><?php echo h($sec['title']); ?></a></li>
+        <?php foreach ($arch_detail['toc'] as $toc): ?>
+          <li<?php if (isset($toc['level']) && (int)$toc['level'] > 2): ?> class="toc-l3"<?php endif; ?>><a href="#<?php echo h($toc['id']); ?>"><?php echo h($toc['title']); ?></a></li>
         <?php endforeach; ?>
       </ul>
+      <?php endif; ?>
+      <?php if ($arch_detail['md_fallback'] !== null && !$arch_detail['sections']): ?>
+        <?php echo md_render_doc($arch_detail['md_fallback']); ?>
+      <?php endif; ?>
       <?php foreach ($arch_detail['sections'] as $sec): ?>
         <section id="<?php echo h($sec['id']); ?>">
           <h2><?php echo h($sec['title']); ?></h2>
           <?php echo md_render(isset($sec['body_markdown']) ? $sec['body_markdown'] : ''); ?>
         </section>
       <?php endforeach; ?>
+      <?php if ($arch_detail['md_fallback'] !== null && $arch_detail['sections']): ?>
+        <details><summary>Исходный markdown</summary><pre><?php echo h($arch_detail['md_fallback']); ?></pre></details>
+      <?php endif; ?>
+      <?php if ($arch_detail['sections'] || $arch_detail['findings']): ?>
       <h2>Подводные камни (<?php echo count($arch_detail['findings']); ?>)</h2>
       <?php foreach ($arch_detail['findings'] as $fn): ?>
         <div class="finding"><strong><?php echo h(isset($fn['id']) ? $fn['id'] : ''); ?> <?php echo h(isset($fn['title']) ? $fn['title'] : ''); ?></strong>
         <div><?php echo md_render(isset($fn['statement']) ? $fn['statement'] : ''); ?></div></div>
       <?php endforeach; ?>
       <?php if (!$arch_detail['findings']): ?><p class="muted">Нет.</p><?php endif; ?>
+      <?php endif; ?>
     <?php endif; ?>
   </main>
 
@@ -1506,15 +1535,21 @@ $manifest = $analytics !== null ? read_json_file(doc_dir() . '/task-analytics/ou
       <button type="submit">Применить</button>
     </form>
     <ul class="side-list" id="side-list">
-      <?php foreach ($arch_filtered as $a): ?>
-      <li data-search="<?php echo h($a['name'] . ' ' . $a['title']); ?>" class="<?php echo $a['name'] === $sel_doc ? 'sel' : ''; ?>">
+      <?php $group = ''; foreach ($arch_filtered as $a): ?>
+      <?php if ($a['source_label'] !== $group): $group = $a['source_label']; ?>
+      <li class="side-sep"><span class="side-sep-title"><?php echo h($group); ?></span><span class="trel"><?php $gc = 0; foreach ($arch_filtered as $x) { if ($x['source_label'] === $group) { $gc++; } } echo (int)$gc; ?></span></li>
+      <?php endif; ?>
+      <li data-search="<?php echo h($a['name'] . ' ' . $a['title'] . ' ' . $a['path']); ?>" class="<?php echo $a['name'] === $sel_doc ? 'sel' : ''; ?>">
         <a href="<?php echo h(self_url(array('tab' => 'docs', 'doc' => $a['name'], 'q' => $tab === 'docs' ? $q : ''))); ?>">
           <span class="ttitle"><?php echo h($a['title']); ?></span>
-          <span class="tmeta"><?php echo h($a['name']); ?><?php if ($a['updated'] !== '') { echo ' · ' . h($a['updated']); } ?></span>
+          <span class="tmeta"><?php echo h($a['path']); ?><?php if ($a['updated'] !== '') { echo ' · ' . h($a['updated']); } ?></span>
         </a>
       </li>
       <?php endforeach; ?>
     </ul>
+    <?php if (!$arch_filtered): ?>
+    <p class="muted">Документов не найдено. Источники: <code>.doc/architecture/*.md|*.json</code>, <code>.doc/harnes/**/*.md</code>.</p>
+    <?php endif; ?>
     <p class="muted">Показано <?php echo count($arch_filtered); ?> из <?php echo count($arch_list); ?>.</p>
     <?php else: ?>
     <h3 class="side-title">Топ задач по токенам</h3>

@@ -1,0 +1,250 @@
+/*
+ * Разделы «Задачи» и «Аналитика».
+ *
+ * Своя сетка не нужна: каркас тот же (тулбар, три колонки, док), поэтому здесь только
+ * таблицы, список задач слева, бары разрезов и лента деталей.
+ */
+
+.tasksview,
+.analyticsview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  overflow: auto;
+  height: 100%;
+}
+
+/* ------------------------------ Таблица ---------------------------------- */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.tbl th,
+.tbl td {
+  padding: 6px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--line, #2a2f37);
+  vertical-align: top;
+}
+
+.tbl th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--panel-2, #1b1f26);
+  color: var(--text-dim, #9aa4b2);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tbl tbody tr:hover {
+  background: var(--hover, rgb(255 255 255 / 4%));
+}
+
+.tbl tbody tr.is-selected {
+  background: var(--accent-soft, rgb(47 123 246 / 18%));
+}
+
+.tbl .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tbl__wrap {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tbl__link {
+  color: var(--accent, #4aa3df);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.tbl__link:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------- Список задач слева --------------------------- */
+.tasklist {
+  margin: 0;
+  padding: 0 4px;
+  list-style: none;
+  overflow: auto;
+}
+
+.tasklist__item + .tasklist__item {
+  border-top: 1px solid var(--line, #2a2f37);
+}
+
+.tasklist__link {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "id title" ". meta";
+  gap: 2px 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.tasklist__link:hover {
+  background: var(--hover, rgb(255 255 255 / 5%));
+}
+
+.tasklist__id {
+  grid-area: id;
+  color: var(--text-dim, #9aa4b2);
+  font-variant-numeric: tabular-nums;
+  font-size: 11.5px;
+}
+
+.tasklist__title {
+  grid-area: title;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+}
+
+.tasklist__meta {
+  grid-area: meta;
+  color: var(--text-dim, #9aa4b2);
+  font-size: 11px;
+}
+
+.ghost-btn--block {
+  display: block;
+  width: calc(100% - 16px);
+  margin: 6px 8px 10px;
+  text-align: center;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+/* ------------------------------- Разрезы --------------------------------- */
+.bargrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px 18px;
+}
+
+.bargrid__block {
+  min-width: 0;
+}
+
+.barlist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.barlist__item {
+  display: grid;
+  grid-template-columns: minmax(0, 46%) 1fr auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.barlist__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-dim, #9aa4b2);
+}
+
+.barlist__bar {
+  display: block;
+  height: 6px;
+  min-width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2f7bf6, #56b6c2);
+}
+
+.barlist__value {
+  font-variant-numeric: tabular-nums;
+  font-size: 11.5px;
+  color: var(--text-dim, #9aa4b2);
+}
+
+/* ------------------------------- Детали ---------------------------------- */
+.taskdetail__title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.taskdetail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.feed {
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.feed__item {
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--panel-2, rgb(255 255 255 / 4%));
+}
+
+.feed__kind {
+  font-size: 11px;
+  color: var(--text-dim, #9aa4b2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 6px;
+}
+
+.feed__author {
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.feed__time {
+  font-size: 11px;
+  color: var(--text-dim, #9aa4b2);
+}
+
+.feed__text {
+  margin: 3px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text, #e6e9ee);
+}
+
+.feed__link {
+  color: var(--accent, #4aa3df);
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.empty__hint {
+  display: inline-block;
+  margin-top: 4px;
+  color: var(--text-dim, #9aa4b2);
+  font-size: 11.5px;
+}
