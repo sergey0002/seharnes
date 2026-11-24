@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/flow-choice-1.json",
+  "title": "FLOW-CHOICE-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "request_id", "decision_id", "question", "selection", "options", "default", "allow_custom_response", "policy_scope"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema": {"const": "FLOW-CHOICE-1"},
+    "request_id": {"type": "string", "minLength": 1},
+    "flow_run": {"type": ["string", "null"]},
+    "task_ref": {"type": ["string", "null"]},
+    "decision_id": {"type": "string", "minLength": 1},
+    "question": {"type": "string", "minLength": 1},
+    "selection": {"enum": ["boolean", "single", "multiple", "text"]},
+    "options": {"type": "array", "items": {"$ref": "#/$defs/option"}},
+    "default": {},
+    "allow_custom_response": {"type": "boolean"},
+    "policy_scope": {"enum": ["step", "flow_run", "change", "workspace", "task"]},
+    "expires_at": {"type": ["string", "null"]},
+    "flow_id": {"type": ["string", "null"]},
+    "flow_revision": {"type": ["integer", "null"], "minimum": 1},
+    "step_id": {"type": ["string", "null"]},
+    "version": {"type": "integer", "minimum": 1},
+    "source": {},
+    "metadata": {"type": "object"}
+  },
+  "$defs": {
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "minLength": 1},
+        "description": {"type": "string"},
+        "value": {}, "route": {}, "flow": {}, "preset": {},
+        "effects": {"type": "object"}, "policy": {"type": "object"}
+      }
+    }
+  }
+}

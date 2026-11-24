@@ -25,10 +25,10 @@ import os
 import re
 import shutil
 import sys
-import tempfile
 from pathlib import Path
 
 import rule_model
+from verify_parity import BINARY_SUFFIXES
 
 TRIGGERS = {"always_on", "manual", "model_decision", "glob"}
 TRIGGER_BY_KIND = {
@@ -152,7 +152,7 @@ def normalize(data: bytes) -> bytes:
 
 
 def tree_payload(source: Path) -> dict[str, bytes]:
-    """Relative path -> normalized bytes for a skill tree mirror."""
+    """Relative path -> text-normalized or raw binary bytes for a skill mirror."""
     payload: dict[str, bytes] = {}
     if not source.is_dir():
         return payload
@@ -162,7 +162,8 @@ def tree_payload(source: Path) -> dict[str, bytes]:
         relative = path.relative_to(source)
         if any(part.startswith(".") or part == "__pycache__" for part in relative.parts):
             continue
-        payload[relative.as_posix()] = normalize(path.read_bytes())
+        data = path.read_bytes()
+        payload[relative.as_posix()] = data if path.suffix.lower() in BINARY_SUFFIXES else normalize(data)
     return payload
 
 
@@ -306,7 +307,9 @@ def compare_tree(target: Path, expected: dict[str, bytes]) -> list[str]:
     for relative in sorted(expected):
         if relative not in actual:
             errors.append(f"missing skill file {relative}")
-        elif actual[relative].is_symlink() or normalize(actual[relative].read_bytes()) != expected[relative]:
+        elif actual[relative].is_symlink() or (
+                actual[relative].read_bytes() if actual[relative].suffix.lower() in BINARY_SUFFIXES
+                else normalize(actual[relative].read_bytes())) != expected[relative]:
             errors.append(f"stale skill file {relative}")
     errors.extend(f"extra skill file {name}" for name in sorted(set(actual) - set(expected)))
     return errors
@@ -372,36 +375,6 @@ def preflight_view(qoder: Path, rules: dict[str, str], skills: dict[str, bytes],
     return errors
 
 
-def backup_changed_views(root: Path, qoder: Path, rules: dict[str, str], skills: dict[str, bytes], generated_mcp: dict) -> Path | None:
-    changed: list[Path] = []
-    for label, expected in (("rules", {k: v.encode("utf-8") for k, v in rules.items()}), ("skills", skills)):
-        base = qoder / label
-        for relative, payload in expected.items():
-            path = base / relative
-            if path.is_file() and normalize(path.read_bytes()) != normalize(payload):
-                changed.append(path)
-    settings = qoder / "settings.json"
-    if settings.is_file():
-        previous = json.loads(settings.read_text(encoding="utf-8"))
-        if merge_settings(previous, generated_mcp) != previous:
-            changed.append(settings)
-    if not changed:
-        return None
-    parent = root / ".doc/skil_data/environment-sync/backups/qoder-preflight"
-    for part in (root / ".doc", root / ".doc/skil_data", root / ".doc/skil_data/environment-sync", parent.parent, parent):
-        if part.is_symlink():
-            raise ValueError(f"unsafe backup path: {part}")
-    parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    backup = Path(tempfile.mkdtemp(prefix="sync-", dir=parent))
-    os.chmod(backup, 0o700)
-    for path in changed:
-        target = backup / path.relative_to(qoder)
-        target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-        shutil.copyfile(path, target)
-        os.chmod(target, 0o600)
-    return backup
-
-
 def merge_settings(previous: object, generated: dict) -> dict:
     """Replace managed MCP fields while preserving unrelated settings."""
     if not isinstance(previous, dict):
@@ -456,7 +429,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=".", help="project root")
     parser.add_argument("--check", action="store_true", help="verify without writing")
     parser.add_argument("--preflight", action="store_true", help="check for unmanaged Qoder data without writing")
-    parser.add_argument("--replace-managed-mcp", action="store_true", help="replace reviewed managed MCP entries after backup")
+    parser.add_argument("--replace-managed-mcp", action="store_true", help="replace reviewed managed MCP entries")
     args = parser.parse_args(argv)
 
     root = Path(args.root).resolve()
@@ -494,13 +467,6 @@ def main(argv: list[str] | None = None) -> int:
         }, ensure_ascii=False))
         return 0 if not errors else 1
 
-    try:
-        backup = backup_changed_views(root, qoder, expected_rule_payload, expected_skill_payload, expected_mcp)
-    except (OSError, ValueError) as error:
-        print(f"Qoder backup failed: {error}", file=sys.stderr)
-        return 3
-    if backup:
-        print(f"Qoder changed files backed up: {backup}")
     target_rules = qoder / "rules"
     clear_tree(target_rules)
     for name, content in expected_rule_payload.items():

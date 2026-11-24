@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "updated_by": null,
+  "roles": [
+    {
+      "role": "developer",
+      "tier": "balanced",
+      "mode": "subagent",
+      "tools": [
+        "read",
+        "edit",
+        "bash"
+      ],
+      "models": []
+    },
+    {
+      "role": "researcher",
+      "tier": "cheap",
+      "mode": "subagent",
+      "tools": [
+        "read",
+        "grep"
+      ],
+      "models": []
+    },
+    {
+      "role": "tester",
+      "tier": "balanced",
+      "mode": "subagent",
+      "tools": [
+        "read",
+        "bash"
+      ],
+      "models": []
+    }
+  ]
+}

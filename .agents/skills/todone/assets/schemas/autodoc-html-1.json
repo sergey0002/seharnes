@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/autodoc-html-1.json",
+  "title": "AUTODOC-HTML-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema",
+    "html_id",
+    "bundle_id",
+    "bundle_digest",
+    "generator",
+    "output_path",
+    "pages",
+    "assets",
+    "diagrams"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "AUTODOC-HTML-1"
+    },
+    "html_id": {
+      "type": "string"
+    },
+    "bundle_id": {
+      "type": "string"
+    },
+    "bundle_digest": {
+      "type": "string"
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "output_path": {
+      "type": "string"
+    },
+    "pages": {
+      "type": "array",
+      "items": {}
+    },
+    "assets": {
+      "type": "array",
+      "items": {}
+    },
+    "diagrams": {
+      "type": "array",
+      "items": {}
+    },
+    "source_links": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "redactions": {
+      "type": "array",
+      "items": {}
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

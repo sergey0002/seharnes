@@ -1,0 +1,18 @@
+{
+  "id": "feature",
+  "name": "Новая возможность",
+  "class": "product",
+  "gates": {
+    "tests": "required",
+    "evidence": true,
+    "acceptance_min": 2,
+    "change_kind_required": true,
+    "docs": true,
+    "close": "work"
+  },
+  "fields": [],
+  "editor": "any",
+  "capabilities": [],
+  "checks": [],
+  "profile": null
+}

@@ -1,0 +1,46 @@
+{
+  "id": "libs-research",
+  "name": "Поиск готовых библиотек",
+  "class": "research",
+  "gates": {
+    "tests": "not_required",
+    "handoff": "required",
+    "acceptance_min": false,
+    "close": "result_is_knowledge"
+  },
+  "capabilities": [
+    "web-search"
+  ],
+  "fields": [
+    {
+      "name": "candidates",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "кандидаты: что нашли и где",
+      "example": "openpyxl, xlsxwriter, pandas"
+    },
+    {
+      "name": "comparison",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "сравнение по тому, что важно проекту",
+      "example": "openpyxl: только стандартная установка не нужна; xlsxwriter: пишет быстрее"
+    },
+    {
+      "name": "verdict",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "вердикт и причина",
+      "example": "берём xlsxwriter: запись быстрее, лицензия BSD"
+    }
+  ],
+  "editor": "any",
+  "checks": [],
+  "profile": null
+}

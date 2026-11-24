@@ -85,6 +85,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/c
 
 Скрипт автоматически:
 - выгружает `task.md` из Jira через PHP/Docker (`.agents/skills/task-router/children/jira/scripts/server.php`) и передает снимок в `jsondoc ingest-tracker`;
+- скачивает вложения задачи в `.doc/tasks/{N}/attachments/` и пишет ссылки в `## Attachments` файла `task.md` (уже скачанный файл того же размера не перекачивается);
 - делает `git fetch origin`;
 - возвращает JSON: `task` (`title`, `kind`, `jiraVersion`, `bitbucket`, `suggestedPrefix`, `suggestedBranch`), `releaseBranches`, `defaultReleaseBranch`, `defaultReleaseSource`, `taskBranches` (`exact`, `jiraExact`, `legacyExact`, `variants`), `branchExists`, `branchExistsLocally`, `localAheadCount`, `hasLocalChanges`, `originState`, `currentBranch`, `recommendedAction`, `needsUserInput`;
 - при недоступной сети не падает: `originState` принимает значение `fetch_failed` или `ls_remote_failed`, список веток собирается из локальных remote-tracking refs `origin/*`.

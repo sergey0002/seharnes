@@ -1,0 +1,392 @@
+{
+  "artifacts": [],
+  "business_logic": {
+    "facts": [],
+    "linked_rule_ids": [],
+    "unconfirmed": []
+  },
+  "checks": [],
+  "decisions": [],
+  "files": [],
+  "findings": [
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-1",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s17",
+      "severity": null,
+      "source_ids": [],
+      "statement": "powershell.exe не в PATH",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "powershell.exe не в PATH"
+    },
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-2",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s17",
+      "severity": null,
+      "source_ids": [],
+      "statement": "секреты в патче открытым текстом",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "секреты в патче открытым текстом"
+    },
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-3",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s17",
+      "severity": null,
+      "source_ids": [],
+      "statement": "node в WSL есть, но старая запись это отрицала",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "node в WSL есть, но старая запись это отрицала"
+    }
+  ],
+  "git_events": [],
+  "git_state": null,
+  "history": [
+    {
+      "actor": "migration",
+      "at": "2026-10-21T05:57:43Z",
+      "id": "migrate-arch-deepseek-harness-05-skripty-2",
+      "source_ids": [],
+      "summary": "deepseek_harnes -> architecture"
+    },
+    {
+      "actor": "agent-review",
+      "at": "2026-10-21T22:41:08Z",
+      "id": "tags2-deepseek-harness-05-skripty-4e046f",
+      "source_ids": [],
+      "summary": "tag harness documentation"
+    },
+    {
+      "actor": "user",
+      "at": "2026-10-29T15:05:22Z",
+      "id": "arch-dsh-05-graphify-20261029-01",
+      "source_ids": [],
+      "summary": "factual audit: в DSH-патч добавлен graphify, таблица MCP устарела"
+    },
+    {
+      "actor": "project-doc",
+      "at": "2026-10-31T02:10:13Z",
+      "id": "arch-deepseek-harness-05-skripty-dsh-kit-20261031-01",
+      "source_ids": [],
+      "summary": "Документирование DSH kit, синка и проверок переноса"
+    },
+    {
+      "actor": "project-doc",
+      "at": "2026-11-02T01:52:36Z",
+      "id": "dsh-skills-root-deepseek-harness-05-skripty-20261102",
+      "source_ids": [],
+      "summary": "switch skill canon to .agents/skills"
+    },
+    {
+      "actor": "user",
+      "at": "2026-11-11T05:28:14Z",
+      "id": "arch-dsh05-remove-mcp-20261111",
+      "source_ids": [],
+      "summary": "MCP-серверы xmlriver, xmlriver-ws и leantime удалены"
+    }
+  ],
+  "id": "architecture:deepseek-harness-05-skripty",
+  "jira_report": null,
+  "kind": "architecture",
+  "metadata": {
+    "branch": null,
+    "doc_type": "architecture",
+    "release": null,
+    "source_status": "actual",
+    "status": "unknown",
+    "task_id": null,
+    "task_type": "unknown",
+    "title": "Скрипты, оболочка и MCP",
+    "updated_at": "1970-01-01T00:00:00Z"
+  },
+  "notes": [],
+  "progress": [],
+  "relations": [],
+  "requirements": [],
+  "revision": 6,
+  "schema_version": "1.0",
+  "section_order": [
+    "s0",
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "s8",
+    "s10",
+    "s19",
+    "s11",
+    "s12",
+    "s13",
+    "s14",
+    "s15",
+    "s16",
+    "s17",
+    "s18"
+  ],
+  "sections": [
+    {
+      "anchor": "скрипты,-оболочка-и-mcp",
+      "anchor_aliases": [],
+      "body_markdown": "\n<!-- meta\ntype: config\nstatus: actual\nupdated: 2026-10-31\ntags: [deepseek, scripts, mcp]\n-->\n\n---\n",
+      "id": "s0",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Скрипты, оболочка и MCP"
+    },
+    {
+      "anchor": "суть",
+      "anchor_aliases": [],
+      "body_markdown": "\nСкрипты канона не копируются, а вызываются по каноническому пути. Python, git и\nbash идут напрямую: агент уже внутри WSL. PowerShell-скрипты идут только через\nшим `.dsh/scripts/run-ps1.sh`, который выбирает движок PowerShell и запускает\nскрипт с нативным git. MCP-серверы подключаются патчем, имена инструментов\n`mcp__<serverName>__<tool>`.\n\n> **AI:** читай этот doc, чтобы правильно запускать скрипты и MCP из DSH.\n> **Сначала:** [03-workflow.md](./deepseek-harness-03-workflow.md) - где какой скрипт вызывается.\n> **Не читай целиком:** команды бери из `.dsh/adapters/shell.md` по мере надобности.\n> **См. также:** [../harnes/state/05-scripts.md](../harnes/state/05-scripts.md) - реестр скриптов канона.\n\n---\n",
+      "id": "s1",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Суть"
+    },
+    {
+      "anchor": "оболочка-(факты)",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Инструмент | Где | Версия |\n|---|---|---|\n| python3 | WSL | 3.14.4 |\n| git | WSL | 2.53.0 |\n| bash | WSL | есть |\n| node | WSL, nvm | v24.17.0 |\n| pwsh | WSL, `~/.local/pwsh/pwsh` | 7.4.6 (нужен invariant-режим) |\n| powershell.exe | Windows, полный путь | 5.1, в PATH отсутствует |\n",
+      "id": "s2",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Оболочка (факты)"
+    },
+    {
+      "anchor": "правила-вызова",
+      "anchor_aliases": [],
+      "body_markdown": "\n```\npy:  python3 <repo-relative-path> <args>\ngit: git <args>\nsh:  bash <repo-relative-path> <args>\nps1: bash .dsh/scripts/run-ps1.sh <repo-relative-path> <args>\n```\n\n`wsl -e` не нужен: команды выполняются внутри WSL.\n\n---\n",
+      "id": "s3",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Правила вызова"
+    },
+    {
+      "anchor": "шим-run-ps1.sh",
+      "anchor_aliases": [],
+      "body_markdown": "\nПорядок выбора движка: `pwsh` в PATH, `~/.local/pwsh/pwsh`, затем\n`powershell.exe` с конвертацией пути через `wslpath -w`.\n\nЗамеры на этой машине:\n\n| Способ | Операция | Время |\n|---|---|---|\n| powershell.exe + UNC | `git status --short` | ~50 с |\n| powershell.exe + UNC | `gototask inspect` | больше 180 с |\n| pwsh в WSL | `gototask inspect` | ~6 с |\n| pwsh в WSL | `task-diff inspect` | ~2 с |\n\nПричина разницы: под `powershell.exe` каждый `git` это Windows-git по\n`\\\\wsl.localhost`. Поэтому `powershell.exe` оставлен только как fallback.\n\n---\n",
+      "id": "s4",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Шим run-ps1.sh"
+    },
+    {
+      "anchor": "скрипты-канона-(не-копируются)",
+      "anchor_aliases": [],
+      "body_markdown": "\n```\n.agents/skills/*/scripts/   32 scripts (скилы)\n.cursor/scripts/            multi-exec.sh, multi-search.sh, php-docker и др.\n.agents/skills/project-doc/scripts/            find-related-tasks, build-tasks-index и др.\n.agents/skills/test-task/scripts/            gates.py, task-test.sh, check-tests.sh\n.doc/skil_data/task-doc/       jsondoc.py (plan write/verify/template)\n.agents/skills/harness-management/children/environment-sync/scripts/           sync-agent-views.sh, generate-dsh-config.py, copy-dsh-kit.ps1\n```\n\nКлючевые вызовы:\n\n```bash",
+      "id": "s5",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Скрипты канона (не копируются)"
+    },
+    {
+      "anchor": "переход-к-задаче",
+      "anchor_aliases": [],
+      "body_markdown": "bash .dsh/scripts/run-ps1.sh .agents/skills/gototask/scripts/gototask.ps1 \\\n  -TaskNumber N -Action inspect\n",
+      "id": "s6",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "переход к задаче"
+    },
+    {
+      "anchor": "diff-задачи",
+      "anchor_aliases": [],
+      "body_markdown": "bash .dsh/scripts/run-ps1.sh .agents/skills/task-diff/scripts/task-diff.ps1 \\\n  -TaskNumber N -Action generate\n",
+      "id": "s7",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "diff задачи"
+    },
+    {
+      "anchor": "план",
+      "anchor_aliases": [],
+      "body_markdown": "python3 .doc/skil_data/task-doc/jsondoc.py --root . plan verify --task N --require-syntax\n",
+      "id": "s8",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "план"
+    },
+    {
+      "anchor": "тест",
+      "anchor_aliases": [],
+      "body_markdown": "bash .agents/skills/test-task/scripts/task-test.sh N\npython3 .agents/skills/test-task/scripts/gates.py N\n```\n\n---\n",
+      "id": "s10",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "тест"
+    },
+    {
+      "anchor": "шим-smoke.sh",
+      "anchor_aliases": [],
+      "body_markdown": "\n```bash\nbash .dsh/scripts/smoke.sh              # статические проверки\nbash .dsh/scripts/smoke.sh --task 2622  # плюс gototask и task-diff\nbash .dsh/scripts/smoke.sh --mcp        # напоминание про живые MCP\n```\n\nExit 0 - всё зелёное, exit 1 - есть падения с причиной.\n\n---\n",
+      "id": "s11",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Шим smoke.sh"
+    },
+    {
+      "anchor": "mcp:-имена-и-диагностика",
+      "anchor_aliases": [],
+      "body_markdown": "\n12 серверов в патче. Имя инструмента `mcp__<serverName>__<tool>`.\n\n| serverName | DSH prefix |\n|---|---|\n| codebase-memory-mcp | `mcp__codebase-memory-mcp__` |\n| sourcegraph | `mcp__sourcegraph__` |\n| mysql | `mcp__mysql__` |\n| serena | `mcp__serena__` |\n| playwright | `mcp__playwright__` |\n| context7 | `mcp__context7__` |\n| phpstan-mcp | `mcp__phpstan-mcp__` |\n| semgrep | `mcp__semgrep__` |\n| git | `mcp__git__` |\n| graphify | `mcp__graphify__` |\n| php-deps-mcp | `mcp__php-deps-mcp__` |\n| jira-task | `mcp__jira-task__` |\n\nВыключены: deepwiki, bitbucket-task (disabled в каноне), xdebug (порт 9003).\n",
+      "id": "s12",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "MCP: имена и диагностика"
+    },
+    {
+      "anchor": "диагностика-(кеш)",
+      "anchor_aliases": [],
+      "body_markdown": "\nСтатус сервера стабилен в пределах сессии. Кеш в `.doc/tasks/{N}/mcp-status.json`:\n\n```json\n{\"servers\": {\"codebase-memory-mcp\": {\"status\": \"green\", \"checked_at\": \"...\"},\n             \"sourcegraph\": {\"status\": \"red\", \"fallback\": \"grep\", \"checked_at\": \"...\"}}}\n```\n",
+      "id": "s13",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Диагностика (кеш)"
+    },
+    {
+      "anchor": "fallback-при-red",
+      "anchor_aliases": [],
+      "body_markdown": "\n```\nCBM red         -> sourcegraph -> serena -> grep/read\nsourcegraph red -> grep по коду\nmysql red       -> факты БД не выдумывать\nplaywright red  -> Codeception через CLI\n```\n\n---\n",
+      "id": "s14",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Fallback при red"
+    },
+    {
+      "anchor": "адаптеры",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Файл | Что содержит |\n|---|---|\n| `.dsh/adapters/shell.md` | правила оболочки, факты, замеры, установка pwsh |\n| `.dsh/adapters/mcp-names.md` | serverName -> prefix, fallback |\n| `.dsh/adapters/models.md` | модели, включение `llm-pi-ai` |\n| `.dsh/adapters/prepare-plan-digest.md` | сжатый чеклист P0-P7 |\n\n---\n",
+      "id": "s15",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Адаптеры"
+    },
+    {
+      "anchor": "связи",
+      "anchor_aliases": [],
+      "body_markdown": "\n- [Workflow](./deepseek-harness-03-workflow.md) - где вызываются скрипты\n- [Устройство](./deepseek-harness-01-ustroystvo.md) - состав\n- [Скрипты канона](../harnes/state/05-scripts.md) - полный реестр\n\n---\n",
+      "id": "s16",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Связи"
+    },
+    {
+      "anchor": "известные-проблемы-и-ограничения",
+      "anchor_aliases": [],
+      "body_markdown": "\n\n- Симптом: `command not found`.\n- Причина: PATH агентской оболочки без `/mnt/c`.\n- Решение: только через `run-ps1.sh`.\n\n\n- Симптом: `project.patch.yml` содержит токены и пароли в `env`.\n- Причина: генератор инлайнит `mcp.env`.\n- Решение: файл вне git, значения не копировать в документы и чат.\n\n\n- Раньше писали \"node нет\". Сейчас v24.17.0, npx-серверы MCP работают.\n\n---\n",
+      "id": "s17",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Известные проблемы и ограничения"
+    },
+    {
+      "anchor": "история-изменений",
+      "anchor_aliases": [],
+      "body_markdown": "\n- 2026-10-20: создан\n- 2026-10-20: исправлены факты оболочки, добавлен шим, MCP 14 серверов\n- 2026-10-29: MCP 15 серверов (в патч добавлен graphify)\n\n#deepseek #scripts #mcp\n- 2026-10-31: добавлены copy-dsh-kit.ps1, DSH-гейт в синке и smoke-проверки kit\n",
+      "id": "s18",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "История изменений"
+    },
+    {
+      "anchor": "dsh-kit-и-миграция",
+      "anchor_aliases": [],
+      "body_markdown": "\nDSH kit не хранится в git. При переносе проекта его копирует\n`.agents/skills/harness-management/children/new-project/scripts/copy-dsh-kit.ps1`:\n\n- `.dsh/skills`, `.dsh/adapters`, `.dsh/scripts`, `.dsh/tests`,\n  `.dsh/models.overlay.json`;\n- не копирует `.dsh/project.patch.yml`, `DSH-RULES.md`, `__pycache__`, бэкапы overlay.\n\nСгенерированные файлы создает `sync-agent-views.sh`. После генерации синк выполняет\n`generate-dsh-config.py --check` и падает при расхождении.\n\nПроверки:\n\n```bash\npython3 .agents/skills/harness-management/children/environment-sync/scripts/test_dsh_config.py\npython3 .agents/skills/harness-management/children/environment-sync/scripts/test_dsh_kit.py\nbash .dsh/scripts/smoke.sh\n```\n\n`smoke.sh` проверяет kit, динамическое число скилов и валидность\n`models.overlay.json`.\n",
+      "id": "s19",
+      "level": 2,
+      "origin": "authored",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "DSH kit и миграция"
+    }
+  ],
+  "sources": [
+    {
+      "availability": "present",
+      "id": "S-legacy",
+      "kind": "doc",
+      "observation": "legacy doc.md",
+      "observed_at": null,
+      "path": null,
+      "pointer": null,
+      "revision": null,
+      "sha256": "6ec283b613a61c63295e85de9fcfac3b78830ccec111cef10f1d3ae019cf136b"
+    }
+  ],
+  "stages": [],
+  "summary": null,
+  "tags": [
+    {
+      "reason": "документация харнеса",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:harness"
+    },
+    {
+      "reason": "описание DeepSeek Harness",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:deepseek"
+    },
+    {
+      "reason": "стандарт и поиск по документации",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:documentation"
+    }
+  ],
+  "tracker": null
+}

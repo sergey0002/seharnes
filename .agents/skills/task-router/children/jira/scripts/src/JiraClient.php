@@ -231,6 +231,97 @@ class JiraClient
         return $this->baseUrl . '/browse/' . rawurlencode($issueKey);
     }
 
+    /**
+     * Download an attachment body to $destPath.
+     *
+     * Jira answers /rest/api/3/attachment/content/{id} with 303 to a signed
+     * media URL, so redirects must be followed. Basic auth is sent to the Jira
+     * host only: curl does not forward credentials to another host unless
+     * CURLOPT_UNRESTRICTED_AUTH is set, and it is intentionally not set.
+     */
+    public function downloadAttachment($contentUrl, $destPath)
+    {
+        $url = $this->absoluteUrl($contentUrl);
+        if ($url === '') {
+            throw new RuntimeException('Attachment content URL is empty');
+        }
+
+        $attempts = 2;
+        $lastError = '';
+
+        for ($attempt = 1; $attempt <= $attempts; $attempt++) {
+            try {
+                return $this->downloadAttachmentOnce($url, $destPath);
+            } catch (RuntimeException $e) {
+                $lastError = $e->getMessage();
+            }
+        }
+
+        throw new RuntimeException($lastError);
+    }
+
+    protected function downloadAttachmentOnce($url, $destPath)
+    {
+        $handle = fopen($destPath, 'wb');
+        if ($handle === false) {
+            throw new RuntimeException('Cannot open file for writing: ' . $destPath);
+        }
+
+        $ch = curl_init($url);
+        if ($ch === false) {
+            fclose($handle);
+            throw new RuntimeException('Failed to init curl');
+        }
+
+        curl_setopt_array($ch, array(
+            CURLOPT_FILE => $handle,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_HTTPHEADER => array(
+                'User-Agent: jira-task-mcp/1.0',
+            ),
+            CURLOPT_USERPWD => $this->email . ':' . $this->apiToken,
+            CURLOPT_TIMEOUT => 120,
+        ));
+
+        $ok = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+        fclose($handle);
+
+        $size = is_file($destPath) ? filesize($destPath) : 0;
+
+        if ($ok === false || $status !== 200 || $size === 0) {
+            if (is_file($destPath)) {
+                @unlink($destPath);
+            }
+
+            $reason = $ok === false ? $error : 'HTTP ' . $status;
+            if ($status === 401) {
+                $reason .= '. Check JIRA_EMAIL and JIRA_API_TOKEN (scope read:jira-work).';
+            }
+
+            throw new RuntimeException('Attachment download failed: ' . $reason);
+        }
+
+        return $size;
+    }
+
+    protected function absoluteUrl($url)
+    {
+        $url = trim((string) $url);
+        if ($url === '') {
+            return '';
+        }
+
+        if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
+            return $url;
+        }
+
+        return $this->baseUrl . '/' . ltrim($url, '/');
+    }
+
     protected function request($path)
     {
         $url = $this->baseUrl . $path;

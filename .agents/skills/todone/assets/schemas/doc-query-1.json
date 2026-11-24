@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/doc-query-1.json",
+  "title": "DOC-QUERY-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "mode", "workspace_id"],
+  "properties": {
+    "schema": {"const": "DOC-QUERY-1"}, "mode": {"type": "string"}, "workspace_id": {"type": "string"},
+    "task_refs": {"type": "array"}, "release_context": {"type": "object"}, "files": {"type": "array"},
+    "symbols": {"type": "array"}, "doc_keys": {"type": "array"}, "limits": {"type": "object"},
+    "include_history": {"type": "integer", "minimum": 0}
+  }
+}

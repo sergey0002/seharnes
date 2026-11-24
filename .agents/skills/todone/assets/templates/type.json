@@ -1,0 +1,14 @@
+{
+  "id": "custom",
+  "name": "Пользовательский тип",
+  "class": "product",
+  "editor": "any",
+  "fields": [],
+  "capabilities": [],
+  "checks": [],
+  "gates": {
+    "tests": "not_required",
+    "acceptance_min": false
+  },
+  "profile": null
+}

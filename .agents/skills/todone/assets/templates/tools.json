@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "updated_by": null,
+  "tools": [
+    {
+      "capability": "code-graph",
+      "command": null,
+      "note": "заполнить командой проекта"
+    },
+    {
+      "capability": "memory",
+      "command": null,
+      "note": "заполнить командой проекта"
+    },
+    {
+      "capability": "web-search",
+      "command": null,
+      "note": "заполнить командой проекта"
+    },
+    {
+      "capability": "git",
+      "command": null,
+      "note": "заполнить командой проекта"
+    },
+    {
+      "capability": "test-runner",
+      "command": null,
+      "note": "заполнить командой проекта"
+    },
+    {
+      "capability": "docs-store",
+      "command": null,
+      "note": "заполнить командой проекта"
+    }
+  ]
+}

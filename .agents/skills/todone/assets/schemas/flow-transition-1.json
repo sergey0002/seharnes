@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/flow-transition-1.json",
+  "title": "FLOW-TRANSITION-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "transition_id", "from_flow", "from_run", "from_step", "transition", "target_flow", "target_step", "carry_refs", "requested_by", "status"],
+  "properties": {
+    "schema": {"const": "FLOW-TRANSITION-1"},
+    "transition_id": {"type": "string", "minLength": 1},
+    "from_flow": {"type": "string", "minLength": 1},
+    "from_run": {"type": "string", "minLength": 1},
+    "from_step": {"type": "string", "minLength": 1},
+    "transition": {"const": "switch_flow"},
+    "target_flow": {"type": "string", "minLength": 1},
+    "target_step": {"type": "string", "minLength": 1},
+    "choice_ref": {"type": ["string", "null"]},
+    "carry_refs": {"type": "array", "maxItems": 32},
+    "requested_by": {"enum": ["user", "agent", "policy"]},
+    "status": {"enum": ["requested", "approved", "applied", "blocked", "rejected"]},
+    "scope": {"type": ["object", "null"]},
+    "release_context": {"type": ["object", "null"]},
+    "policy": {"type": ["object", "null"]},
+    "created_at": {"type": ["string", "null"]},
+    "approved_at": {"type": ["string", "null"]},
+    "applied_at": {"type": ["string", "null"]},
+    "new_run": {"type": ["string", "null"]},
+    "new_record": {"type": ["string", "null"]},
+    "reason": {"type": ["string", "null"]},
+    "validation": {"type": "object"},
+    "parent_transition": {"type": ["string", "null"]}
+  }
+}

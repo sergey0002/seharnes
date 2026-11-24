@@ -194,11 +194,13 @@ class DshKitWiringTest(unittest.TestCase):
 
     def test_sync_checks_dsh_outputs(self) -> None:
         text = SYNC.read_text(encoding="utf-8")
-        self.assertIn('verify_step "dsh"', text)
-        self.assertIn("generate-dsh-config.py", text)
+        self.assertIn('verify_step render-check', text)
+        self.assertIn('render_agent_views.py', text)
         self.assertIn("--check", text)
 
     def test_smoke_uses_dynamic_skill_count(self) -> None:
+        if not SMOKE.is_file():
+            self.skipTest("optional DSH runtime kit is not installed")
         text = SMOKE.read_text(encoding="utf-8")
         self.assertIn("no redundant Codex mirror", text)
         self.assertNotIn('find .codex/skills', text)

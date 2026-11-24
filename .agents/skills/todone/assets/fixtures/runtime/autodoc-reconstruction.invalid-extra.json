@@ -1,0 +1,12 @@
+{
+  "$schema": "x",
+  "schema": "AUTODOC-RECONSTRUCTION-1",
+  "bundle_id": "autodoc:test",
+  "bundle_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "target": ".",
+  "restored": [],
+  "skipped": [],
+  "redacted": [],
+  "status": "complete",
+  "unknown_extra": true
+}

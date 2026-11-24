@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "DOC-PATH-1",
+  "root": ".",
+  "docs_path": "documentation",
+  "manifest": "documentation/manifest.json"
+}

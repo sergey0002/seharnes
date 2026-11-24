@@ -20,7 +20,8 @@ tags: [harness, environment, sync, parity, export, editor, opencode]
 проходит parity, попадает в перенос проекта и отражается в документации.
 Документ фиксирует полный список точек изменения и порядок проверки.
 Пример новой среды - opencode, потому что opencode читает `.agents/skills` и
-`AGENTS.md` нативно и требует только проектный `opencode.json`.
+`AGENTS.md` нативно и требует только проектный `opencode.json` и генерируемый
+каталог `.opencode/rules`.
 
 ---
 
@@ -97,17 +98,17 @@ opencode читает проектные правила из `AGENTS.md`, ски
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": [".agents/rules/*.md"],
+  "instructions": [".opencode/rules/gates.md", ".opencode/rules-index.md"],
   "mcp": {
-    "mysql": {
-      "type": "local",
-      "command": ["bash", ".tools/scripts/run-with-mcp-env.sh", "node", ".tools/scripts/mysql-mcp-proxy.mjs"],
-      "enabled": true
-    },
-    "codebase-memory-mcp": {
-      "type": "remote",
-      "url": "http://127.0.0.1:9131/mcp",
-      "enabled": true
+    "servers": {
+      "mysql": {
+        "type": "local",
+        "command": ["bash", "/abs/project/.tools/scripts/run-with-mcp-env.sh", "node", "/abs/project/.tools/scripts/mysql-mcp-proxy.mjs"]
+      },
+      "codebase-memory-mcp": {
+        "type": "remote",
+        "url": "http://127.0.0.1:9131/mcp"
+      }
     }
   }
 }
@@ -115,19 +116,28 @@ opencode читает проектные правила из `AGENTS.md`, ски
 
 Правила для генератора:
 
-- `instructions` указывает на `.agents/rules/*.md`. Каталог уже генерируется из
-  `.cursor/rules` для Antigravity, отдельный формат правил opencode не нужен.
+- `instructions` указывает на always-правила в `.opencode/rules` и компактный
+  `.opencode/rules-index.md`. Каталог `.agents/rules` содержит frontmatter
+  Antigravity и все 38 правил; подключать его целиком нельзя, иначе каждый запрос
+  получает около 217 KB правил.
+- Правила копируются в `.opencode/rules/*.md` без Cursor-frontmatter.
 - MCP `stdio` переводится в `type: local` с массивом `command`.
 - MCP `http` и `sse` переводятся в `type: remote` с `url` и `headers`.
-- Выключенный сервер получает `enabled: false`.
-- Секреты не писать в `opencode.json`. Использовать существующий
-  `.tools/scripts/run-with-mcp-env.sh` и `.cursor/mcp.env`, как в Qoder и Qwen.
-- `opencode.json` добавить в `.git/info/exclude` и в `kit.json`, потому что
-  харнес в этом проекте не коммитится.
+- Выключенный сервер получает `disabled: true`; в `mcp.servers` поля `enabled` нет.
+- `${workspaceFolder}` раскрывается в абсолютный путь: OpenCode не раскрывает
+  переменные в JSON.
+- Значение заголовка `${env:VAR}` переводится в `{env:NAME}`. Секреты остаются в
+  `.cursor/mcp.env` и подставляются через `run-with-mcp-env.sh`; поля `envFile` у
+  OpenCode нет.
+- `timeout` канона не переносится: в `mcp.servers` это объект, а не число.
+- `alwaysAllow` и `disabledTools` пишутся в `.opencode/permissions.fragment.json`
+  для ручного слияния.
+- `opencode.json` и `.opencode/` добавить в `.git/info/exclude` и в `kit.json`,
+  потому что харнес в этом проекте не коммитится.
 
 Ограничение: opencode загружает все файлы из `instructions` в каждый запрос.
-Метаданные `trigger: model_decision` в `.agents/rules` opencode не понимает.
-Если набор правил станет большим, нужен отдельный компактный список.
+Поэтому в стартовый набор входят только always-правила, остальные лежат в
+компактном индексе `.opencode/rules-index.md` и читаются по триггеру.
 
 Оценка для одной среды opencode: 0.5-1 день. Три среды при текущей архитектуре
 по отдельности: 2-3 дня. После выноса общих правил в декларативный адаптер
@@ -340,6 +350,7 @@ bash .agents/skills/harness-router/children/environment-sync/scripts/sync-agent-
 
 ## История изменений
 
+- 2026-11-20: введена декларативная политика сред через `environments.json` с переключателем `enabled`; добавлен `environment_policy.py` (чтение переключателей, список управляемых путей, безопасная очистка); синхронизация и перенос используют `render_agent_views.py` с фильтрацией по `enabled`; `compact_agent_views.py` читает список управляемых копий из реестра; `verify_rule_triggers.py`, `harness_mirror.py` и doctor фильтруют проверки по `enabled`; отключены Qoder, Qwen, DSH, Agents (Antigravity) и Cursor (канон); включены Codex, Kilo, OpenCode; Cursor остался каноном с `enabled: false`; OpenCode v2: `generate-opencode-config.py` пишет `opencode.json` (`mcp.servers`, `disabled`), `.opencode/rules` и компактный индекс; `compact_agent_views.py` читает список управляемых копий из реестра и не удаляет изменённые MCP-записи.
 - 2026-11-11: П-1 переписан как исправленная проблема: генератор и синк используют один путь в `harness-router`, старый артефакт в `harness-core` удалён.
 - 2026-11-11: в области сканирования харнеса путь `.cursor/mcp-servers` заменён на `.tools/mcp-servers`.
 - 2026-11-05: создан документ. Зафиксированы точки добавления среды, режимы

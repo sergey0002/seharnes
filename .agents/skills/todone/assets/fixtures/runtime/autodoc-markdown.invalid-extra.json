@@ -1,0 +1,15 @@
+{
+  "$schema": "x",
+  "schema": "AUTODOC-MARKDOWN-1",
+  "document_id": "doc:a@r1",
+  "doc_key": "a",
+  "revision": 1,
+  "canonical_path": "docs/a.md",
+  "source_ref": "source:1111111111111111111111111111111111111111111111111111111111111111",
+  "markdown": {
+    "source_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "tokens": []
+  },
+  "provenance": [],
+  "unknown_extra": true
+}

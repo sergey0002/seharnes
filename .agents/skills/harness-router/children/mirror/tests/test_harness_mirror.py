@@ -11,6 +11,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 HERE = Path(__file__).resolve().parent
 SCRIPT_DIR = HERE.parent / "scripts"
 
@@ -265,9 +267,11 @@ def test_set_rewrites_canonical(tmp_path):
     block = next(b for b in node["content_blocks"] if b["header_text"] == "Rules")
     content = data / "block.md"
     content.write_text("# Rules\n\nRead `.doc/rules.md` first, then nothing.\n", encoding="utf-8")
-    assert hm.cmd_set(args(node="rule:doc-rules", block=block["block_id"], content=str(content)), root, data) == 0
+    code, result = run_json(hm.cmd_set, args(node="rule:doc-rules", block=block["block_id"], content=str(content)), root, data)
+    assert code == 0
+    assert "backup" not in result
     assert "then nothing" in (root / ".cursor" / "rules" / "doc-rules.mdc").read_text(encoding="utf-8")
-    assert list((data / "nodes" / ".history").glob("*.json"))
+    assert not (data / "nodes" / ".history").exists()
 
 
 def test_bom_and_final_newline(tmp_path):
@@ -474,13 +478,17 @@ def test_set_file_replaces_skill_and_rule(tmp_path):
     scan(root)
     data = data_of(root)
     skill = "---\nname: demo\ndescription: demo skill\n---\n\n# Demo\n\nNew body.\n"
-    assert hm.set_file(root, data, "skill:demo", skill)["status"] == "ok"
+    assert hm.set_file(root, data, "skill:demo", skill) == {
+        "status": "ok", "node": "skill:demo", "file": ".cursor/skills/demo/SKILL.md",
+    }
     assert (root / ".cursor" / "skills" / "demo" / "SKILL.md").read_text(encoding="utf-8") == skill
     rule = "---\ndescription: rules\n---\n\n# Rules\n\nWhole file.\n"
-    assert hm.set_file(root, data, "rule:doc-rules", rule)["status"] == "ok"
+    assert hm.set_file(root, data, "rule:doc-rules", rule) == {
+        "status": "ok", "node": "rule:doc-rules", "file": ".cursor/rules/doc-rules.mdc",
+    }
     assert (root / ".cursor" / "rules" / "doc-rules.mdc").read_text(encoding="utf-8") == rule
     assert hm.cmd_check(args(), root, data) == 0
-    assert list((data / "nodes" / ".history").glob("*.json"))
+    assert not (data / "nodes" / ".history").exists()
 
 
 def test_set_file_refuses_script_and_mirror(tmp_path):
@@ -693,19 +701,63 @@ if __name__ == "__main__":
     sys.exit("run with pytest")
 
 
-def test_set_block_recompiles_and_keeps_history(tmp_path):
+def test_set_block_recompiles_without_history(tmp_path):
     root = make_repo(tmp_path)
     scan(root, include_mirrors=True)
     data = data_of(root)
     node = json.loads((data / "nodes" / "rule__doc-rules.json").read_text(encoding="utf-8"))
     block = next(b for b in node["content_blocks"] if b["header_text"] == "Rules")
     result = hm.set_block(root, data, "rule:doc-rules", block["block_id"], "# Rules\n\nEdited body.\n")
-    assert result["status"] == "ok"
+    assert result == {"status": "ok", "node": "rule:doc-rules", "block": block["block_id"]}
     source = (root / ".cursor" / "rules" / "doc-rules.mdc").read_text(encoding="utf-8")
     assert "Edited body." in source
     assert source.count("# Rules") == 1
-    assert list((data / "nodes" / ".history").glob("*.json"))
+    assert not (data / "nodes" / ".history").exists()
     assert hm.cmd_check(args(), root, data) == 0
+
+
+@pytest.mark.parametrize("whole_file", [False, True])
+def test_set_restores_source_on_readback_mismatch(tmp_path, monkeypatch, whole_file):
+    root = make_repo(tmp_path)
+    scan(root)
+    data = data_of(root)
+    source = root / ".cursor" / "rules" / "doc-rules.mdc"
+    original = source.read_bytes()
+    node_path = hm.node_path(data, "rule:doc-rules")
+    original_node = node_path.read_bytes()
+    original_cache = (data / "cache.map").read_bytes()
+    atomic_write = hm.atomic_write
+
+    def corrupt_new_source(path, raw):
+        atomic_write(path, b"corrupted" if path == source and raw != original else raw)
+
+    monkeypatch.setattr(hm, "atomic_write", corrupt_new_source)
+    with pytest.raises(hm.MirrorError, match="source restored"):
+        if whole_file:
+            hm.set_file(root, data, "rule:doc-rules", "# Changed\n")
+        else:
+            hm.set_block(root, data, "rule:doc-rules", "b001", "# Changed\n")
+    assert source.read_bytes() == original
+    assert node_path.read_bytes() == original_node
+    assert (data / "cache.map").read_bytes() == original_cache
+    assert not (data / "nodes" / ".history").exists()
+
+
+def test_set_file_restores_source_on_lossless_validation_failure(tmp_path, monkeypatch):
+    root = make_repo(tmp_path)
+    scan(root)
+    data = data_of(root)
+    source = root / ".cursor" / "skills" / "demo" / "SKILL.md"
+    original = source.read_bytes()
+    original_node = hm.node_path(data, "skill:demo").read_bytes()
+    original_cache = (data / "cache.map").read_bytes()
+    monkeypatch.setattr(hm, "compile_node", lambda node: "invalid round trip")
+    with pytest.raises(hm.MirrorError, match="source restored"):
+        hm.set_file(root, data, "skill:demo", "# Changed\n")
+    assert source.read_bytes() == original
+    assert hm.node_path(data, "skill:demo").read_bytes() == original_node
+    assert (data / "cache.map").read_bytes() == original_cache
+    assert not (data / "nodes" / ".history").exists()
 
 
 def test_set_block_refuses_mirror(tmp_path):

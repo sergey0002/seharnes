@@ -3,52 +3,192 @@
   "environments": [
     {
       "id": "cursor",
-      "enabled": true,
+      "enabled": false,
       "adapter": "cursor",
-      "rules": {"source": ".cursor/rules", "target": ".cursor/rules", "format": "mdc"},
-      "skills": {"mode": "native", "target": ".agents/skills"},
-      "mcp": {"source": ".cursor/mcp.json", "target": ".cursor/mcp.json"},
-      "instructions": {"target": "AGENTS.md"}
+      "rules": {
+        "source": ".cursor/rules",
+        "target": ".cursor/rules",
+        "format": "mdc"
+      },
+      "skills": {
+        "mode": "native",
+        "target": ".agents/skills"
+      },
+      "mcp": {
+        "source": ".cursor/mcp.json",
+        "target": ".cursor/mcp.json"
+      },
+      "instructions": {
+        "target": "AGENTS.md"
+      },
+      "generated": []
     },
     {
       "id": "codex",
       "enabled": true,
       "adapter": "codex",
-      "rules": {"source": ".cursor/rules", "target": ".codex/rules", "format": "flat_md"},
-      "skills": {"mode": "mirror", "target": ".codex/skills"},
-      "mcp": {"source": ".cursor/mcp.json", "target": ".codex/config.toml"}
+      "rules": {
+        "source": ".cursor/rules",
+        "target": ".codex/rules",
+        "format": "flat_md"
+      },
+      "skills": {
+        "mode": "native",
+        "target": ".agents/skills"
+      },
+      "mcp": {
+        "source": ".cursor/mcp.json",
+        "target": ".codex/config.toml"
+      },
+      "generated": [
+        ".codex/rules",
+        ".codex/rules-index.md",
+        ".codex/config.toml",
+        ".codex/mcp.json",
+        ".codex/scripts",
+        ".codex/mcp.env",
+        ".codex/tools/composer.phar"
+      ]
     },
     {
       "id": "kilo",
       "enabled": true,
       "adapter": "kilo",
-      "rules": {"source": ".cursor/rules", "target": ".kilo/rules", "format": "flat_md"},
-      "skills": {"mode": "native", "target": ".agents/skills"},
-      "mcp": {"source": ".cursor/mcp.json", "target": ".kilo/kilo.jsonc"}
+      "rules": {
+        "source": ".cursor/rules",
+        "target": ".kilo/rules",
+        "format": "flat_md"
+      },
+      "skills": {
+        "mode": "native",
+        "target": ".agents/skills"
+      },
+      "mcp": {
+        "source": ".cursor/mcp.json",
+        "target": ".kilo/kilo.jsonc"
+      },
+      "generated": [
+        ".kilo/rules",
+        ".kilo/rules-index.md",
+        ".kilo/kilo.jsonc",
+        ".kilo/mcp.json",
+        ".kilo/scripts",
+        ".kilo/mcp.env",
+        ".kilo/kilo-permissions.fragment.jsonc"
+      ]
     },
     {
       "id": "qoder",
-      "enabled": true,
+      "enabled": false,
       "adapter": "qoder",
-      "rules": {"source": ".cursor/rules", "target": ".qoder/rules", "format": "trigger"},
-      "skills": {"mode": "mirror", "target": ".qoder/skills"},
-      "mcp": {"source": ".cursor/mcp.json", "target": ".qoder/settings.json"}
+      "generator": "generate-qoder-config.py",
+      "rules": {
+        "source": ".cursor/rules",
+        "target": ".qoder/rules",
+        "format": "trigger"
+      },
+      "skills": {
+        "mode": "mirror",
+        "target": ".qoder/skills"
+      },
+      "mcp": {
+        "source": ".cursor/mcp.json",
+        "target": ".qoder/settings.json"
+      },
+      "generated": [
+        ".qoder/rules",
+        ".qoder/skills",
+        ".qoder/settings.json"
+      ]
     },
     {
       "id": "qwen",
-      "enabled": true,
+      "enabled": false,
       "adapter": "qwen",
-      "rules": {"source": ".cursor/rules", "target": ".qwen/rules", "format": "paths"},
-      "skills": {"mode": "native", "target": ".agents/skills"},
-      "mcp": {"source": ".cursor/mcp.json", "target": ".qwen/settings.json"}
+      "generator": "generate-qwen-config.py",
+      "rules": {
+        "source": ".cursor/rules",
+        "target": ".qwen/rules",
+        "format": "paths"
+      },
+      "skills": {
+        "mode": "native",
+        "target": ".agents/skills"
+      },
+      "mcp": {
+        "source": ".cursor/mcp.json",
+        "target": ".qwen/settings.json"
+      },
+      "generated": [
+        ".qwen/rules",
+        ".qwen/skills",
+        ".qwen/settings.json"
+      ]
     },
     {
       "id": "agents",
-      "enabled": true,
+      "enabled": false,
       "adapter": "agents",
-      "rules": {"source": ".cursor/rules", "target": ".agents/rules", "format": "trigger"},
-      "skills": {"mode": "native", "target": ".agents/skills"},
-      "mcp": {"source": ".cursor/mcp.json", "target": ".agents/mcp.json"}
+      "rules": {
+        "source": ".cursor/rules",
+        "target": ".agents/rules",
+        "format": "trigger"
+      },
+      "skills": {
+        "mode": "native",
+        "target": ".agents/skills"
+      },
+      "mcp": {
+        "source": ".cursor/mcp.json",
+        "target": ".agents/mcp.json"
+      },
+      "generated": [
+        ".agents/rules",
+        ".agents/mcp.json",
+        ".agents/mcp_config.json",
+        ".agents/skills.json",
+        ".agents/scripts",
+        ".agents/mcp.env",
+        ".doc/skil_data/harness-router/antigravity_mcp_config.json",
+        ".doc/skil_data/harness-core/antigravity_mcp_config.windows-wsl.json"
+      ]
+    },
+    {
+      "id": "opencode",
+      "enabled": true,
+      "adapter": "opencode",
+      "generator": "generate-opencode-config.py",
+      "rules": {
+        "source": ".cursor/rules",
+        "target": ".opencode/rules",
+        "format": "flat_md"
+      },
+      "skills": {
+        "mode": "native",
+        "target": ".agents/skills"
+      },
+      "mcp": {
+        "source": ".cursor/mcp.json",
+        "target": "opencode.json"
+      },
+      "generated": [
+        ".opencode/rules",
+        ".opencode/rules-index.md",
+        ".opencode/permissions.fragment.json",
+        "opencode.json"
+      ]
+    },
+    {
+      "id": "dsh",
+      "enabled": false,
+      "adapter": "dsh",
+      "generator": "generate-dsh-config.py",
+      "generated": [
+        ".dsh/skills",
+        ".dsh/project.patch.yml",
+        "DSH-RULES.md",
+        "DSH-BOOTSTRAP.md"
+      ]
     }
   ]
 }

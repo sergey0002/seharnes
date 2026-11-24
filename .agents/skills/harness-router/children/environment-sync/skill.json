@@ -8,10 +8,12 @@
     "scripts": [
       "scripts/compact_agent_views.py",
       "scripts/generate-agent-configs.py",
+      "scripts/environment_policy.py",
       "scripts/generate-antigravity-rules.py",
       "scripts/generate-codex-mcp.py",
       "scripts/generate-dsh-config.py",
       "scripts/generate-mcp-config.py",
+      "scripts/generate-opencode-config.py",
       "scripts/generate-qoder-config.py",
       "scripts/generate-qwen-config.py",
       "scripts/render_agent_views.py",

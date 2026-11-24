@@ -4,7 +4,7 @@
 type: script
 status: actual
 argv: manual
-updated: 2026-11-09
+updated: 2026-11-19
 related: [../../SKILL.md]
 tags: [harness, script, generate-agent-configs, codex, kilo]
 -->
@@ -49,7 +49,7 @@ tags: [harness, script, generate-agent-configs, codex, kilo]
 - `.codex/scripts/**` — копия legacy-пула `.cursor/scripts`, если он существует; иначе каталог удаляется
 - `.codex/mcp.json` — копия `.cursor/mcp.json` (pretty-print)
 - `.codex/mcp.env` — копия `.cursor/mcp.env`
-- `.codex/AGENTS.md` — копия корневого `AGENTS.md` с указателем на индекс правил Codex
+- Распознанный legacy `.codex/AGENTS.md` удаляется; bootstrap находится в корневом `AGENTS.md`.
 
 **Пишет (Kilo):**
 - `.kilo/rules/**/*.md` — правила без frontmatter
@@ -99,10 +99,11 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/generate
 - Связанные документы: `.doc/harnes/state/01-canon-envs.md`, `.doc/harnes/state/03-rules.md`.
 
 ## История изменений
+- 2026-11-19: старые копии скилов и распознанный legacy `.codex/AGENTS.md` удаляются без постоянных резервных копий.
 - 2026-11-07: полная документация на основе анализа кода
 - 2026-11-09: описана генерация glob-блока для conditional-правил Kilo и Codex
 - 2026-11-09: добавлено удаление лишних файлов зеркал и генерация инструкций Codex из корневого `AGENTS.md`.
 
 ## Изменения 2026-11-12
 
-Ссылки перемещённых правил сохраняют каноническую цель. Синхронизация проверяет native discovery отдельно от parity. Codex и Cursor используют канонические скилы; Antigravity получает строковый globs и манифест вложенных скилов, DSH получает discovery-указатели. Bootstrap Codex находится в корневом AGENTS.md и не заменяет встроенные инструкции. Отличающиеся старые копии сохраняются в `.doc/skil_data/environment-sync/backups/`; receipt discovery находится в `.doc/skil_data/environment-sync/discovery.json`.
+Ссылки перемещённых правил сохраняют каноническую цель. Синхронизация проверяет native discovery отдельно от parity. Codex и Cursor используют канонические скилы; Antigravity получает строковый globs и манифест вложенных скилов, DSH получает discovery-указатели. Bootstrap Codex находится в корневом AGENTS.md и не заменяет встроенные инструкции. Receipt discovery находится в `.doc/skil_data/environment-sync/discovery.json`.

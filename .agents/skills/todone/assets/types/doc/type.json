@@ -1,0 +1,18 @@
+{
+  "id": "doc",
+  "name": "Документация продукта",
+  "class": "product",
+  "gates": {
+    "tests": "not_required",
+    "docs": true,
+    "acceptance_min": false,
+    "close": "docs_rendered"
+  },
+  "capabilities": [
+    "docs-store"
+  ],
+  "fields": [],
+  "editor": "any",
+  "checks": [],
+  "profile": null
+}

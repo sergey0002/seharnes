@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/flow-doc-1.json",
+  "title": "FLOW-DOC-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "policy_key", "required", "confirmation", "question", "on_decline"],
+  "properties": {
+    "schema": {"const": "FLOW-DOC-1"}, "policy_key": {"const": "documentation"},
+    "required": {"type": "boolean"}, "confirmation": {"enum": ["effective_policy", "always", "never"]},
+    "question": {"type": "object"}, "on_decline": {"type": "string"},
+    "automation": {"enum": ["ask", "always", "manual", "disabled"]},
+    "cadence": {"enum": ["slice", "aggregate", "both", "explicit"]},
+    "update_after": {"enum": ["implementation", "slice_tests", "all_tests", "explicit_command"]},
+    "verify": {"enum": ["on_update", "after_final_tests", "on_close"]},
+    "enforcement": {"enum": ["advisory", "required", "critical"]},
+    "retain_impact_record": {"type": "boolean"}
+  }
+}

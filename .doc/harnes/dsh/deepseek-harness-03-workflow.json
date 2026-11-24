@@ -1,0 +1,327 @@
+{
+  "artifacts": [],
+  "business_logic": {
+    "facts": [],
+    "linked_rule_ids": [],
+    "unconfirmed": []
+  },
+  "checks": [],
+  "decisions": [],
+  "files": [],
+  "findings": [
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-1",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s15",
+      "severity": null,
+      "source_ids": [],
+      "statement": "model selection в subagent",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "model selection в subagent"
+    },
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-3",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s15",
+      "severity": null,
+      "source_ids": [],
+      "statement": "gototask долгий на медленной сети",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "gototask долгий на медленной сети"
+    }
+  ],
+  "git_events": [],
+  "git_state": null,
+  "history": [
+    {
+      "actor": "migration",
+      "at": "2026-10-21T05:57:43Z",
+      "id": "migrate-arch-deepseek-harness-03-workflow-2",
+      "source_ids": [],
+      "summary": "deepseek_harnes -> architecture"
+    },
+    {
+      "actor": "agent-review",
+      "at": "2026-10-21T22:41:08Z",
+      "id": "tags2-deepseek-harness-03-workflow-15f53a",
+      "source_ids": [],
+      "summary": "tag harness documentation"
+    },
+    {
+      "actor": "project-doc",
+      "at": "2026-10-31T02:10:13Z",
+      "id": "arch-deepseek-harness-03-workflow-dsh-kit-20261031-01",
+      "source_ids": [],
+      "summary": "Уточнение источника канонических скилов и переноса DSH kit"
+    },
+    {
+      "actor": "project-doc",
+      "at": "2026-11-02T01:52:36Z",
+      "id": "dsh-skills-root-deepseek-harness-03-workflow-20261102",
+      "source_ids": [],
+      "summary": "switch skill canon to .agents/skills"
+    }
+  ],
+  "id": "architecture:deepseek-harness-03-workflow",
+  "jira_report": null,
+  "kind": "architecture",
+  "metadata": {
+    "branch": null,
+    "doc_type": "architecture",
+    "release": null,
+    "source_status": "actual",
+    "status": "unknown",
+    "task_id": null,
+    "task_type": "unknown",
+    "title": "Workflow задачи в DeepSeek Harness",
+    "updated_at": "1970-01-01T00:00:00Z"
+  },
+  "notes": [],
+  "progress": [],
+  "relations": [],
+  "requirements": [],
+  "revision": 4,
+  "schema_version": "1.0",
+  "section_order": [
+    "s0",
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "s8",
+    "s9",
+    "s10",
+    "s11",
+    "s13",
+    "s14",
+    "s15",
+    "s16"
+  ],
+  "sections": [
+    {
+      "anchor": "workflow-задачи-в-deepseek-harness",
+      "anchor_aliases": [],
+      "body_markdown": "\n<!-- meta\ntype: flow\nstatus: actual\nupdated: 2026-10-31\ntags: [deepseek, workflow, task]\n-->\n\n---\n",
+      "id": "s0",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Workflow задачи в DeepSeek Harness"
+    },
+    {
+      "anchor": "суть",
+      "anchor_aliases": [],
+      "body_markdown": "\nЦикл работы с задачей: переход, классификация размера, план, аудит плана,\nреализация, тест, ручная отправка в git. Отличие от Cursor только в оболочке:\nPowerShell-скрипты идут через `run-ps1.sh`, вопросы через tool\n`ask_user_question`, моделей пока одна.\n\nМаршрутизатор - скил `dsh-router` (`.dsh/skills/dsh-router/SKILL.md`).\nКанонические скилы синк кладет в `.agents/skills`, DSH читает их через tool\n`skill(name)`. В `.dsh/skills` лежит только `dsh-router`.\n\n> **AI:** читай этот doc при выполнении задачи в DSH.\n> **Сначала:** `skill(dsh-router)`.\n> **Не читай целиком:** детали P0-P7 в `.dsh/adapters/prepare-plan-digest.md`.\n> **См. также:** [../harnes/state/07-workflows.md](../harnes/state/07-workflows.md) - схемы канона.\n\n---\n",
+      "id": "s1",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Суть"
+    },
+    {
+      "anchor": "маршрут-по-размеру-задачи",
+      "anchor_aliases": [],
+      "body_markdown": "",
+      "id": "s2",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Маршрут по размеру задачи"
+    },
+    {
+      "anchor": "ступень-a---pre-классификация",
+      "anchor_aliases": [],
+      "body_markdown": "\nПосле gototask прочитать `task.md` и определить `size_pre`:\n\n| size_pre | Сигналы |\n|---|---|\n| trivial | <=1 AC; 1 файл; нет money/auth/DB; риск Low |\n| small | <=2 файла; один UI/HTTP-контур |\n| medium | 3+ файла, или 2+ AC, или свежий комментарий с требованием |\n| large | Critical, shared default, money/auth mutation, multi-domain |\n\nНе можешь доказать trivial - ставь small. Результат в `.doc/tasks/{N}/route.json`.\n",
+      "id": "s3",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Ступень A - pre-классификация"
+    },
+    {
+      "anchor": "что-выполняется-по-размерам",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Этап | trivial | small | medium | large |\n|---|---|---|---|---|\n| gototask | да | да | да | да |\n| план | digest | digest | канон | канон |\n| P7.0 plan verify | да | да | да | да |\n| P7.8 zero-ambiguity | да | да | да | да |\n| P7.9 task-closure | да | да | да | да |\n| G13 ветки | да | да | да | да |\n| P0.5a find-related-tasks | skip | да | да | да |\n\nМеханические гейты не масштабируются.\n\n---\n",
+      "id": "s4",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Что выполняется по размерам"
+    },
+    {
+      "anchor": "шаги",
+      "anchor_aliases": [],
+      "body_markdown": "",
+      "id": "s5",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Шаги"
+    },
+    {
+      "anchor": "1.-переход-к-задаче",
+      "anchor_aliases": [],
+      "body_markdown": "\n```bash\nbash .dsh/scripts/run-ps1.sh .agents/skills/gototask/scripts/gototask.ps1 \\\n  -TaskNumber {N} -Action inspect\n```\n\nРазобрать JSON: `needsUserInput`, `recommendedAction`, `defaultReleaseBranch`.\nВажно: `branchExists` считается по origin. Локальная ветка без origin даёт\n`false` и `recommendedAction: create-branch`, даже если она уже checkout\n(так на задаче 2622). Сверять `currentBranch` до apply.\nВопросы по `needsUserInput` задавать через `ask_user_question` с вариантами,\nне текстом. Apply с флагами канона:\n\n```bash\n-Action create-branch -ReleaseBranch \"<релиз>\" -TaskBranch \"<ветка>\" -LocalChanges discard\n-Action merge-release -ReleaseBranch \"<релиз>\" -TaskBranch \"<ветка>\" -LocalChanges discard\n```\n\nДля `merge-release` проверить конфликты и отразить их в отчёте. Свежие\nкомментарии - правило `comment-triage`. MCP smoke один раз на сервер, кеш в\n`.doc/tasks/{N}/mcp-status.json`; красные серверы брать из\n`.dsh/adapters/mcp-names.md`. Отчёт пользователю: ветка, релиз, что применено.\n",
+      "id": "s6",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "1. Переход к задаче"
+    },
+    {
+      "anchor": "2.-план",
+      "anchor_aliases": [],
+      "body_markdown": "\n```\nskill(prepare-plan)\nпрочитать .dsh/adapters/prepare-plan-digest.md\njsondoc plan template --task {N} -> заполнить -> plan write -> plan verify\n```\n\nSubagent вызывать можно, но без `provider`/`model`: наследуется текущая модель.\n",
+      "id": "s7",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "2. План"
+    },
+    {
+      "anchor": "3.-аудит-плана-(p7.4a)",
+      "anchor_aliases": [],
+      "body_markdown": "\nПолный rebuild по 17 шагам канона, ведущим: blast radius, git-task-blame по\nкаждому Patches, свежий P7.9, IN/OUT, docs!=code, инварианты, симуляция,\nуникальность Before, покрытие R->S, sources of truth, риск, scope_size.\nКанон запрещает re-tick без шагов 1-17.\nНезависимого второго мнения на другой модели нет, пока не включён `llm-pi-ai`\n(см. [04-модели.md](./deepseek-harness-04-modeli.md)).\nАгрегация: common = обязательно, unique = проверить по коду.\n",
+      "id": "s8",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "3. Аудит плана (P7.4a)"
+    },
+    {
+      "anchor": "4.-реализация",
+      "anchor_aliases": [],
+      "body_markdown": "\n```\n1. Читать модель плана: jsondoc get --task {N}.\n2. Before -> After через edit tool.\n3. После каждого R: plan verify --task {N} до запуска S.\n4. \"Проверь этап R\": только S этого R.\n```\n",
+      "id": "s9",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "4. Реализация"
+    },
+    {
+      "anchor": "5.-тест",
+      "anchor_aliases": [],
+      "body_markdown": "\n```\nпроверь этап R:   один метод или сценарий этого R.\nтестируй задачу N:\n  0. task-diff свежий.\n  1. Таблица веток G13.\n  2. Нет Cest -> prepare-task-test.\n  3. preflight: check-tests.sh + task-test.sh --phase preflight.\n  4. browser-verify: Codeception -g task-N, Playwright только строки без метода.\n  5. Вердикт из verdict.json.\n  6. gates.py N - G0..G13, skipped G13 = failed.\n```\n",
+      "id": "s10",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "5. Тест"
+    },
+    {
+      "anchor": "6.-отправка-в-git",
+      "anchor_aliases": [],
+      "body_markdown": "\n```\n1. skill(send-to-git).\n2. verdict.json зелёный.\n3. Согласовать файлы через ask_user_question.\n4. После \"да\": git add/commit/push.\n5. skill(task-doc) режим B после push.\n```\n",
+      "id": "s11",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "6. Отправка в git"
+    },
+    {
+      "anchor": "гейты",
+      "anchor_aliases": [],
+      "body_markdown": "\n```\nP7.0: python3 .doc/skil_data/task-doc/jsondoc.py --root . plan verify --task {N} --require-syntax\n      0 green / 1 warnings / 5 legacy (артефакт есть, JSON-модели нет)\n      2 plan_model_missing (модели нет: template + plan write) / 3-4 чини план.\nP7.8: Before grep count=1; After полный; expected литерал.\nP7.9: каждый AC закрыт R; 100% для FULL.\nG13:  таблица веток без open/partial. gates.py считает skipped как ok,\n      поэтому проверять вручную: plan.md есть, а таблицы нет = FAILED.\n      Нет plan.md - G13 законно n/a.\n```\n\n---\n",
+      "id": "s13",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Гейты"
+    },
+    {
+      "anchor": "связи",
+      "anchor_aliases": [],
+      "body_markdown": "\n- [Устройство](./deepseek-harness-01-ustroystvo.md) - слои\n- [Модели](./deepseek-harness-04-modeli.md) - что доступно\n- [Скрипты](./deepseek-harness-05-skripty.md) - команды\n- [План 07](../harnes/plan/07-dsh-final.md) - детальные гейты\n\n---\n",
+      "id": "s14",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Связи"
+    },
+    {
+      "anchor": "известные-проблемы-и-ограничения",
+      "anchor_aliases": [],
+      "body_markdown": "\n\n- Симптом: `subagent(provider=xai, model=grok-4.7)` возвращает null.\n- Причина: `llm-pi-ai` выключен, провайдеров нет.\n- Решение: не передавать provider/model; для тяжёлых моделей сначала\n  [04-модели.md](./deepseek-harness-04-modeli.md).\n\n\n- Симптом: subagent не видит transcript родителя и фабрикует incidents.\n- Причина: spawn/fork не наследуют текущий транскрипт.\n- Решение: только ведущий в своём контексте.\n\n\n- Симптом: `inspect` висит больше 90 с.\n- Причина: внутри `git fetch origin`.\n- Решение: давать `timeoutMs` 60000 и повторять; fetch докачивается.\n\n---\n",
+      "id": "s15",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Известные проблемы и ограничения"
+    },
+    {
+      "anchor": "история-изменений",
+      "anchor_aliases": [],
+      "body_markdown": "\n- 2026-10-20: создан\n- 2026-10-20: команды переведены на `run-ps1.sh`, вопросы на `ask_user_question`,\n  добавлен факт об одной модели\n\n#deepseek #workflow #task\n- 2026-10-31: уточнено, что канонические скилы приходят из .agents/skills, DSH kit переносится copy-dsh-kit.ps1\n",
+      "id": "s16",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "История изменений"
+    }
+  ],
+  "sources": [
+    {
+      "availability": "present",
+      "id": "S-legacy",
+      "kind": "doc",
+      "observation": "legacy doc.md",
+      "observed_at": null,
+      "path": null,
+      "pointer": null,
+      "revision": null,
+      "sha256": "4815b1cbdef031dc123b47a90fe1ca0dcb521a6673308d511159b895e23a6fc2"
+    }
+  ],
+  "stages": [],
+  "summary": null,
+  "tags": [
+    {
+      "reason": "документация харнеса",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:harness"
+    },
+    {
+      "reason": "описание DeepSeek Harness",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:deepseek"
+    },
+    {
+      "reason": "стандарт и поиск по документации",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:documentation"
+    }
+  ],
+  "tracker": null
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "x",
+  "schema": "AUTODOC-RELATION-1",
+  "relation_id": "uses:type:fixture",
+  "from": "task:fixture:q:T-001",
+  "to": "type:fixture",
+  "kind": "uses",
+  "resolution": "resolved",
+  "source_refs": [],
+  "provenance": [],
+  "unknown_extra": true
+}

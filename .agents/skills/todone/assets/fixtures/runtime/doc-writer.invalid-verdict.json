@@ -1,0 +1,14 @@
+{
+  "schema": "DOC-WRITER-1",
+  "docs_changed": false,
+  "doc_keys": [],
+  "revisions": [],
+  "claims_changed": [],
+  "source_refs": [],
+  "render_check": "passed",
+  "schema_check": "passed",
+  "stale_check": "current",
+  "verdict": "done",
+  "unknowns": [],
+  "next_action": "tcheck docs check --root ."
+}

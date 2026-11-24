@@ -174,6 +174,8 @@ def slug_of(rel: str) -> str:
         skill = parts[0].lower()
         if "children" in parts[:-1] or len(parts) > 3:
             stem = "-".join(part.lower() for part in parts[:-1] + [stem])
+        elif len(parts) == 3 and stem in AUX_STEMS:
+            stem = "%s-%s-%s" % (skill, parent, stem)
         else:
             stem = "%s-%s" % (skill, parent if stem in PRIMARY_STEMS else stem)
     elif stem in PRIMARY_STEMS:
@@ -2079,7 +2081,6 @@ def set_block(root: Path, data: Path, node_id: str, block_id: str, text: str) ->
         raise MirrorError("unknown block: " + block_id, 1)
     source = root / node["meta"]["source_file_path"]
     original = source.read_bytes()
-    snapshot = json.loads(json.dumps(node))
     target[field] = text
     rebuilt = compile_node(node)
     bom = "\ufeff" if node["reconstruction_meta"].get("bom") else ""
@@ -2095,12 +2096,6 @@ def set_block(root: Path, data: Path, node_id: str, block_id: str, text: str) ->
     if source.read_bytes() != expected:
         atomic_write(source, original)
         raise MirrorError("round trip mismatch after write, source restored", 1)
-    history = data / "nodes" / ".history"
-    history.mkdir(parents=True, exist_ok=True)
-    version = 1
-    while (history / ("%s.v%d.json" % (safe_name(node_id), version))).exists():
-        version += 1
-    write_json(history / ("%s.v%d.json" % (safe_name(node_id), version)), snapshot)
     _mcp_rel, mcp_servers = load_mcp_servers(root)
     fresh = build_node(node["meta"]["source_file_path"], root, build_index(root), node, sorted(mcp_servers))
     save_node(data, fresh)
@@ -2114,7 +2109,7 @@ def set_block(root: Path, data: Path, node_id: str, block_id: str, text: str) ->
         "node_file": "nodes/" + node_path(data, node_id).name,
     }
     write_json(cache_path, cache)
-    return {"status": "ok", "node": node_id, "block": block_id, "backup": version}
+    return {"status": "ok", "node": node_id, "block": block_id}
 
 
 def set_file(root: Path, data: Path, node_id: str, text: str) -> dict:
@@ -2142,7 +2137,6 @@ def set_file(root: Path, data: Path, node_id: str, text: str) -> dict:
     expected = (bom + body).encode("utf-8")
     if source.read_bytes() != original:
         raise MirrorError("source changed while editing, retry: " + meta["source_file_path"], 1)
-    snapshot = json.loads(json.dumps(node))
     try:
         atomic_write(source, expected)
     except OSError as exc:  # noqa: BLE001
@@ -2155,12 +2149,6 @@ def set_file(root: Path, data: Path, node_id: str, text: str) -> dict:
     if compile_node(fresh) != body:
         atomic_write(source, original)
         raise MirrorError("new text does not split into blocks losslessly, source restored", 1)
-    history = data / "nodes" / ".history"
-    history.mkdir(parents=True, exist_ok=True)
-    version = 1
-    while (history / ("%s.v%d.json" % (safe_name(node_id), version))).exists():
-        version += 1
-    write_json(history / ("%s.v%d.json" % (safe_name(node_id), version)), snapshot)
     save_node(data, fresh)
     cache_path = data / "cache.map"
     cache = json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.is_file() else {}
@@ -2172,7 +2160,7 @@ def set_file(root: Path, data: Path, node_id: str, text: str) -> dict:
         "node_file": "nodes/" + node_path(data, node_id).name,
     }
     write_json(cache_path, cache)
-    return {"status": "ok", "node": node_id, "file": meta["source_file_path"], "backup": version}
+    return {"status": "ok", "node": node_id, "file": meta["source_file_path"]}
 
 
 def serve(data: Path, root: Path, host: str, port: int) -> int:
@@ -2406,7 +2394,7 @@ def cmd_check(args, root: Path, data: Path) -> int:
     return 0 if not errors else 1
 
 
-VISIBILITY_ENVS = ("cursor", "codex", "kilo", "dsh", "qoder", "qwen", "antigravity")
+VISIBILITY_ENVS = ("cursor", "codex", "kilo", "dsh", "qoder", "qwen", "antigravity", "opencode")
 TRIGGER_MODE = {
     "always_on": "inline",
     "glob": "glob",
@@ -2480,6 +2468,16 @@ def kilo_instructions(root: Path) -> set[str]:
         return set()
 
 
+def opencode_instructions(root: Path) -> set[str]:
+    path = root / "opencode.json"
+    if not path.is_file():
+        return set()
+    try:
+        return set(json.loads(path.read_text(encoding="utf-8")).get("instructions", []))
+    except json.JSONDecodeError:
+        return set()
+
+
 def trigger_of(path: Path) -> str:
     if not path.is_file():
         return "none"
@@ -2504,6 +2502,11 @@ def compute_visibility(root: Path) -> dict:
     """
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "environment-sync/scripts"))
     import rule_model
+    from environment_policy import enabled_ids
+    active = set(enabled_ids(root))
+    active_envs = set(VISIBILITY_ENVS) & active
+    if "agents" in active:
+        active_envs.add("antigravity")
     canon = root / ".cursor" / "rules"
     startup = root / "AGENTS.md"
     startup_text = startup.read_text(encoding="utf-8") if startup.is_file() else ""
@@ -2516,6 +2519,9 @@ def compute_visibility(root: Path) -> dict:
     codex_index_path = root / ".codex" / "rules-index.md"
     codex_text = codex_index_path.read_text(encoding="utf-8") if codex_index_path.is_file() else ""
     codex_head, _, codex_tail = codex_text.partition("## По требованию")
+    oc_instructions = opencode_instructions(root)
+    oc_index_path = root / ".opencode" / "rules-index.md"
+    oc_index = oc_index_path.read_text(encoding="utf-8") if oc_index_path.is_file() else ""
 
     matrix: dict[str, dict[str, str]] = {}
     errors: list[str] = []
@@ -2546,12 +2552,15 @@ def compute_visibility(root: Path) -> dict:
             "qoder": TRIGGER_MODE.get(qoder_trigger, "none"),
             "qwen": qwen_mode(root, flat),
             "antigravity": TRIGGER_MODE.get(antigravity_trigger, "none"),
+            "opencode": "inline" if f".opencode/rules/{rel_md}" in oc_instructions else "index",
         }
-        matrix[key] = modes
+        matrix[key] = {env: mode for env, mode in modes.items() if env in active_envs}
 
         if str(fields.get("gate", "")).strip().lower() == "true":
             gates.append(key)
             for env in VISIBILITY_ENVS:
+                if env not in active_envs:
+                    continue
                 if modes[env] != "inline":
                     errors.append(f"{key}: gate not inline in {env} ({modes[env]})")
 
@@ -2561,9 +2570,14 @@ def compute_visibility(root: Path) -> dict:
             if kind != "conditional" or not globs:
                 errors.append(f"{key}: attach glob requires globs or paths")
             for env in ("cursor", "qoder", "qwen", "antigravity"):
+                if env not in active_envs:
+                    continue
                 if modes[env] != "glob":
                     errors.append(f"{key}: path trigger not attached in {env} ({modes[env]})")
-            for env, text in (("kilo", kilo_index), ("codex", codex_tail), ("dsh", dsh_tail)):
+            for env, text in (("kilo", kilo_index), ("codex", codex_tail), ("dsh", dsh_tail),
+                              ("opencode", oc_index)):
+                if env not in active_envs:
+                    continue
                 if "<!-- glob-triggers -->" not in text:
                     errors.append(f"{key}: generated glob block missing in {env}")
                 for glob in globs:

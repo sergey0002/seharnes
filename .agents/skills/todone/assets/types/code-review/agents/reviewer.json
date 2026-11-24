@@ -1,0 +1,23 @@
+{
+  "name": "reviewer",
+  "role": "reviewer",
+  "tools": [
+    "read",
+    "bash"
+  ],
+  "boundaries": [
+    "не менять чужую запись",
+    "предложения не применять самому"
+  ],
+  "return_contract": {
+    "fields": [
+      "findings",
+      "verdict",
+      "commands_run"
+    ],
+    "shape": "json: находки с указателями и вердикт",
+    "persist": "artifacts/review.json",
+    "pointer": "ttask artifact add <id> --kind report --path artifacts/review.json"
+  },
+  "brief": "_shared/subagent-brief.md"
+}

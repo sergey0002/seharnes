@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/autodoc-diagram-1.json",
+  "title": "AUTODOC-DIAGRAM-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema",
+    "diagram_id",
+    "kind",
+    "title",
+    "nodes",
+    "edges",
+    "legend",
+    "source_entity_refs",
+    "layout"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "AUTODOC-DIAGRAM-1"
+    },
+    "diagram_id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {}
+    },
+    "edges": {
+      "type": "array",
+      "items": {}
+    },
+    "legend": {
+      "type": "array",
+      "items": {}
+    },
+    "source_entity_refs": {
+      "type": "array",
+      "items": {}
+    },
+    "layout": {
+      "type": "string"
+    },
+    "spec_digest": {
+      "type": "string"
+    },
+    "asset_path": {
+      "type": "string"
+    },
+    "asset_digest": {
+      "type": "string"
+    },
+    "persisted_state": {
+      "type": "array",
+      "items": {}
+    },
+    "problems": {
+      "type": "array",
+      "items": {}
+    },
+    "problem_nodes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "renderer": {
+      "const": "mermaid"
+    },
+    "renderer_version": {
+      "type": "string"
+    },
+    "renderer_adapter": {
+      "type": "string"
+    },
+    "renderer_runtime": {
+      "type": "string"
+    },
+    "renderer_offline": {
+      "const": true
+    },
+    "mermaid_source": {
+      "type": "string"
+    },
+    "mermaid_source_digest": {
+      "type": "string"
+    },
+    "mermaid_render_source": {
+      "type": "string"
+    },
+    "source_mode": {
+      "type": "string"
+    },
+    "source_document_path": {
+      "type": "string"
+    },
+    "source_line": {
+      "type": "integer"
+    },
+    "source_block_digest": {
+      "type": "string"
+    },
+    "source_file_digest": {
+      "type": "string"
+    },
+    "projection_source": {
+      "type": "string"
+    },
+    "projection_digest": {
+      "type": "string"
+    }
+  }
+}

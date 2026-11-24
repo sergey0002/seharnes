@@ -1,0 +1,339 @@
+{
+  "$schema": "x",
+  "schema": "PREZA-PARITY-1",
+  "legacy_root": "external/preza",
+  "legacy_output": "external/preza/site/index.html",
+  "sections": [
+    {
+      "id": "start",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "architecture",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "entities",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "lifecycle",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "commands",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "types",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "flows",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "schemas",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "templates",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "file-catalog",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "checks",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "faq",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "live-facts",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    },
+    {
+      "id": "footer",
+      "source": "external/preza/content.py",
+      "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target_page": "audit/index.html#legacy-facts",
+      "status": "transformed",
+      "source_refs": [
+        "source:test"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "legacy-architecture-svg",
+      "digest": null,
+      "target": "assets/diagrams/legacy-architecture.svg",
+      "status": "unknown",
+      "source_refs": []
+    }
+  ],
+  "inventory": {
+    "entity_sections": [
+      {
+        "id": "entity_sections:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "lifecycle": [
+      {
+        "id": "lifecycle:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "schema_notes": [
+      {
+        "id": "schema_notes:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "faq": [
+      {
+        "id": "faq:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "command_notes": [
+      {
+        "id": "command_notes:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "file_overrides": [
+      {
+        "id": "file_overrides:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "id": "commands:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "types": [
+      {
+        "id": "types:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "flows": [
+      {
+        "id": "flows:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "schemas": [
+      {
+        "id": "schemas:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "templates": [
+      {
+        "id": "templates:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "file_notes": [
+      {
+        "id": "file_notes:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "checks": [
+      {
+        "id": "checks:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "live_facts": [
+      {
+        "id": "live_facts:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ],
+    "svg": [
+      {
+        "id": "svg:1",
+        "source": "external/preza/content.py",
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "target_page": "audit/index.html#legacy-facts",
+        "status": "transformed",
+        "source_refs": [
+          "source:test"
+        ]
+      }
+    ]
+  }
+}

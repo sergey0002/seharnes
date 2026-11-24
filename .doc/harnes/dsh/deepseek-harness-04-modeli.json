@@ -1,0 +1,239 @@
+{
+  "artifacts": [],
+  "checks": [],
+  "decisions": [],
+  "files": [],
+  "findings": [
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-1",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s7",
+      "severity": null,
+      "source_ids": [],
+      "statement": "id моделей не подтверждены",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "id моделей не подтверждены"
+    },
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-2",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s7",
+      "severity": null,
+      "source_ids": [],
+      "statement": "настройки моделей в UI без провайдеров",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "настройки моделей в UI без провайдеров"
+    },
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-3",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s7",
+      "severity": null,
+      "source_ids": [],
+      "statement": "headless-профиль",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "headless-профиль"
+    }
+  ],
+  "git_events": [],
+  "git_state": null,
+  "history": [
+    {
+      "actor": "migration",
+      "at": "2026-10-21T05:57:43Z",
+      "id": "migrate-arch-deepseek-harness-04-modeli-2",
+      "source_ids": [],
+      "summary": "deepseek_harnes -> architecture"
+    },
+    {
+      "actor": "agent-review",
+      "at": "2026-10-21T22:41:08Z",
+      "id": "tags2-deepseek-harness-04-modeli-34f956",
+      "source_ids": [],
+      "summary": "tag harness documentation"
+    }
+  ],
+  "id": "architecture:deepseek-harness-04-modeli",
+  "jira_report": null,
+  "kind": "architecture",
+  "metadata": {
+    "branch": null,
+    "doc_type": "architecture",
+    "release": null,
+    "source_status": "actual",
+    "status": "unknown",
+    "task_id": null,
+    "task_type": "unknown",
+    "title": "что доступно и как включить остальное",
+    "updated_at": "1970-01-01T00:00:00Z"
+  },
+  "notes": [],
+  "progress": [],
+  "relations": [],
+  "requirements": [],
+  "revision": 2,
+  "schema_version": "1.0",
+  "section_order": [
+    "s0",
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "s8"
+  ],
+  "sections": [
+    {
+      "anchor": "модели:-что-доступно-и-как-включить-остальное",
+      "anchor_aliases": [],
+      "body_markdown": "\n<!-- meta\ntype: config\nstatus: actual\nupdated: 2026-10-20\ntags: [deepseek, models, routing]\n-->\n\n---\n",
+      "id": "s0",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Модели: что доступно и как включить остальное"
+    },
+    {
+      "anchor": "суть",
+      "anchor_aliases": [],
+      "body_markdown": "\nСейчас профиль DSH работает на одной модели: `deepseek-account` /\n`deepseek-flash`. Плагин `llm-pi-ai`, который даёт xai, anthropic и google, в\nпатч не входит, поэтому `list_subagent_models` пуст и выбрать grok, claude или\ngemini в subagent нельзя. Ниже - как это проверено и как включить обратно.\n\n> **AI:** читай этот doc перед тем, как обещать мультимодельный маршрут.\n> **Сначала:** [03-workflow.md](./deepseek-harness-03-workflow.md) - шаги цикла.\n> **Не читай целиком:** блок включения нужен только при переключении моделей.\n> **См. также:** [02-установка.md](./deepseek-harness-02-ustanovka.md) - проверка после запуска.\n\n---\n",
+      "id": "s1",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Суть"
+    },
+    {
+      "anchor": "факт",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Роль | Модель | Как идёт работа |\n|---|---|---|\n| gototask, классификация | deepseek-flash | ведущий |\n| план любого размера | deepseek-flash | ведущий или subagent без выбора модели |\n| аудит плана | deepseek-flash | ведущий, один проход |\n| реализация | deepseek-flash | ведущий |\n| тест | deepseek-flash | ведущий или subagent |\n\nПодтверждение (2026-10-20):\n\n```\nlist_subagent_models                          -> (no LLM providers)\ngrep -c \"llm-pi-ai\" .dsh/project.patch.yml    -> 0\ngrep -n \"agent-default-model\" ~/.dsh/profiles/web/cordis.patch.yml\n                                              -> provider: deepseek-account, model: deepseek-flash\n```\n\nМодель по умолчанию задаётся в профиле DSH, а не в проектном патче. Поэтому\n`deepseek-flash` виден агенту, хотя в overlay он описан как `llm-pi-ai` провайдер\n`deepseek`.\n\n---\n",
+      "id": "s2",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Факт"
+    },
+    {
+      "anchor": "почему-так",
+      "anchor_aliases": [],
+      "body_markdown": "\n`llm-pi-ai` был в патче (`.dsh/project.patch.yml.bak-dsh`), затем вырезан\nвручную. Строка `subagent-model-selection-settings` при старте даёт warning:\n`standing modelSelectionSettings requires a scoped preset Context`, поэтому\n`modelSelectionSettings` выставлен в `false`.\n\nЧтобы патч перестал быть правленым руками, генератор получил флаги:\n\n```bash\npython3 .agents/skills/harness-management/children/environment-sync/scripts/generate-dsh-config.py --root . --no-llm --no-model-selection\n```\n\nТакой запуск побайтно воспроизводит текущий `.dsh/project.patch.yml`.\n`smoke.sh` это сверяет.\n\n---\n",
+      "id": "s3",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Почему так"
+    },
+    {
+      "anchor": "как-включить-переключение-моделей",
+      "anchor_aliases": [],
+      "body_markdown": "\n1. Ключи провайдеров: `DEEPSEEK_API_KEY`, `XAI_API_KEY`, `ANTHROPIC_API_KEY`,\n   `GOOGLE_API_KEY` в окружении DSH или в `~/.dsh/.credentials.yaml`.\n2. Перегенерировать патч без `--no-llm`:\n\n   ```bash\n   python3 .agents/skills/harness-management/children/environment-sync/scripts/generate-dsh-config.py --root . --no-model-selection\n   ```\n\n3. Перезапустить:\n\n   ```bash\n   dsh --patch .dsh/project.patch.yml web --no-open\n   ```\n\n4. Проверить `list_subagent_models`: должны появиться deepseek, xai, anthropic,\n   google. Если пусто - смотреть stderr на `did not activate`.\n\n5. После зелёной проверки вернуть в `dsh-router` маршрут:\n   план - xai/grok-4.7, аудиторы - anthropic/claude-sonnet-5-5 и\n   google/gemini-3.8-flash.\n\nОжидаемая цена включения: при старте возможен warning про\n`modelSelectionSettings` (не критичен) и рост расхода токенов на тяжёлых ролях.\n\n---\n",
+      "id": "s4",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Как включить переключение моделей"
+    },
+    {
+      "anchor": "fallback,-если-провайдер-недоступен",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Роль | Fallback |\n|---|---|\n| план | deepseek-flash + полный канон prepare-plan |\n| аудит плана | структурные гейты P7.0/P7.8/P7.9/G13 вместо второго мнения |\n| диагностика ошибок | deepseek-flash + MCP-трассировка (CBM, sourcegraph) |\n\nGuard: если аудитор вернул null, помечай `finalStatus: failed`,\n`reason: provider_unavailable`. Один null не считается успешным аудитом.\n\n---\n",
+      "id": "s5",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Fallback, если провайдер недоступен"
+    },
+    {
+      "anchor": "связи",
+      "anchor_aliases": [],
+      "body_markdown": "\n- [Workflow](./deepseek-harness-03-workflow.md) - где модель участвует\n- [Установка](./deepseek-harness-02-ustanovka.md) - проверка после перезапуска\n- [Скрипты](./deepseek-harness-05-skripty.md) - оболочка\n- `.dsh/adapters/models.md` - рабочая памятка по ролям\n\n---\n",
+      "id": "s6",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Связи"
+    },
+    {
+      "anchor": "известные-проблемы-и-ограничения",
+      "anchor_aliases": [],
+      "body_markdown": "\n\n- `grok-4.7`, `claude-sonnet-5-5`, `gemini-3.8-flash` - намерения из overlay.\n- Проверка только через `list_subagent_models` после включения `llm-pi-ai`.\n\n\n- Settings -> Models показывает только зарегистрированные маршруты.\n- Без `llm-pi-ai` там один deepseek-account.\n\n\n- В headless строка `modelSelectionSettings` не активируется, warning в stderr.\n- На работу web-профиля это не влияет, но логи читать надо.\n\n---\n",
+      "id": "s7",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Известные проблемы и ограничения"
+    },
+    {
+      "anchor": "история-изменений",
+      "anchor_aliases": [],
+      "body_markdown": "\n- 2026-10-20: создан\n- 2026-10-20: переписан по факту: одна модель, флаги генератора, инструкция включения\n\n#deepseek #models #routing",
+      "id": "s8",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "История изменений"
+    }
+  ],
+  "sources": [
+    {
+      "availability": "present",
+      "id": "S-legacy",
+      "kind": "doc",
+      "observation": "legacy doc.md",
+      "observed_at": null,
+      "path": null,
+      "pointer": null,
+      "revision": null,
+      "sha256": "e88354b1996f987ea603e6adeae75d705da4f27d92180f4b918f440c45591022"
+    }
+  ],
+  "stages": [],
+  "summary": null,
+  "tags": [
+    {
+      "reason": "документация харнеса",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:harness"
+    },
+    {
+      "reason": "описание DeepSeek Harness",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:deepseek"
+    },
+    {
+      "reason": "стандарт и поиск по документации",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:documentation"
+    }
+  ],
+  "tracker": null
+}

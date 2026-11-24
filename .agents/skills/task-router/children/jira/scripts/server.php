@@ -28,11 +28,47 @@ function resolveOutputRoot(EnvConfig $config, $baseDir)
 {
     $configured = $config->get('WORKSPACE_ROOT');
     if ($configured !== null && $configured !== '') {
-        return rtrim($configured, '/\\');
+        $configured = rtrim($configured, '/\\');
+        if (is_dir($configured) && is_writable($configured)) {
+            return $configured;
+        }
+
+        // WORKSPACE_ROOT is meant for the container path (/var/www/html).
+        // On the host that path may exist but be read-only, so fall through
+        // to the repo root instead of failing the whole export.
+        fwrite(
+            STDERR,
+            'WORKSPACE_ROOT is not writable: ' . $configured
+            . '; using repo root instead' . PHP_EOL
+        );
     }
 
-    // .doc/skil_data/jira -> repo root
-    return dirname(dirname($baseDir));
+    return findRepoRoot($baseDir);
+}
+
+/**
+ * Walk up from the script directory until a directory containing .doc or
+ * .git is found. The exporter lives in .agents/skills/..., so a fixed number
+ * of dirname() calls cannot reach the repo root reliably.
+ */
+function findRepoRoot($startDir)
+{
+    $dir = rtrim((string) $startDir, '/\\');
+
+    while ($dir !== '' && $dir !== DIRECTORY_SEPARATOR) {
+        if (is_dir($dir . DIRECTORY_SEPARATOR . '.doc')
+            || is_dir($dir . DIRECTORY_SEPARATOR . '.git')) {
+            return $dir;
+        }
+
+        $parent = dirname($dir);
+        if ($parent === $dir) {
+            break;
+        }
+        $dir = $parent;
+    }
+
+    return getcwd();
 }
 
 function buildJiraClient($baseDir)
@@ -168,6 +204,7 @@ if (PHP_SAPI === 'cli' && isset($argv[1]) && $argv[1] !== '') {
         fwrite(STDOUT, "Title: " . $result['title'] . PHP_EOL);
         fwrite(STDOUT, "Comments: " . $result['comments_count'] . PHP_EOL);
         fwrite(STDOUT, "Changes: " . $result['changes_count'] . PHP_EOL);
+        fwrite(STDOUT, "Attachments: " . count($result['attachments']) . PHP_EOL);
         exit(0);
     } catch (Exception $e) {
         fwrite(STDERR, $e->getMessage() . PHP_EOL);
@@ -206,7 +243,8 @@ $server->registerTool(
                 . "Title: " . $result['title'] . "\n"
                 . "Path: " . $result['path'] . "\n"
                 . "Comments: " . $result['comments_count'] . "\n"
-                . "Changes: " . $result['changes_count'];
+                . "Changes: " . $result['changes_count'] . "\n"
+                . "Attachments: " . count($result['attachments']);
 
             return mcpTextResult($text, false);
         } catch (Exception $e) {

@@ -42,7 +42,8 @@ def _core_allowed(path: str) -> bool:
         if path.startswith(prefix):
             parts = path.split("/")
             return len(parts) > 2 and parts[2] in CORE_SKILLS
-    for prefix in (".qoder/rules/", ".qwen/rules/", ".codex/rules/", ".kilo/rules/", ".agents/rules/"):
+    for prefix in (".qoder/rules/", ".qwen/rules/", ".codex/rules/", ".kilo/rules/", ".agents/rules/",
+                   ".opencode/rules/"):
         if path.startswith(prefix):
             relative = path[len(prefix):]
             if "/" in relative:

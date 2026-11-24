@@ -1,0 +1,47 @@
+{
+  "id": "intake",
+  "name": "Постановка и формализация задачи",
+  "class": "research",
+  "gates": {
+    "tests": "not_required",
+    "handoff": "required",
+    "acceptance_min": false,
+    "close": "result_is_knowledge"
+  },
+  "capabilities": [
+    "code-graph",
+    "memory"
+  ],
+  "fields": [
+    {
+      "name": "raw_gaps",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "чего не хватает в сыром тексте и что неясно: перечнем",
+      "example": "не назван срок; неясно, кто принимает; нет критериев"
+    },
+    {
+      "name": "assumptions",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "какие допущения приняты и почему они безопасны",
+      "example": "принимаем, что экспорт остаётся в прежнем формате"
+    },
+    {
+      "name": "draft_child",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "черновик рабочей записи: тип, заголовок, цель из сырого текста",
+      "example": "planning «План реализации переноса экспорта»"
+    }
+  ],
+  "editor": "any",
+  "checks": [],
+  "profile": null
+}

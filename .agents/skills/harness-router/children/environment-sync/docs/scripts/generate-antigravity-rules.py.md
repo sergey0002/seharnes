@@ -3,7 +3,7 @@
 <!-- meta
 type: script
 status: actual
-updated: 2026-11-07
+updated: 2026-11-19
 related: [../../SKILL.md]
 tags: [harness, script, generate-antigravity-rules, antigravity]
 -->
@@ -92,9 +92,10 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/generate
 - Связанные документы: `.doc/harnes/state/01-canon-envs.md`, `.doc/harnes/state/03-rules.md`.
 
 ## История изменений
+- 2026-11-19: удалено устаревшее описание постоянных резервных копий синхронизации.
 - 2026-11-07: полная документация на основе анализа кода
 - 2026-11-09: включено удаление лишних правил и проверка вложенных файлов.
 
 ## Изменения 2026-11-12
 
-Ссылки перемещённых правил сохраняют каноническую цель. Синхронизация проверяет native discovery отдельно от parity. Codex и Cursor используют канонические скилы; Antigravity получает строковый globs и манифест вложенных скилов, DSH получает discovery-указатели. Bootstrap Codex находится в корневом AGENTS.md и не заменяет встроенные инструкции. Отличающиеся старые копии сохраняются в `.doc/skil_data/environment-sync/backups/`; receipt discovery находится в `.doc/skil_data/environment-sync/discovery.json`.
+Ссылки перемещённых правил сохраняют каноническую цель. Синхронизация проверяет native discovery отдельно от parity. Codex и Cursor используют канонические скилы; Antigravity получает строковый globs и манифест вложенных скилов, DSH получает discovery-указатели. Bootstrap Codex находится в корневом AGENTS.md и не заменяет встроенные инструкции. Receipt discovery находится в `.doc/skil_data/environment-sync/discovery.json`.

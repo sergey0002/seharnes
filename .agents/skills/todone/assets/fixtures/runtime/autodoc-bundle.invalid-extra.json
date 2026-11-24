@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "AUTODOC-BUNDLE-1",
+  "bundle_id": "autodoc:test",
+  "bundle_revision": 1,
+  "generator": {
+    "name": "fixture",
+    "version": "1"
+  },
+  "root": {
+    "path": ".",
+    "workspace_ids": [
+      "fixture"
+    ],
+    "source_policy": "lossless-allowed-redacted"
+  },
+  "canonical_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "completeness": {
+    "status": "complete",
+    "unknowns": [],
+    "invalid_sources": []
+  },
+  "inventory": {},
+  "entities": [],
+  "relations": [],
+  "sources": [],
+  "documents": [],
+  "diagrams": [],
+  "audit_input": {},
+  "reconstruction": {
+    "$schema": "AUTODOC-RECONSTRUCTION-1",
+    "schema": "AUTODOC-RECONSTRUCTION-1",
+    "mode": "byte-identical-allowed-sources",
+    "source_refs": [],
+    "skipped": [],
+    "requires_human": []
+  },
+  "unknown_extra": true
+}

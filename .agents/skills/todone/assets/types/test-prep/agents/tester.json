@@ -1,0 +1,25 @@
+{
+  "name": "tester",
+  "role": "tester",
+  "tools": [
+    "read",
+    "edit",
+    "bash"
+  ],
+  "boundaries": [
+    "не менять продуктовый код",
+    "не объявлять тест зелёным без прогона"
+  ],
+  "return_contract": {
+    "fields": [
+      "tests",
+      "acceptance_map",
+      "commands_run",
+      "handoff"
+    ],
+    "shape": "json: тесты и связь с AC-N",
+    "persist": "artifacts/tests.json",
+    "pointer": "ttask artifact add <id> --kind tests --path artifacts/tests.json"
+  },
+  "brief": "_shared/subagent-brief.md"
+}

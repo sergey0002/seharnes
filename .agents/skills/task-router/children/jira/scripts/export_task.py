@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
@@ -61,6 +62,96 @@ def paginate_comments(cfg, issue_key):
             break
         start += len(batch)
     return items
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def download_attachment(cfg, content_url, dest):
+    """Jira answers 303 to a signed media URL; auth must not follow it."""
+    auth = base64.b64encode(f"{cfg['JIRA_EMAIL']}:{cfg['JIRA_API_TOKEN']}".encode()).decode()
+    opener = urllib.request.build_opener(_NoRedirect)
+    req = urllib.request.Request(
+        content_url,
+        headers={"User-Agent": "jira-task-export/1.0", "Authorization": f"Basic {auth}"},
+    )
+    try:
+        resp = opener.open(req, timeout=120)
+        body = resp.read()
+        resp.close()
+    except urllib.error.HTTPError as err:
+        location = err.headers.get("Location") if err.headers else None
+        err.close()
+        if err.code not in (301, 302, 303, 307, 308) or not location:
+            raise RuntimeError(f"HTTP {err.code}")
+        with urllib.request.urlopen(location, timeout=120) as media:
+            body = media.read()
+    if not body:
+        raise RuntimeError("empty response")
+    dest.write_bytes(body)
+    return len(body)
+
+
+def safe_filename(filename, att_id, with_id=False):
+    name = os.path.basename(str(filename or "").replace("\\", "/"))
+    name = re.sub(r"[^\w.-]+", "-", name, flags=re.UNICODE)
+    name = re.sub(r"-+\.", ".", name).strip("-._")
+    if not name:
+        name = f"attachment-{att_id}"
+    if with_id:
+        stem, ext = os.path.splitext(name)
+        name = f"{stem}-{att_id}{ext}"
+    return name
+
+
+def download_attachments(cfg, fields, task_dir):
+    items = fields.get("attachment") or []
+    if not items:
+        return []
+    target_dir = Path(task_dir) / "attachments"
+    target_dir.mkdir(parents=True, exist_ok=True)
+    records = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        att_id = str(item.get("id") or "")
+        filename = str(item.get("filename") or "")
+        size = int(item.get("size") or 0)
+        content = str(item.get("content") or "")
+        record = {
+            "id": att_id,
+            "filename": filename,
+            "size": size,
+            "path": "",
+            "status": "failed",
+        }
+        if not att_id or not content:
+            records.append(record)
+            continue
+        if size > 50 * 1024 * 1024:
+            record["status"] = "too_large"
+            records.append(record)
+            continue
+        name = safe_filename(filename, att_id)
+        target = target_dir / name
+        if target.is_file() and (size == 0 or target.stat().st_size == size):
+            record["path"] = f"attachments/{name}"
+            record["status"] = "existing"
+            records.append(record)
+            continue
+        if target.is_file():
+            name = safe_filename(filename, att_id, True)
+            target = target_dir / name
+        try:
+            download_attachment(cfg, content, target)
+            record["path"] = f"attachments/{name}"
+            record["status"] = "downloaded"
+        except Exception as exc:  # noqa: BLE001 - export must not fail on one file
+            print(f"attachment failed: {filename}: {exc}", file=sys.stderr)
+        records.append(record)
+    return records
 
 
 def adf_text(node):
@@ -166,7 +257,7 @@ def history_to_changes(items):
     return changes or None
 
 
-def build_markdown(issue, comments, histories, browse_url):
+def build_markdown(issue, comments, histories, browse_url, attachments=None):
     fields = issue.get("fields") or {}
     issue_num = issue.get("key", "").split("-")[-1]
     title = fields.get("summary", "Untitled")
@@ -190,6 +281,14 @@ def build_markdown(issue, comments, histories, browse_url):
     desc = adf_text(fields.get("description")).strip()
     if desc:
         lines += ["", "## Description", "", desc]
+    attachment_lines = []
+    for item in attachments or []:
+        path = item.get("path") or ""
+        if path:
+            label = item.get("filename") or os.path.basename(path)
+            attachment_lines.append(f"- [{label}]({path})")
+    if attachment_lines:
+        lines += ["", "## Attachments", ""] + attachment_lines
     entries = []
     for c in comments:
         entries.append(
@@ -239,15 +338,17 @@ def main():
     comments = paginate_comments(cfg, issue_key)
     histories = (issue.get("changelog") or {}).get("histories") or []
     browse = f"{cfg['JIRA_BASE_URL'].rstrip('/')}/browse/{issue_key}"
-    md = build_markdown(issue, comments, histories, browse)
     out = REPO / ".doc" / "tasks" / issue_id / "task.md"
     out.parent.mkdir(parents=True, exist_ok=True)
+    attachments = download_attachments(cfg, issue.get("fields") or {}, out.parent)
+    md = build_markdown(issue, comments, histories, browse, attachments)
     out.write_text(md, encoding="utf-8")
     print(f"Saved: {out}")
     print(f"Key: {issue_key}")
     print(f"Title: {(issue.get('fields') or {}).get('summary', '')}")
     print(f"Comments: {len(comments)}")
     print(f"Changes: {len(histories)}")
+    print(f"Attachments: {len(attachments)}")
 
 
 if __name__ == "__main__":

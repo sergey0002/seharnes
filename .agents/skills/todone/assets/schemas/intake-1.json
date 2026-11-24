@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/intake-1.json",
+  "title": "INTAKE-1 persistent conversational task draft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "session_id", "trigger", "state", "root", "created_at", "updated_at", "entries", "questions", "answers", "options", "decisions", "risks", "remaining_questions", "provenance", "history"],
+  "properties": {
+    "$schema": {"type": "string"}, "schema": {"const": "INTAKE-1"},
+    "session_id": {"type": "string", "minLength": 1},
+    "trigger": {"const": "постановка задачи"},
+    "state": {"enum": ["ready", "collecting", "draft", "ready_to_finalize", "finalized", "cancelled"]},
+    "root": {"type": "string", "minLength": 1}, "queue": {"type": ["string", "null"]}, "actor": {"type": ["string", "null"]},
+    "created_at": {"type": "string"}, "updated_at": {"type": "string"},
+    "draft_task_ref": {"type": ["string", "null"]}, "entries": {"type": "array"}, "questions": {"type": "array"}, "answers": {"type": "array"},
+    "options": {"type": "array"}, "decisions": {"type": "array"}, "risks": {"type": "array"}, "remaining_questions": {"type": "array"},
+    "provenance": {"type": "array"}, "history": {"type": "array"}, "verdict": {}, "finalized_task_ref": {"type": ["string", "null"]}, "audit_ref": {"type": ["string", "null"]}
+  }
+}

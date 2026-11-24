@@ -1,0 +1,24 @@
+{
+  "name": "researcher",
+  "role": "researcher",
+  "tools": [
+    "read",
+    "grep"
+  ],
+  "boundaries": [
+    "не менять продукт",
+    "не выдавать вывод без указателя"
+  ],
+  "return_contract": {
+    "fields": [
+      "facts",
+      "refs",
+      "unknowns",
+      "recommendation"
+    ],
+    "shape": "json: факты с указателями и границами знания",
+    "persist": "artifacts/research.json",
+    "pointer": "ttask artifact add <id> --kind report --path artifacts/research.json"
+  },
+  "brief": "_shared/subagent-brief.md"
+}

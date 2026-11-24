@@ -29,12 +29,14 @@ final class TaskExporter
 
         $issueKey = isset($issue['key']) ? $issue['key'] : $this->client->issueKeyFromNumber($issueId);
         $browseUrl = $this->client->browseUrl($issueKey);
-        $markdown = $this->builder->build($issue, $comments, $changes, $browseUrl);
 
         $taskDir = $this->outputRoot . DIRECTORY_SEPARATOR . '.doc' . DIRECTORY_SEPARATOR . 'tasks' . DIRECTORY_SEPARATOR . $issueId;
         if (!is_dir($taskDir) && !mkdir($taskDir, 0777, true) && !is_dir($taskDir)) {
             throw new RuntimeException('Cannot create directory: ' . $taskDir);
         }
+
+        $attachments = $this->downloadAttachments($taskDir, $issue);
+        $markdown = $this->builder->build($issue, $comments, $changes, $browseUrl, $attachments);
 
         $taskFile = $taskDir . DIRECTORY_SEPARATOR . 'task.md';
         if (file_put_contents($taskFile, $markdown) === false) {
@@ -52,12 +54,134 @@ final class TaskExporter
             'comments_count' => count($comments),
             'changes_count' => count($changes),
             'title' => isset($fields['summary']) ? $fields['summary'] : '',
+            'attachments' => $attachments,
         );
         if ($trackerPath !== null) {
             $result['tracker_path'] = $trackerPath;
         }
 
         return $result;
+    }
+
+    /**
+     * Download every issue attachment into .doc/tasks/{N}/attachments/.
+     *
+     * Re-export is idempotent: a file already present with the same size is
+     * kept as is, a name clash with different content gets the attachment id
+     * suffix. A failed download never aborts the export; it is reported in the
+     * returned list and written to stderr.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function downloadAttachments($taskDir, $issue)
+    {
+        $fields = isset($issue['fields']) && is_array($issue['fields']) ? $issue['fields'] : array();
+        $items = isset($fields['attachment']) && is_array($fields['attachment']) ? $fields['attachment'] : array();
+        if (empty($items)) {
+            return array();
+        }
+
+        $dir = $taskDir . DIRECTORY_SEPARATOR . 'attachments';
+        if (!is_dir($dir) && !mkdir($dir, 0777, true) && !is_dir($dir)) {
+            fwrite(STDERR, 'attachments directory failed: ' . $dir . PHP_EOL);
+
+            return array();
+        }
+
+        $result = array();
+        $maxBytes = 50 * 1024 * 1024;
+
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $id = isset($item['id']) ? (string) $item['id'] : '';
+            $filename = isset($item['filename']) ? (string) $item['filename'] : '';
+            $size = isset($item['size']) ? (int) $item['size'] : 0;
+            $content = isset($item['content']) ? (string) $item['content'] : '';
+
+            $record = array(
+                'id' => $id,
+                'filename' => $filename,
+                'size' => $size,
+                'mime_type' => isset($item['mimeType']) ? (string) $item['mimeType'] : '',
+                'created' => isset($item['created']) ? (string) $item['created'] : '',
+                'author' => isset($item['author']['displayName']) ? (string) $item['author']['displayName'] : '',
+                'path' => '',
+                'status' => 'failed',
+            );
+
+            if ($id === '' || $content === '') {
+                $result[] = $record;
+                fwrite(STDERR, 'attachment skipped (no id or content): ' . $filename . PHP_EOL);
+                continue;
+            }
+
+            if ($size > $maxBytes) {
+                $record['status'] = 'too_large';
+                $result[] = $record;
+                fwrite(STDERR, 'attachment skipped (too large): ' . $filename . PHP_EOL);
+                continue;
+            }
+
+            $name = $this->attachmentFileName($filename, $id);
+            $target = $dir . DIRECTORY_SEPARATOR . $name;
+            $exists = is_file($target);
+
+            if ($exists && ($size === 0 || filesize($target) === $size)) {
+                $record['path'] = 'attachments/' . $name;
+                $record['status'] = 'existing';
+                $result[] = $record;
+                continue;
+            }
+
+            if ($exists) {
+                $name = $this->attachmentFileName($filename, $id, true);
+                $target = $dir . DIRECTORY_SEPARATOR . $name;
+            }
+
+            try {
+                $this->client->downloadAttachment($content, $target);
+                $record['path'] = 'attachments/' . $name;
+                $record['status'] = 'downloaded';
+            } catch (Exception $e) {
+                fwrite(STDERR, 'attachment failed: ' . $filename . ': ' . $e->getMessage() . PHP_EOL);
+            }
+
+            $result[] = $record;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Safe file name for a Markdown link: letters, digits, dot, dash and
+     * underscore only, so spaces and brackets cannot break [text](path).
+     */
+    private function attachmentFileName($filename, $id, $withId = false)
+    {
+        $name = basename(str_replace('\\', '/', (string) $filename));
+        $name = preg_replace('/[^\p{L}\p{N}._-]+/u', '-', $name);
+        $name = preg_replace('/-+\./', '.', (string) $name);
+        $name = trim((string) $name, '-._');
+
+        if ($name === '') {
+            $name = 'attachment-' . $id;
+        }
+
+        if (!$withId) {
+            return $name;
+        }
+
+        $ext = '';
+        $dot = strrpos($name, '.');
+        if ($dot !== false && $dot > 0) {
+            $ext = substr($name, $dot);
+            $name = substr($name, 0, $dot);
+        }
+
+        return $name . '-' . $id . $ext;
     }
 
     /**

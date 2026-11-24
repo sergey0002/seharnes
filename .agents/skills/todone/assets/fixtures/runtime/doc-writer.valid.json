@@ -1,0 +1,14 @@
+{
+  "schema": "DOC-WRITER-1",
+  "docs_changed": true,
+  "doc_keys": ["entity/order"],
+  "revisions": [2],
+  "claims_changed": [],
+  "source_refs": ["file:src/order.py"],
+  "render_check": "passed",
+  "schema_check": "passed",
+  "stale_check": "current",
+  "verdict": "updated",
+  "unknowns": [],
+  "next_action": "tcheck docs check --root ."
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "x",
+  "schema": "AUTODOC-AUDIT-1",
+  "audit_id": "audit:test",
+  "bundle_id": "autodoc:test",
+  "bundle_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "algorithm_version": "audit-local-1",
+  "verdict": "approved",
+  "findings": [],
+  "remaining_risks": [],
+  "unknowns": [],
+  "provenance": []
+}

@@ -19,11 +19,17 @@ import shutil
 import subprocess
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from environment_policy import generated_paths, load, safe_path
+from compact_agent_views import compact
+
 SCRIPTS = Path(__file__).resolve().parent
 
 
 class RenderError(ValueError):
-    pass
+    def __init__(self, message: str, code: int = 2):
+        super().__init__(message)
+        self.code = code
 
 
 def _run(script: Path, *args: str, timeout: int = 180) -> dict:
@@ -39,12 +45,13 @@ def _run(script: Path, *args: str, timeout: int = 180) -> dict:
         raise RenderError(f"generator failed: {script.name}") from error
     if result.returncode:
         detail = result.stderr.decode("utf-8", "replace")[-2000:].strip()
-        raise RenderError(f"generator failed: {script.name}: {detail}")
+        raise RenderError(f"generator failed: {script.name} (exit {result.returncode})"
+                          + (f": {detail}" if detail else ""), result.returncode)
     return {"script": script.name, "status": "passed"}
 
 
 def _clean_views(root: Path) -> None:
-    for relative in (".codex", ".kilo", ".qoder", ".qwen", ".cursor", ".agents"):
+    for relative in (".codex", ".kilo", ".qoder", ".qwen", ".opencode", ".cursor", ".agents"):
         base = root / relative
         if not base.is_dir():
             continue
@@ -56,43 +63,74 @@ def _clean_views(root: Path) -> None:
         legacy.unlink()
 
 
-def render(root: Path, *, check: bool) -> dict:
+def render(root: Path, *, check: bool, replace_managed_mcp: bool = False) -> dict:
     root = root.absolute()
     if not root.is_dir():
         raise RenderError("root must be an existing directory")
+    if (root / "AGENTS.md").is_symlink():
+        raise RenderError("linked AGENTS.md")
+    entries = load(root)
+    active = [entry["id"] for entry in entries if entry.get("enabled", True)]
+    for relative in generated_paths(root):
+        path = safe_path(root, relative)
+        if path.is_symlink() and relative != ".kilo/mcp.json":
+            raise RenderError(f"linked generated output: {relative}")
     steps = []
-    steps.append(_run(SCRIPTS / "generate-qoder-config.py", "--root", str(root), "--preflight"))
-    if check:
-        steps.append(_run(SCRIPTS / "generate-qoder-config.py", "--root", str(root), "--check"))
-        steps.append(_run(SCRIPTS / "generate-agent-configs.py", str(root), "--check-discovery"))
-        steps.append(_run(SCRIPTS / "generate-codex-mcp.py", "--root", str(root),
-                          "--config", str(root / ".codex/config.toml"), "--check"))
-        steps.append(_run(SCRIPTS / "generate-qwen-config.py", "--root", str(root), "--check"))
-        steps.append(_run(SCRIPTS / "generate-dsh-config.py", "--root", str(root), "--check"))
-        return {"status": "passed", "mode": "check", "root": str(root), "steps": steps}
-    steps.append(_run(SCRIPTS / "generate-agent-configs.py", str(root)))
-    steps.append(_run(SCRIPTS / "generate-codex-mcp.py", "--root", str(root),
-                      "--config", str(root / ".codex/config.toml")))
-    steps.append(_run(SCRIPTS / "generate-mcp-config.py", str(root),
-                      "--out", str(root / ".doc/skil_data/harness-router/antigravity_mcp_config.json")))
-    steps.append(_run(SCRIPTS / "generate-qoder-config.py", "--root", str(root)))
-    steps.append(_run(SCRIPTS / "generate-qwen-config.py", "--root", str(root)))
-    steps.append(_run(SCRIPTS / "generate-antigravity-rules.py", "--root", str(root)))
-    steps.append(_run(SCRIPTS / "generate-dsh-config.py", "--root", str(root)))
-    _clean_views(root)
-    return {"status": "rendered", "mode": "write", "root": str(root), "steps": steps}
+    root_args = ("--root", str(root))
+    check_args = ("--check",) if check else ()
+    qoder_args = ("--replace-managed-mcp",) if replace_managed_mcp and not check else ()
+    cleanup = compact(root, apply=False, force=False, disabled_only=True)
+    if cleanup.get("errors") or (check and cleanup["present"]):
+        raise RenderError("disabled views: " + ", ".join(cleanup.get("errors") or cleanup["present"]))
+    if "qoder" in active:
+        steps.append(_run(SCRIPTS / "generate-qoder-config.py", *root_args, "--preflight", *qoder_args))
+    steps.append(_run(SCRIPTS / "generate-agent-configs.py", str(root), *(("--check-discovery",) if check else ())))
+    if "codex" in active:
+        steps.append(_run(SCRIPTS / "generate-codex-mcp.py", *root_args, "--config",
+                          str(root / ".codex/config.toml"), *check_args))
+    for entry in entries:
+        env = entry["id"]
+        if entry.get("generator") and env in active:
+            steps.append(_run(SCRIPTS / entry["generator"], *root_args, *check_args,
+                              *(qoder_args if env == "qoder" else ())))
+    if "agents" in active and not check:
+        native = root / ".doc/skil_data/harness-router/antigravity_mcp_config.json"
+        windows = root / ".doc/skil_data/harness-core/antigravity_mcp_config.windows-wsl.json"
+        steps.append(_run(SCRIPTS / "generate-mcp-config.py", str(root), "--out", str(native)))
+        steps.append(_run(SCRIPTS / "generate-mcp-config.py", str(root), "--host", "windows-wsl",
+                          "--distro", os.environ.get("WSL_DISTRO_NAME", ""), "--out", str(windows)))
+        for name in ("mcp.json", "mcp_config.json"):
+            shutil.copyfile(native, root / ".agents" / name)
+        source = root / ".cursor/scripts"
+        if source.is_dir():
+            import runpy
+            runpy.run_path(str(SCRIPTS / "generate-agent-configs.py"))["copy_scripts_pool"](source, root / ".agents/scripts")
+        source_env = root / ".cursor/mcp.env"
+        if source_env.is_file():
+            shutil.copyfile(source_env, root / ".agents/mcp.env")
+        steps.append(_run(SCRIPTS / "generate-antigravity-rules.py", *root_args))
+    elif "agents" in active:
+        steps.append(_run(SCRIPTS / "generate-antigravity-rules.py", *root_args, "--check"))
+    if not check:
+        cleanup = compact(root, apply=True, force=False, disabled_only=True)
+        if cleanup.get("errors"):
+            raise RenderError("disabled views: " + ", ".join(cleanup["errors"]))
+        _clean_views(root)
+    return {"status": "passed" if check else "rendered", "mode": "check" if check else "write",
+            "root": str(root), "steps": steps, "enabled": active, "cleanup": cleanup}
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--check", action="store_true", help="verify without writing")
+    parser.add_argument("--replace-managed-mcp", action="store_true", help="replace reviewed Qoder MCP entries")
     args = parser.parse_args(argv)
     try:
-        report = render(args.root, check=args.check)
-    except RenderError as error:
+        report = render(args.root, check=args.check, replace_managed_mcp=args.replace_managed_mcp)
+    except (OSError, ValueError) as error:
         print(json.dumps({"status": "failed", "reason": str(error)}, ensure_ascii=False))
-        return 2
+        return getattr(error, "code", 2)
     print(json.dumps(report, ensure_ascii=False))
     return 0
 

@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/autodoc-bundle-1.json",
+  "title": "AUTODOC-BUNDLE-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema",
+    "bundle_id",
+    "bundle_revision",
+    "generator",
+    "root",
+    "canonical_digest",
+    "completeness",
+    "inventory",
+    "entities",
+    "relations",
+    "sources",
+    "documents",
+    "diagrams",
+    "audit_input",
+    "reconstruction"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "AUTODOC-BUNDLE-1"
+    },
+    "bundle_id": {
+      "type": "string"
+    },
+    "bundle_revision": {
+      "type": "integer"
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "root": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "canonical_digest": {
+      "type": "string"
+    },
+    "completeness": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "inventory": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "entities": {
+      "type": "array",
+      "items": {}
+    },
+    "relations": {
+      "type": "array",
+      "items": {}
+    },
+    "sources": {
+      "type": "array",
+      "items": {}
+    },
+    "documents": {
+      "type": "array",
+      "items": {}
+    },
+    "diagrams": {
+      "type": "array",
+      "items": {}
+    },
+    "audit_input": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "reconstruction": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "warnings": {
+      "type": "array",
+      "items": {}
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {}
+    },
+    "legacy_parity": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

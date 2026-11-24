@@ -51,7 +51,7 @@ class GeneratedCopiesTest(unittest.TestCase):
             (root / 'AGENTS.md').write_text(
                 '# Local\n\nkeep me\n\n'
                 '<!-- BEGIN HARNESS BOOTSTRAP: generated; edit .cursor/rules -->\n'
-                'generated\n<!-- END HARNESS BOOTSTRAP -->\n', encoding='utf-8')
+                'generated\n<!-- END HARNESS BOOTSTRAP -->\n\nkeep the suffix\n', encoding='utf-8')
             pending = run(COMPACT, '--root', str(root), '--check')
             self.assertEqual(pending.returncode, 1, pending.stdout + pending.stderr)
             self.assertIn('AGENTS.md#bootstrap', pending.stdout)
@@ -60,6 +60,7 @@ class GeneratedCopiesTest(unittest.TestCase):
             self.assertFalse((root / 'DSH-RULES.md').exists())
             text = (root / 'AGENTS.md').read_text(encoding='utf-8')
             self.assertIn('keep me', text)
+            self.assertIn('keep the suffix', text)
             self.assertNotIn('BEGIN HARNESS BOOTSTRAP', text)
 
     def test_compact_refuses_modified_qoder_tree_without_force(self):

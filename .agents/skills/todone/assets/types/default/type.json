@@ -1,0 +1,16 @@
+{
+  "id": "default",
+  "name": "Работа без особой формы",
+  "class": "product",
+  "gates": {
+    "tests": "not_required",
+    "acceptance_min": 2,
+    "change_kind_required": true,
+    "close": "work"
+  },
+  "fields": [],
+  "editor": "any",
+  "capabilities": [],
+  "checks": [],
+  "profile": null
+}

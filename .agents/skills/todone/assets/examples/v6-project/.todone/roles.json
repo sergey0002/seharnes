@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "updated_by": "fixture",
+  "roles": [
+    {
+      "role": "developer",
+      "tier": "balanced",
+      "mode": "subagent",
+      "tools": [
+        "read",
+        "edit",
+        "bash"
+      ],
+      "models": [
+        "fixture-balanced"
+      ]
+    },
+    {
+      "role": "researcher",
+      "tier": "cheap",
+      "mode": "subagent",
+      "tools": [
+        "read",
+        "grep"
+      ],
+      "models": [
+        "fixture-cheap"
+      ]
+    },
+    {
+      "role": "tester",
+      "tier": "balanced",
+      "mode": "subagent",
+      "tools": [
+        "read",
+        "bash"
+      ],
+      "models": [
+        "fixture-balanced"
+      ]
+    },
+    {
+      "role": "planner",
+      "tier": "balanced",
+      "mode": "subagent",
+      "tools": [
+        "read",
+        "grep"
+      ],
+      "models": [
+        "fixture-balanced"
+      ]
+    },
+    {
+      "role": "reviewer",
+      "tier": "balanced",
+      "mode": "subagent",
+      "tools": [
+        "read",
+        "bash"
+      ],
+      "models": [
+        "fixture-balanced"
+      ]
+    },
+    {
+      "role": "writer",
+      "tier": "balanced",
+      "mode": "subagent",
+      "tools": [
+        "read",
+        "edit",
+        "bash"
+      ],
+      "models": [
+        "fixture-balanced"
+      ]
+    }
+  ]
+}

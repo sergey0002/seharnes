@@ -30,7 +30,7 @@ MCP-конфиги и их серверы. Каталог `.doc/` это док�
 входит. Состав каталогов и запреты: [dirtree.md](../dirtree.md), разделы 1-5.
 
 - Документация не индексируется картой харнеса: скан читает только `.cursor/`,
-  `.codex/`, `.kilo/`, `.agents/`, `.dsh/`.
+  `.codex/`, `.kilo/`, `.agents/`.
 - Связи из скилов и правил на пути вне этих префиксов отбрасываются при разборе и
   при повторном скане, поэтому правки документации не меняют граф.
 - Скилы, правила и скрипты харнеса работают без документации. Документация может
@@ -47,14 +47,16 @@ MCP-конфиги и их серверы. Каталог `.doc/` это док�
 | Cursor | `.cursor/` (канон) | `${workspaceFolder}`, `envFile`, прямое чтение |
 | Codex CLI | `.codex/` | rules как `.md` без Cursor-frontmatter; `rules-index.md` содержит обязательные правила, on-demand правила и сгенерированную glob-таблицу для условных правил; `go-task.ps1` / `task-diff.ps1` форвардят к канону |
 | Kilo | `.kilo/` | нативный `kilo.jsonc`; always-правила находятся в `instructions`, остальные в `.kilo/rules-index.md`; условные правила также перечислены в сгенерированной glob-таблице, поскольку Kilo не прикрепляет их по пути автоматически |
+| OpenCode | `.opencode/`, `opencode.json` | правила копируются плоским `.md` без frontmatter; always-правила в `instructions`, остальные в `.opencode/rules-index.md` с glob-таблицей; MCP под `mcp.servers` (`type: local|remote`, `disabled`), секреты через `run-with-mcp-env.sh`; `alwaysAllow`/`disabledTools` - фрагмент для ручного слияния |
 | Antigravity | `.agents/` | `rules`, `skills`, `mcp_config.json` с раскрытыми путями; legacy `.antigravity/` и `.gemini/` не генерируются |
 | Agents | `.agents/` | универсальные рантаймы, полный набор |
-| DeepSeek Harness | `.dsh/project.patch.yml`, `DSH-RULES.md`, `.dsh/skills/dsh-router/`, `.dsh/adapters/`, `.dsh/scripts/`, `.dsh/models.overlay.json` | генерируются MCP (15 `mcp-client`), inline always и on-demand индекс; conditional-правила получают generated glob-блок; скил-маршрутизатор `dsh-router` (ранг 100, вне реестра канона); адаптеры shell/mcp-names/models/digest; шимы `.dsh/scripts/run-ps1.sh` и `.dsh/scripts/smoke.sh`; модели: одна `deepseek-account/deepseek-flash`, `llm-pi-ai` выключен |
+| DeepSeek Harness (удалён 2026-11-18) | `.dsh/project.patch.yml`, `DSH-RULES.md`, `.dsh/skills/dsh-router/`, `.dsh/adapters/`, `.dsh/scripts/`, `.dsh/models.overlay.json` | среда и генератор `generate-dsh-config.py` больше не используются; пакет `@deepseek-ai/dsh` и каталоги `.dsh` удалены |
 
 Генераторы живут в `.agents/skills/harness-router/children/environment-sync/scripts/`:
 
 - `generate-agent-configs.py` - skills/rules + Kilo remote + single wrap + permissions fragment.
 - `generate-mcp-config.py` - MCP с раскрытием `${workspaceFolder}` для Antigravity/Gemini.
+- `generate-opencode-config.py` - `opencode.json` (`mcp.servers`), `.opencode/rules` и компактный индекс для OpenCode v2.
 - `sync-agent-views.sh` - оркестратор: генераторы, копии, LF-нормализация, parity, freshness-гейт.
 
 Сгенерированные артефакты лежат в `.doc/skil_data/`:
@@ -167,7 +169,7 @@ python3 .agents/skills/harness-router/children/environment-sync/tests/test_sync_
 |---|---|---|---|
 | Скилы (28) | `.agents/skills/` | `.codex` (копия для Codex); Kilo читает `.agents` | SKILL.md плюс scripts внутри скила |
 | Рулесы (37) | `.cursor/rules/*.mdc` | `.md` в Codex и Kilo; `.mdc` в `.agents`, Antigravity ждет `.md` с `trigger` (M9) | триггеры плюс ограничения |
-| MCP (20, из них 16 включённых) | `.cursor/mcp.json` плюс mcp.env | mcp.json / mcp_config.json / config.toml / kilo.jsonc | пути раскрыты, секреты из env |
+| MCP (20, из них 16 включённых) | `.cursor/mcp.json` плюс mcp.env | mcp.json / mcp_config.json / config.toml / kilo.jsonc / `opencode.json` (`mcp.servers`) | пути раскрыты, секреты из env |
 | Скрипты MCP и инструментов | `scripts/` скила-владельца | копия вместе с деревом скилов | лаунчеры и обёртки |
 | Системные утилиты | `.tools/scripts/` | не зеркалируются | общие утилиты и пакетные обёртки |
 | Документация (docscripts 19) | `.agents/skills/documentation-router/children/project-doc/scripts/` | не зеркалируются - общие | `_map/*.tsv`, tasks/index.md |
@@ -198,6 +200,7 @@ python3 .agents/skills/harness-router/children/environment-sync/tests/test_sync_
 
 ## История изменений
 
+- 2026-11-18: DeepSeek Harness удалён: строка среды в таблице зеркал помечена удалённой, `.dsh/` убран из списка каталогов скана харнеса.
 - 2026-11-11: генераторы указаны по фактическому пути в `environment-sync/scripts`; нативный MCP-артефакт Antigravity перенесён в `harness-router`, ссылка на несуществующий `.doc/synh_harnes` заменена.
 - 2026-11-11: раскладка каталогов и причины выбора корней перенесены в [dirtree.md](../dirtree.md); здесь остались синхронизация, parity и границы харнеса.
 - 2026-11-09: уточнены источники канона, удаление лишних файлов зеркал и использование карты путей.
@@ -220,3 +223,5 @@ python3 .agents/skills/harness-router/children/environment-sync/tests/test_sync_
 - 2026-11-05: классификация правил вынесена в общий `rule_model.py`; Qoder, Qwen, Antigravity, DSH и Kilo используют один порядок `always` > `globs` > `description`; добавлен `verify_rule_triggers.py` и шаг `rule-triggers` в синке; исправлен блочный `globs` у Antigravity
 - 2026-11-05: Codex получил генерируемый `.codex/rules-index.md` и ссылку в `.codex/AGENTS.md`, поэтому обязательные и on-demand правила находятся без чтения всех 38 файлов
 - 2026-11-09: добавлены inline-гейты, generated glob-блоки для Kilo/Codex/DSH и проверка видимости в синке и harness mirror; правило `gates.mdc` зарегистрировано как компонент
+- 2026-11-20: добавлена среда OpenCode v2: `generate-opencode-config.py` пишет `opencode.json` (`mcp.servers`, `disabled`), `.opencode/rules` и компактный индекс; синк, doctor, `verify_rule_triggers.py` и `verify_mcp_views.py` проверяют новую среду
+- 2026-11-20: введена декларативная политика сред: `environments.json` теперь единственный источник `enabled` для всех генераторов; добавлен `environment_policy.py` (чтение переключателей, путей управляемых файлов, безопасная очистка); `render_agent_views.py` и `sync-agent-views.sh` фильтруют генерацию по `enabled`; `compact_agent_views.py` читает список управляемых копий из реестра; `verify_rule_triggers.py`, `harness_mirror.py` и doctor фильтруют проверки по `enabled`; отключены Qoder, Qwen, DSH, Agents (Antigravity) и Cursor (канон); включены Codex, Kilo, OpenCode; Cursor остался каноном, его `enabled: false` не удаляет `.cursor/` и `.agents/skills/`

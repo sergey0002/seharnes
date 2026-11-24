@@ -1,0 +1,34 @@
+{
+  "id": "mirror",
+  "name": "Зеркало внешней системы",
+  "class": "source",
+  "editor": "import_only",
+  "gates": {
+    "tests": "not_required",
+    "acceptance_min": false,
+    "close": "none"
+  },
+  "fields": [
+    {
+      "name": "mirror_note",
+      "type": "string",
+      "required": false,
+      "enum": null,
+      "pattern": null,
+      "message": "что известно о снимке: что изменилось с прошлой загрузки",
+      "example": "повторный импорт 14.11: добавлены два комментария"
+    },
+    {
+      "name": "external",
+      "type": "object",
+      "required": false,
+      "enum": null,
+      "pattern": null,
+      "message": "bounded structured projection внешнего профиля",
+      "example": "{profile: jira-cloud-rest-v3-local, revision: 1}"
+    }
+  ],
+  "capabilities": [],
+  "checks": [],
+  "profile": null
+}

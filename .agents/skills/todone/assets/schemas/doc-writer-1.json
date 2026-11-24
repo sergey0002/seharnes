@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/doc-writer-1.json",
+  "title": "DOC-WRITER-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "docs_changed", "doc_keys", "revisions", "claims_changed", "source_refs", "render_check", "schema_check", "stale_check", "verdict", "unknowns", "next_action"],
+  "properties": {
+    "schema": {"const": "DOC-WRITER-1"}, "docs_changed": {"type": "boolean"},
+    "doc_keys": {"type": "array"}, "revisions": {"type": "array"}, "claims_changed": {"type": "array"},
+    "source_refs": {"type": "array"}, "render_check": {"type": "string"}, "schema_check": {"type": "string"},
+    "stale_check": {"type": "string"}, "verdict": {"enum": ["updated", "no_change", "needs_review", "blocked"]},
+    "unknowns": {"type": "array"}, "next_action": {"type": "string"}
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "analyst",
+  "role": "researcher",
+  "tools": [
+    "read",
+    "grep"
+  ],
+  "boundaries": [
+    "не менять зеркало",
+    "не менять код продукта"
+  ],
+  "return_contract": {
+    "fields": [
+      "gaps",
+      "assumptions",
+      "refs",
+      "draft_child"
+    ],
+    "shape": "json: поля записи и указатели",
+    "persist": "artifacts/intake.json",
+    "pointer": "ttask artifact add <id> --kind spec --path artifacts/intake.json"
+  },
+  "brief": "_shared/subagent-brief.md"
+}

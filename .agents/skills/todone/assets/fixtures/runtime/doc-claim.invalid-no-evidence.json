@@ -1,0 +1,14 @@
+{
+  "schema": "DOC-CLAIM-1",
+  "doc_key": "entity/order",
+  "revision": 1,
+  "claims": [{
+    "claim_id": "claim:order:identity",
+    "subject": "entity/order",
+    "predicate": "identity_fields",
+    "object": ["orders.id"],
+    "status": "observed",
+    "evidence_refs": [],
+    "review_status": "reviewed"
+  }]
+}

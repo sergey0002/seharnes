@@ -1,0 +1,43 @@
+{
+  "id": "plan-audit",
+  "name": "Независимый аудит плана",
+  "class": "research",
+  "executor": {
+    "role": "reviewer",
+    "tier": "balanced",
+    "mode": "subagent"
+  },
+  "gates": {
+    "tests": "not_required",
+    "handoff": "required",
+    "refs": true,
+    "acceptance_min": false,
+    "close": "result_is_knowledge"
+  },
+  "capabilities": [
+    "code-graph"
+  ],
+  "fields": [
+    {
+      "name": "verdict",
+      "type": "string",
+      "required": true,
+      "enum": ["approved", "changes_required", "blocked"],
+      "pattern": null,
+      "message": "решение аудита: approved, changes_required или blocked",
+      "example": "changes_required: AC-2 не покрыт тестом"
+    },
+    {
+      "name": "findings",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "существенные находки аудита с адресами плана и исследования",
+      "example": "AC-2 → TEST-4: команда проверки отсутствует"
+    }
+  ],
+  "editor": "any",
+  "checks": [],
+  "profile": null
+}

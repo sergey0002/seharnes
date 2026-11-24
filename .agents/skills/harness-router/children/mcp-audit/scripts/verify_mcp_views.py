@@ -143,6 +143,26 @@ def check_expanded(canon: dict, path: Path, errors: list[str]) -> None:
     scan_placeholders(servers, str(path), errors)
 
 
+def check_opencode(canon: dict, path: Path, errors: list[str]) -> None:
+    """OpenCode v2 keeps servers under `mcp.servers` and disables with `disabled`.
+
+    A project may add local servers, so extras are allowed; every canonical
+    server must be present and its enabled/disabled state must match.
+    """
+    data = load_json(path, errors)
+    if data is None:
+        return
+    mcp = data.get("mcp")
+    servers = mcp.get("servers") if isinstance(mcp, dict) else None
+    if not isinstance(servers, dict):
+        errors.append(f"{path}: no mcp.servers object")
+        return
+    for name in sorted(set(canon) - set(servers)):
+        errors.append(f"{path}: server missing {name}")
+    compare_state(canon, servers, str(path), errors, native_enabled=False)
+    scan_placeholders(servers, str(path), errors)
+
+
 def check_qwen(canon: dict, path: Path, errors: list[str]) -> None:
     """Qwen keeps enabled servers in `mcpServers` and disabled ones in `mcp.excluded`."""
     data = load_json(path, errors)
@@ -190,6 +210,7 @@ def main() -> int:
     parser.add_argument("--kilo", type=Path, help=".kilo/kilo.jsonc")
     parser.add_argument("--expanded", action="append", default=[], type=Path, help="view with expanded paths (repeatable)")
     parser.add_argument("--qwen", type=Path, help=".qwen/settings.json")
+    parser.add_argument("--opencode", type=Path, help="opencode.json")
     parser.add_argument("--codex-toml", type=Path, help=".codex/config.toml")
     args = parser.parse_args()
 
@@ -206,12 +227,15 @@ def main() -> int:
     if args.qwen is not None:
         checks.append(str(args.qwen))
         check_qwen(canon, args.qwen, errors)
+    if args.opencode is not None:
+        checks.append(str(args.opencode))
+        check_opencode(canon, args.opencode, errors)
     if args.codex_toml is not None:
         checks.append(str(args.codex_toml))
         check_codex_toml(canon, args.codex_toml, errors)
 
     if not checks:
-        parser.error("nothing to check: pass --kilo, --expanded or --codex-toml")
+        parser.error("nothing to check: pass --kilo, --expanded, --qwen, --opencode or --codex-toml")
 
     report = {
         "canonical": str(args.canonical),

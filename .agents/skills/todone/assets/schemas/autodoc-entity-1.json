@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/autodoc-entity-1.json",
+  "title": "AUTODOC-ENTITY-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema",
+    "entity_id",
+    "kind",
+    "namespace",
+    "status",
+    "source_refs",
+    "provenance",
+    "normalized"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "AUTODOC-ENTITY-1"
+    },
+    "entity_id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "namespace": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {}
+    },
+    "provenance": {
+      "type": "array",
+      "items": {}
+    },
+    "raw_ref": {
+      "type": "string"
+    },
+    "revision": {},
+    "normalized": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

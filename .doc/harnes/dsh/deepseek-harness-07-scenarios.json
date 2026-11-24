@@ -1,0 +1,389 @@
+{
+  "artifacts": [],
+  "business_logic": {
+    "facts": [],
+    "linked_rule_ids": [],
+    "unconfirmed": []
+  },
+  "checks": [],
+  "decisions": [],
+  "files": [],
+  "findings": [
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-1",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s18",
+      "severity": null,
+      "source_ids": [],
+      "statement": "сценарии проверялись на задаче 2622",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "сценарии проверялись на задаче 2622"
+    },
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-2",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s18",
+      "severity": null,
+      "source_ids": [],
+      "statement": "тяжёлые MCP не вызывались",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "тяжёлые MCP не вызывались"
+    }
+  ],
+  "git_events": [],
+  "git_state": null,
+  "history": [
+    {
+      "actor": "migration",
+      "at": "2026-10-21T05:57:43Z",
+      "id": "migrate-arch-deepseek-harness-07-scenarios-2",
+      "source_ids": [],
+      "summary": "deepseek_harnes -> architecture"
+    },
+    {
+      "actor": "agent-review",
+      "at": "2026-10-21T22:41:08Z",
+      "id": "tags2-deepseek-harness-07-scenarios-272b5d",
+      "source_ids": [],
+      "summary": "tag harness documentation"
+    },
+    {
+      "actor": "project-doc",
+      "at": "2026-11-02T01:29:38Z",
+      "id": "dsh-counts-20261102-07",
+      "source_ids": [],
+      "summary": "update DSH MCP count in scenario"
+    },
+    {
+      "actor": "project-doc",
+      "at": "2026-11-02T01:52:37Z",
+      "id": "dsh-skills-root-deepseek-harness-07-scenarios-20261102",
+      "source_ids": [],
+      "summary": "switch skill canon to .agents/skills"
+    },
+    {
+      "actor": "user",
+      "at": "2026-11-11T05:28:15Z",
+      "id": "arch-dsh07-remove-seo-20261111",
+      "source_ids": [],
+      "summary": "Скилы xmlriver и leantime удалены, комментарий сценария обновлён"
+    },
+    {
+      "actor": "user",
+      "at": "2026-11-11T05:30:07Z",
+      "id": "arch-dsh07-remove-seo-2-20261111",
+      "source_ids": [],
+      "summary": "Удалены xmlriver и leantime"
+    }
+  ],
+  "id": "architecture:deepseek-harness-07-scenarios",
+  "jira_report": null,
+  "kind": "architecture",
+  "metadata": {
+    "branch": null,
+    "doc_type": "architecture",
+    "release": null,
+    "source_status": "actual",
+    "status": "unknown",
+    "task_id": null,
+    "task_type": "unknown",
+    "title": "тест от 2026-10-20",
+    "updated_at": "1970-01-01T00:00:00Z"
+  },
+  "notes": [],
+  "progress": [],
+  "relations": [],
+  "requirements": [],
+  "revision": 6,
+  "schema_version": "1.0",
+  "section_order": [
+    "s0",
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "s8",
+    "s9",
+    "s10",
+    "s11",
+    "s12",
+    "s13",
+    "s14",
+    "s15",
+    "s16",
+    "s17",
+    "s18",
+    "s19"
+  ],
+  "sections": [
+    {
+      "anchor": "сценарии-работы-dsh:-тест-от-2026-10-20",
+      "anchor_aliases": [],
+      "body_markdown": "\n<!-- meta\ntype: flow\nstatus: actual\nupdated: 2026-10-20\ntags: [deepseek, scenarios, tests]\n-->\n\n---\n",
+      "id": "s0",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Сценарии работы DSH: тест от 2026-10-20"
+    },
+    {
+      "anchor": "суть",
+      "anchor_aliases": [],
+      "body_markdown": "\nСценарии проверены \"как будто выполняешь\": четыре независимых прогона\n(переход к задаче и план, аудит плана и тест, матрица MCP, доки и правила).\nКаждый прогон смотрел, грузятся ли нужные скилы, работают ли скрипты, отвечают\nли MCP и совпадает ли документация с реальностью.\n\nИтог: рабочий цикл в DSH проходит, но нашлось несколько расхождений, которые\nломали корректность, а не только текст. Критичное исправлено, остальное\nперечислено ниже.\n\n> **AI:** читай перед прогоном задачи, чтобы не наступить на известные грабли.\n> **Сначала:** [03-workflow.md](./deepseek-harness-03-workflow.md) - шаги цикла.\n> **Не читай целиком:** смотри \"Находки\" и \"Осталось открытым\".\n\n---\n",
+      "id": "s1",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Суть"
+    },
+    {
+      "anchor": "как-проверяли",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Сценарий | Что делали | Чем подтверждали |\n|---|---|---|\n| SC-1 переход к задаче | `skill(gototask)`, `gototask.ps1 -Action inspect` на 2622 | JSON inspect, сверка с каноном скила |\n| SC-2 план | `skill(prepare-plan)`, `jsondoc plan template/verify` | JSON модели, exit-коды |\n| SC-3 аудит плана | разбор P7.4a в каноне, сверка с dsh-router | 17 шагов, проверяемость каждого |\n| SC-4 тест | `skill(test-task)`, `gates.py`, контракт `verdict.json` | код скриптов, поля verdict |\n| SC-5 MCP | по одному дешёвому вызову на 15 серверов | статусы green/red/SKIP |\n| SC-6 доки и правила | `validate-docs.ps1`, сверка чисел, генератор | 0 ошибок, `cmp` |\n\n---\n",
+      "id": "s2",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Как проверяли"
+    },
+    {
+      "anchor": "результаты-по-сценариям",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Сценарий | PASS | FAIL | WARN | Комментарий |\n|---|---|---|---|---|\n| SC-1 переход | 5 | 2 | 1 | inspect работает за 6 с; расходится трактовка `branchExists` |\n| SC-2 план | 4 | 1 | 1 | `template` валиден; `verify` на 2622 даёт 2, а не 5 |\n| SC-3 аудит плана | 3 | 0 | 2 | 17 шагов на месте; формулировка \"структурная проверка\" сужала канон |\n| SC-4 тест | 4 | 2 | 3 | `verdict.json` согласован; G13 skipped проходит зелёным |\n| SC-5 MCP | 6 | 4 | 0 | 6 green, jira-task без tools, часть серверов red по env |\n| SC-6 доки | 6 | 1 | 1 | overlay_entries и битые ссылки в DSH-RULES |\n\n---\n",
+      "id": "s3",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Результаты по сценариям"
+    },
+    {
+      "anchor": "находки-и-что-сделано",
+      "anchor_aliases": [],
+      "body_markdown": "",
+      "id": "s4",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Находки и что сделано"
+    },
+    {
+      "anchor": "n-1:-branchexists-считается-по-origin-(исправлено-в-доках)",
+      "anchor_aliases": [],
+      "body_markdown": "\n- Симптом: ветка `bugfixes/#2622` уже checkout, а inspect говорит\n  `branchExists: false` и советует `create-branch`.\n- Причина: `$branches.exact` собирается из `git ls-remote origin`; локальная\n  ветка без origin в расчёт не входит.\n- Решение: в `03-workflow.md` и `dsh-router` добавлено правило сверять\n  `currentBranch` перед apply.\n- Файлы: `.dsh/skills/dsh-router/SKILL.md`, `.doc/architecture/deepseek-harness-03-workflow.md`\n",
+      "id": "s5",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "N-1: branchExists считается по origin (исправлено в доках)"
+    },
+    {
+      "anchor": "n-2:-шкала-exit-в-plan-verify-была-неполной-(исправлено)",
+      "anchor_aliases": [],
+      "body_markdown": "\n- Симптом: `plan verify --task 2622` даёт 2 `plan_model_missing`, хотя план\n  (30 КБ, `status: implemented`) есть. Доки называли такой случай \"legacy = 5\".\n- Причина: 5 возвращается только если в сторе есть plan-артефакт без\n  JSON-модели; если артефакта нет вовсе, это 2.\n- Решение: шкала расписана: 5 legacy, 2 plan_model_missing (сначала\n  `template + plan write`), 3-4 чинить.\n- Файлы: `.dsh/skills/dsh-router/SKILL.md`, `.doc/architecture/deepseek-harness-03-workflow.md`,\n  `.dsh/adapters/prepare-plan-digest.md`\n",
+      "id": "s6",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "N-2: шкала exit в plan verify была неполной (исправлено)"
+    },
+    {
+      "anchor": "n-3:-digest-противоречил-оболочке-(исправлено)",
+      "anchor_aliases": [],
+      "body_markdown": "\n- Симптом: digest звал `powershell.exe -File \"<unc>...\"` и `wsl -e python3`.\n- Причина: файл писался до появления `run-ps1.sh`.\n- Решение: команды переведены на `bash .dsh/scripts/run-ps1.sh` и голый\n  `python3`.\n- Файлы: `.dsh/adapters/prepare-plan-digest.md`\n",
+      "id": "s7",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "N-3: digest противоречил оболочке (исправлено)"
+    },
+    {
+      "anchor": "n-4:-p7.4a-описан-слишком-мягко-(исправлено)",
+      "anchor_aliases": [],
+      "body_markdown": "\n- Симптом: в router было \"1 проход структурной проверки\", канон требует\n  mandatory rebuild.\n- Решение: перечислены обязательные части rebuild, добавлено, что re-tick\n  без шагов 1-17 невалиден.\n- Файлы: `.dsh/skills/dsh-router/SKILL.md`, `.doc/architecture/deepseek-harness-03-workflow.md`\n",
+      "id": "s8",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "N-4: P7.4a описан слишком мягко (исправлено)"
+    },
+    {
+      "anchor": "n-5:-g13-skipped-проходит-зелёным-(задокументировано,-код-не-меняли)",
+      "anchor_aliases": [],
+      "body_markdown": "\n- Симптом: задача без `plan.md` и без таблицы веток проходит `gates.py` с\n  exit 0.\n- Причина: `skipped()` ставит `ok=True, blocking=False`, `ready` считается\n  только по блокирующим.\n- Решение: в доки добавлено правило проверять G13 вручную: plan.md есть, а\n  таблицы нет = FAILED; нет plan.md = законно n/a.\n- Файлы: `.dsh/skills/dsh-router/SKILL.md`, `.doc/architecture/deepseek-harness-03-workflow.md`\n- Почему не правили код: `gates.py` принадлежит канону QA и используется\n  Cursor/Codex; менять его без отдельного согласования нельзя.\n",
+      "id": "s9",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "N-5: G13 skipped проходит зелёным (задокументировано, код не меняли)"
+    },
+    {
+      "anchor": "n-6:-jira-task-не-регистрируется-(задокументировано,-обход-есть)",
+      "anchor_aliases": [],
+      "body_markdown": "\n- Симптом: в патче клиент есть, tools нет.\n- Причина: `.doc/skil_data/jira/server.php` ждёт LSP-фрейминг `Content-Length`, а\n  DSH-клиент шлёт newline-JSON; сервер молча выходит.\n- Решение: обход через `gototask.ps1` (он экспортирует `task.md` через\n  docker/php). Записано в `.dsh/adapters/mcp-names.md`.\n- Файлы: `.dsh/adapters/mcp-names.md`, `.doc/architecture/deepseek-harness-05-skripty.md`\n",
+      "id": "s10",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "N-6: jira-task не регистрируется (задокументировано, обход есть)"
+    },
+    {
+      "anchor": "n-7:-снятые-mcp-серверы",
+      "anchor_aliases": [],
+      "body_markdown": "\n- Серверы из этого наблюдения удалены из канона.\n- Решение: статусы в таблице, fallback \"данные не выдумывать\".\n- Файлы: `.dsh/adapters/mcp-names.md`\n",
+      "id": "s11",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "N-7: снятые MCP-серверы"
+    },
+    {
+      "anchor": "n-8:-битые-ссылки-в-dsh-rules.md-(исправлено)",
+      "anchor_aliases": [],
+      "body_markdown": "\n- Симптом: 12 относительных ссылок вели в несуществующие пути из корня.\n- Причина: тела правил инлайнились из `.cursor/rules/` без перебазирования.\n- Решение: генератор пересчитывает ссылки на путь от корня репо; после\n  регенерации 0 битых.\n- Файлы: `.agents/skills/harness-management/children/environment-sync/scripts/generate-dsh-config.py`, `DSH-RULES.md`\n",
+      "id": "s12",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "N-8: битые ссылки в DSH-RULES.md (исправлено)"
+    },
+    {
+      "anchor": "n-9:-устаревшие-числа-(исправлено)",
+      "anchor_aliases": [],
+      "body_markdown": "\n- `overlay_entries` 2 → 3 в `02` и `06`.\n- `state/04-mcp.md`: \"17 записей, 15 включённых, 2 отключённых\".\n- `AGENTS.md`: канон тестов `.doc/tests.md` → `.doc/harnes/tests.md`.\n",
+      "id": "s13",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "N-9: устаревшие числа (исправлено)"
+    },
+    {
+      "anchor": "n-10:-в-шаблоне-плана-нет-`patches`-(задокументировано)",
+      "anchor_aliases": [],
+      "body_markdown": "\n- `plan template` даёт модель без ключа `patches`, хотя P5 и P7.0 требуют\n  Patches и \"N == число файлов\".\n- Решение: в digest добавлено, что форму Patches брать из канона, не угадывать.\n\n---\n",
+      "id": "s14",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "N-10: в шаблоне плана нет `patches` (задокументировано)"
+    },
+    {
+      "anchor": "осталось-открытым",
+      "anchor_aliases": [],
+      "body_markdown": "\n| # | Что | Почему не закрыто |\n|---|---|---|\n| 1 | jira-task фрейминг | нужен фикс MCP-клиента или сервера, это не .dsh |\n| 3 | G13 skipped в `gates.py` | канон QA, нужно отдельное решение |\n| 4 | `patches` в шаблоне jsondoc | канон JSONdoc |\n| 5 | Разница test-task и 03-workflow (chromedriver, отчёт §8) | сознательное упрощение, отмечено |\n\n---\n",
+      "id": "s15",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Осталось открытым"
+    },
+    {
+      "anchor": "как-повторить",
+      "anchor_aliases": [],
+      "body_markdown": "\n```bash\nbash .dsh/scripts/smoke.sh --task 2622\nbash .dsh/scripts/run-ps1.sh .agents/skills/project-doc/scripts/validate-docs.ps1 -Path .doc/architecture\npython3 .doc/skil_data/task-doc/jsondoc.py --root . plan verify --task 2622 --require-syntax\nbash .dsh/scripts/run-ps1.sh .agents/skills/gototask/scripts/gototask.ps1 -TaskNumber 2622 -Action inspect\n```\n\nСценарии MCP проверяются вызовом инструментов в сессии: запись в патче не\nгарантирует наличие tools.\n\n---\n",
+      "id": "s16",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Как повторить"
+    },
+    {
+      "anchor": "связи",
+      "anchor_aliases": [],
+      "body_markdown": "\n- [Workflow](./deepseek-harness-03-workflow.md) - шаги, затронутые находками\n- [Скрипты](./deepseek-harness-05-skripty.md) - оболочка и MCP\n- [Модели](./deepseek-harness-04-modeli.md) - почему нет второго аудитора\n\n---\n",
+      "id": "s17",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Связи"
+    },
+    {
+      "anchor": "известные-проблемы-и-ограничения",
+      "anchor_aliases": [],
+      "body_markdown": "\n\n- Симптом: вывод про `branchExists` и `plan verify` привязан к этой задаче.\n- Причина: один прогон, а не матрица задач.\n- Ограничение или решение: повторить на задаче без локальных изменений и на\n  задаче с планом в JSON-модели.\n\n\n- Симптом: phpstan, semgrep, playwright, php-deps помечены SKIP.\n- Причина: полный скан или браузерная навигация не входили в прогон.\n- Ограничение или решение: отдельный прогон с известным дефектом в коде.\n\n---\n",
+      "id": "s18",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Известные проблемы и ограничения"
+    },
+    {
+      "anchor": "история-изменений",
+      "anchor_aliases": [],
+      "body_markdown": "\n- 2026-10-20: сценарии прогнаны, находки N-1..N-10 зафиксированы, N-1..N-5,\n  N-8, N-9 исправлены в доках и генераторе\n\n#deepseek #scenarios #tests",
+      "id": "s19",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "История изменений"
+    }
+  ],
+  "sources": [
+    {
+      "availability": "present",
+      "id": "S-legacy",
+      "kind": "doc",
+      "observation": "legacy doc.md",
+      "observed_at": null,
+      "path": null,
+      "pointer": null,
+      "revision": null,
+      "sha256": "c31657ded87b073fa21270cd92145ea5bbf5543a44938b3580441ddd29329e4c"
+    }
+  ],
+  "stages": [],
+  "summary": null,
+  "tags": [
+    {
+      "reason": "документация харнеса",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:harness"
+    },
+    {
+      "reason": "описание DeepSeek Harness",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:deepseek"
+    },
+    {
+      "reason": "стандарт и поиск по документации",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:documentation"
+    }
+  ],
+  "tracker": null
+}

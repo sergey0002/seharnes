@@ -1,0 +1,6 @@
+{
+  "schema": "DOC-QUERY-1",
+  "mode": "catalog",
+  "workspace_id": "workspace:fixture",
+  "prompt": "read everything"
+}

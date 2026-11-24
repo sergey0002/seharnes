@@ -1,0 +1,195 @@
+{
+  "schema": "FLOW-2",
+  "id": "issue-delivery",
+  "name": "Исследование, аудит плана и реализация изменения",
+  "entry": "source",
+  "max_batch": 5,
+  "instruction": "instruction.md",
+  "steps": [
+    {
+      "id": "intake",
+      "type": "intake",
+      "input_from": [],
+      "output": ["refs", "raw_gaps", "draft_child"],
+      "executor": {
+        "role": "researcher",
+        "tier": "cheap",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "handoff",
+      "brief": "формализовать исходную запись и отделить факты от пробелов"
+    },
+    {
+      "id": "research",
+      "type": "research",
+      "input_from": ["intake"],
+      "output": ["refs", "handoff"],
+      "executor": {
+        "role": "researcher",
+        "tier": "cheap",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "handoff",
+      "brief": "исследовать код, документацию и фактическое поведение"
+    },
+    {
+      "id": "test-prep",
+      "type": "test-prep",
+      "input_from": ["research"],
+      "output": ["tests", "acceptance_map", "handoff"],
+      "executor": {
+        "role": "tester",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "handoff",
+      "brief": "сделать тестовый контракт до реализации и связать его с AC-N"
+    },
+    {
+      "id": "planning",
+      "type": "planning",
+      "input_from": ["research", "test-prep"],
+      "output": ["acceptance", "refs", "artifacts", "slice_list", "handoff"],
+      "executor": {
+        "role": "planner",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "acceptance",
+      "brief": "подготовить решение только по исследованию и test-prep"
+    },
+    {
+      "id": "plan-audit",
+      "type": "plan-audit",
+      "input_from": ["planning"],
+      "output": ["verdict", "findings", "refs", "artifacts", "handoff"],
+      "executor": {
+        "role": "reviewer",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "acceptance",
+      "route_field": "verdict",
+      "decision_tree": {
+        "schema": "DECISION-TREE-1",
+        "id": "issue-delivery-plan-audit-route",
+        "version": 1,
+        "root": "verdict",
+        "nodes": [
+          {
+            "id": "verdict",
+            "field": "verdict",
+            "routes": {
+              "approved": "implementation",
+              "changes_required": "planning.revision",
+              "blocked": "human-decision"
+            }
+          }
+        ]
+      },
+      "brief": "независимо проверить покрытие AC, tests, slices и scope"
+    },
+    {
+      "id": "implementation",
+      "type": "feature",
+      "input_from": ["plan-audit"],
+      "requires": [
+        {"from": "plan-audit", "field": "verdict", "equals": "approved"}
+      ],
+      "fan_out": {
+        "items_from": ["planning", "slice_list"],
+        "item_id": "slice_id",
+        "task_type_from": "type",
+        "title_from": "title",
+        "join": "all_closed"
+      },
+      "output": ["artifacts", "handoff"],
+      "executor": {
+        "role": "developer",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "close",
+      "brief": "исполнить утверждённые implementation slices; дочерние slices создавать явно"
+    },
+    {
+      "id": "documentation",
+      "type": "doc",
+      "input_from": ["implementation"],
+      "output": ["artifacts", "docs", "handoff"],
+      "executor": {
+        "role": "writer",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "docs",
+      "brief": "документировать только реализованное поведение",
+      "documentation": {
+        "schema": "FLOW-DOC-1",
+        "policy_key": "documentation",
+        "required": false,
+        "confirmation": "effective_policy",
+        "question": {
+          "id": "DOC-CONFIRM-1",
+          "text": "Обновить затронутую документацию для этого изменения?",
+          "choices": ["document_now", "skip_once", "switch_to_manual", "cancel"],
+          "default": "document_now"
+        },
+        "on_decline": "block|skip_with_reason|manual_only",
+        "on_disabled": "skip_with_reason",
+        "cadence": "aggregate",
+        "update_after": "all_tests",
+        "verify": "on_close",
+        "enforcement": "advisory",
+        "retain_impact_record": true
+      }
+    },
+    {
+      "id": "test-fix",
+      "type": "fix",
+      "input_from": ["documentation"],
+      "output": ["artifacts", "evidence", "handoff"],
+      "executor": {
+        "role": "developer",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "tests",
+      "brief": "исправить находки подготовленных тестов и оставить evidence"
+    },
+    {
+      "id": "final-testing",
+      "type": "testing",
+      "input_from": ["test-fix"],
+      "requires": [
+        {"from": "implementation", "field": "fan_out", "equals": "all_closed"}
+      ],
+      "output": ["verdict", "evidence", "artifacts", "handoff"],
+      "executor": {
+        "role": "tester",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "tests",
+      "brief": "прогнать все заявленные команды и вынести verdict по AC-N"
+    }
+  ]
+}

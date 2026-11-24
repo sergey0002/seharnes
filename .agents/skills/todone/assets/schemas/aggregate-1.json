@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/aggregate-1.json",
+  "title": "AGGREGATE-1 run manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "aggregate_run_id", "root_workspace_id", "root_path",
+    "started_at", "finished_at", "aggregator_version", "contract_version",
+    "discovery", "completeness", "counts", "sources", "outputs",
+    "warnings", "unknowns", "invalid_sources"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema": {"const": "AGGREGATE-1"},
+    "aggregate_run_id": {"type": "string", "minLength": 1},
+    "root_workspace_id": {"type": "string", "minLength": 1},
+    "root_path": {"type": "string", "minLength": 1},
+    "started_at": {"type": "string", "minLength": 1},
+    "finished_at": {"type": "string", "minLength": 1},
+    "aggregator_version": {"type": "string", "minLength": 1},
+    "contract_version": {"const": "AGGREGATE-1"},
+    "discovery": {"type": "object", "additionalProperties": true},
+    "completeness": {"type": "object", "additionalProperties": true},
+    "counts": {"type": "object", "additionalProperties": true},
+    "sources": {"type": "array", "items": {"type": "object", "additionalProperties": true}},
+    "outputs": {"type": "array", "items": {"type": "object", "additionalProperties": true}},
+    "warnings": {"type": "array", "items": {"type": "object", "additionalProperties": true}},
+    "unknowns": {"type": "array", "items": {"type": "object", "additionalProperties": true}},
+    "invalid_sources": {"type": "array", "items": {"type": "object", "additionalProperties": true}},
+    "snapshot_path": {"type": "string"}
+  }
+}

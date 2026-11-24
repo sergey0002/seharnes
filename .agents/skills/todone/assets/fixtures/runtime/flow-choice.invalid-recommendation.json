@@ -1,0 +1,8 @@
+{
+  "schema": "FLOW-CHOICE-RESPONSE-1",
+  "request_id": "choice:fixture:1",
+  "selection": "single",
+  "value": "quick_fix",
+  "source": "agent",
+  "recommendation": {"rationale": "agent suggestion", "evidence_refs": []}
+}

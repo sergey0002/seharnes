@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/task-audit-1.json",
+  "title": "TASK-AUDIT-1 read-only task consistency verdict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "audit_id", "target_ref", "root", "created_at", "updated_at", "mode", "verdict", "findings", "remaining_questions", "remaining_risks", "refs_checked", "code_checked", "task_checked", "docs_checked", "provenance"],
+  "properties": {
+    "$schema": {"type": "string"}, "schema": {"const": "TASK-AUDIT-1"},
+    "audit_id": {"type": "string", "minLength": 1}, "target_ref": {"type": "string", "minLength": 1}, "root": {"type": "string", "minLength": 1}, "queue": {"type": ["string", "null"]},
+    "created_at": {"type": "string"}, "updated_at": {"type": "string"}, "actor": {"type": ["string", "null"]}, "mode": {"const": "read_only"},
+    "verdict": {"enum": ["approved", "changes_required", "blocked"]}, "findings": {"type": "array"}, "remaining_questions": {"type": "array"}, "remaining_risks": {"type": "array"},
+    "refs_checked": {"type": "array"}, "code_checked": {"type": "array"}, "task_checked": {"type": "object"}, "docs_checked": {"type": "object"},
+    "provenance": {"type": "array"}, "audit_task_ref": {"type": ["string", "null"]}
+  }
+}

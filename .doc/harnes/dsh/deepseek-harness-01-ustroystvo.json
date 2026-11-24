@@ -1,0 +1,325 @@
+{
+  "artifacts": [],
+  "business_logic": {
+    "facts": [],
+    "linked_rule_ids": [],
+    "unconfirmed": []
+  },
+  "checks": [],
+  "decisions": [],
+  "files": [],
+  "findings": [
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-1",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s10",
+      "severity": null,
+      "source_ids": [],
+      "statement": "патч расходится с overlay",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "патч расходится с overlay"
+    },
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-2",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s10",
+      "severity": null,
+      "source_ids": [],
+      "statement": "powershell.exe не в PATH",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "powershell.exe не в PATH"
+    },
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-3",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s10",
+      "severity": null,
+      "source_ids": [],
+      "statement": "тяжёлые модели выключены",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "тяжёлые модели выключены"
+    },
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-4",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s10",
+      "severity": null,
+      "source_ids": [],
+      "statement": "MCP и модели требуют перезапуска",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "MCP и модели требуют перезапуска"
+    }
+  ],
+  "git_events": [],
+  "git_state": null,
+  "history": [
+    {
+      "actor": "migration",
+      "at": "2026-10-21T05:57:43Z",
+      "id": "migrate-arch-deepseek-harness-01-ustroystvo-2",
+      "source_ids": [],
+      "summary": "deepseek_harnes -> architecture"
+    },
+    {
+      "actor": "agent-review",
+      "at": "2026-10-21T22:41:08Z",
+      "id": "tags2-deepseek-harness-01-ustroystvo-25d504",
+      "source_ids": [],
+      "summary": "tag harness documentation"
+    },
+    {
+      "actor": "project-doc",
+      "at": "2026-10-31T02:10:12Z",
+      "id": "arch-deepseek-harness-01-ustroystvo-dsh-kit-20261031-01",
+      "source_ids": [],
+      "summary": "Актуализация состава DSH kit и числа канонических скилов"
+    },
+    {
+      "actor": "project-doc",
+      "at": "2026-11-02T01:29:32Z",
+      "id": "dsh-counts-20261102-01",
+      "source_ids": [],
+      "summary": "update DSH counts"
+    },
+    {
+      "actor": "project-doc",
+      "at": "2026-11-02T01:52:35Z",
+      "id": "dsh-skills-root-deepseek-harness-01-ustroystvo-20261102",
+      "source_ids": [],
+      "summary": "switch skill canon to .agents/skills"
+    },
+    {
+      "actor": "user",
+      "at": "2026-11-11T05:25:09Z",
+      "id": "arch-dsh01-remove-seo-20261111",
+      "source_ids": [],
+      "summary": "Удалены скилы xmlriver, serp-study, seoq, serpanalise-report, page-content, leantime и business-analyst"
+    }
+  ],
+  "id": "architecture:deepseek-harness-01-ustroystvo",
+  "jira_report": null,
+  "kind": "architecture",
+  "metadata": {
+    "branch": null,
+    "doc_type": "architecture",
+    "release": null,
+    "source_status": "actual",
+    "status": "unknown",
+    "task_id": null,
+    "task_type": "unknown",
+    "title": "Устройство харнеса DeepSeek Harness",
+    "updated_at": "1970-01-01T00:00:00Z"
+  },
+  "notes": [],
+  "progress": [],
+  "relations": [],
+  "requirements": [],
+  "revision": 6,
+  "schema_version": "1.0",
+  "section_order": [
+    "s0",
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "s8",
+    "s9",
+    "s10",
+    "s11"
+  ],
+  "sections": [
+    {
+      "anchor": "устройство-харнеса-deepseek-harness",
+      "anchor_aliases": [],
+      "body_markdown": "\n<!-- meta\ntype: architecture\nstatus: actual\nupdated: 2026-10-31\ntags: [deepseek, harness, structure]\n-->\n\n---\n",
+      "id": "s0",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Устройство харнеса DeepSeek Harness"
+    },
+    {
+      "anchor": "суть",
+      "anchor_aliases": [],
+      "body_markdown": "\nХарнес DeepSeek Harness - тонкий слой поверх канона `.cursor/`, который\nадаптирует скилы, правила и MCP к модели конфигурации DSH. У DSH нет движка\nalways-правил и он не читает `.cursor/rules/*.mdc` напрямую: правила\nподключаются файлом `DSH-RULES.md`, скилы читаются из проектных корней, MCP\nживёт отдельными инстансами `dsh-mcp-client`, PowerShell-скрипты запускаются\nчерез шим.\n\nХарнес не копирует канон. Единственный источник скилов и правил - `.cursor/`.\nDSH-слой маршрутизирует: какой скил читать, какой скрипт запускать, как\nназываются MCP-инструменты и что реально доступно в этой среде.\n\n> **AI:** читай этот doc, чтобы понять состав и границы харнеса DSH перед правкой.\n> **Сначала:** [02-установка.md](./deepseek-harness-02-ustanovka.md) для развёртывания.\n> **Не читай целиком:** файлы `.dsh/adapters/*.md` открывай по мере необходимости.\n\n---\n",
+      "id": "s1",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Суть"
+    },
+    {
+      "anchor": "состав-файлов",
+      "anchor_aliases": [],
+      "body_markdown": "\n```\n.dsh/\n├── project.patch.yml              MCP + overlay, генерируется, загружается через --patch\n├── models.overlay.json            маршрутизация моделей (руками)\n├── project.patch.yml.bak-*        старые снимки патча, не для запуска\n├── scripts/\n│   ├── run-ps1.sh                 шим запуска PowerShell-скриптов канона\n│   └── smoke.sh                   проверка окружения и харнеса\n├── skills/\n│   └── dsh-router/SKILL.md        единственный проектный скил DSH (ранг 100)\n└── adapters/\n    ├── shell.md                   оболочка, pwsh, замеры\n    ├── mcp-names.md               15 serverName -> mcp__server__tool\n    ├── models.md                  модели и как включить llm-pi-ai\n    ├── prepare-plan-digest.md     сжатый чеклист P0-P7\nDSH-RULES.md                       always-правила инлайнены, on-demand таблицей (генерируется)\n```\n\n| Файл | Кто создаёт | Роль |\n|---|---|---|\n| `.dsh/project.patch.yml` | `generate-dsh-config.py` | MCP-инстансы + overlay моделей |\n| `.dsh/models.overlay.json` | вручную | маршрутизация моделей, читается генератором |\n| `.dsh/skills/dsh-router/SKILL.md` | вручную | маршрутизация задачи, гейты, оболочка |\n| `.dsh/adapters/*.md` | вручную | справочники оболочки, MCP, моделей, команд |\n| `.dsh/scripts/run-ps1.sh` | вручную | единственный способ запускать `.ps1` канона |\n| `.dsh/scripts/smoke.sh` | вручную | повторяемая проверка харнеса |\n| `DSH-RULES.md` | `generate-dsh-config.py` | always-правила целиком, on-demand - таблица триггеров |\n\n---\n",
+      "id": "s2",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Состав файлов"
+    },
+    {
+      "anchor": "слои-и-границы",
+      "anchor_aliases": [],
+      "body_markdown": "",
+      "id": "s3",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Слои и границы"
+    },
+    {
+      "anchor": "канон-(читаем,-не-правим)",
+      "anchor_aliases": [],
+      "body_markdown": "\n```\n.cursor/rules/*.mdc        36 правил\n.agents/skills/            26 скилов\n.agents/skills/*/scripts/  скрипты скилов (32 scripts в каноне)\n.cursor/scripts/           общие скрипты (multi-exec, multi-search, php-docker)\n.cursor/mcp.json           19 серверов, 4 выключены\n.cursor/mcp.env            секреты\n```\n",
+      "id": "s4",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Канон (читаем, не правим)"
+    },
+    {
+      "anchor": "зеркала-(генерируются)",
+      "anchor_aliases": [],
+      "body_markdown": "\n```\n.codex/ .kilo/ .agents/ .antigravity/ .gemini/\n```\n\nDSH читает скилы из `.agents/skills` (ранг 200) и `.dsh/skills` (ранг 100),\nправила - только из `DSH-RULES.md` и `AGENTS.md`.\n",
+      "id": "s5",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Зеркала (генерируются)"
+    },
+    {
+      "anchor": "слой-dsh-(единственный-редактируемый)",
+      "anchor_aliases": [],
+      "body_markdown": "\n`.dsh/`, `DSH-RULES.md`, документация `.doc/architecture/` (deepseek-harness-*).\nВне git через `.git/info/exclude`: `/.dsh/`, `/DSH-RULES.md`.\n\nПереносимая часть `.dsh` (`skills`, `adapters`, `scripts`, `tests`, `models.overlay.json`)\nкопируется `copy-dsh-kit.ps1` при переносе проекта. `project.patch.yml` и\n`DSH-RULES.md` генерируются из `.cursor` и в git не входят.\n",
+      "id": "s6",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Слой DSH (единственный редактируемый)"
+    },
+    {
+      "anchor": "18-скилов-канона-и-роль-в-dsh",
+      "anchor_aliases": [
+        "22-скила-канона-и-роль-в-dsh"
+      ],
+      "body_markdown": "\nСкилы читаются через tool `skill(name)`. `dsh-router` в эти 18 не входит.\n\n| Скил | Роль в DSH-цикле |\n|---|---|\n| gototask | переход к задаче, ядро цикла |\n| task-doc | погружение (режим A) и doc.md после push (режим B) |\n| prepare-plan | план и аудит P7.4a |\n| git-task-blame | история строк внутри prepare-plan |\n| task-diff | diff задачи после правок |\n| test-task | оркестратор теста |\n| prepare-task-test | собрать Cest, если нет |\n| browser-verify | прогон браузера внутри test-task |\n| login-as-user | вход под клиентом |\n| send-to-git | commit и push по явному \"да\" |\n| task-change-report | HTML-отчёт после тестов |\n| jira-report | текст в Jira |\n| harness-improvement | правка харнеса |\n| doc-verify | сверка arch и кода |\n| project-doc | индексация документации |\n| task-intake | завод задачи и догон документации |\n| task-code-review | ревью hunk-ов |\n| yadisk-screenshot | скриншот по ссылке |\n\n`comment-triage` - правило, не скил. В цикле обязательно.\n",
+      "id": "s7",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "18 скилов канона и роль в DSH"
+    },
+    {
+      "anchor": "как-dsh-отличается-от-cursor",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Понятие Cursor | Как в DSH |\n|---|---|\n| `.cursor/rules/*.mdc` с `alwaysApply` | `DSH-RULES.md`: всегда-правила инлайнены, on-demand - таблица |\n| `.agents/skills/*/SKILL.md` | `.agents/skills` (зеркало) + `.dsh/skills` (наш скил) |\n| `.cursor/mcp.json` + `mcp.env` | `project.patch.yml`, по одному `dsh-mcp-client` на сервер |\n| AskQuestion | tool `ask_user_question` (есть, с вариантами) |\n| `powershell -File script.ps1` | `bash .dsh/scripts/run-ps1.sh script.ps1` |\n| автоматический apply правил | нет, правила приходят текстом в промпте |\n\n---\n",
+      "id": "s8",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Как DSH отличается от Cursor"
+    },
+    {
+      "anchor": "связи",
+      "anchor_aliases": [],
+      "body_markdown": "\n- [Установка](./deepseek-harness-02-ustanovka.md) - как развернуть и проверить\n- [Workflow](./deepseek-harness-03-workflow.md) - цикл задачи\n- [Модели](./deepseek-harness-04-modeli.md) - что доступно и как включить остальное\n- [Скрипты и MCP](./deepseek-harness-05-skripty.md) - оболочка и инструменты\n- [Канон и среды](../harnes/state/01-canon-envs.md) - полная картина сред\n\n---\n",
+      "id": "s9",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Связи"
+    },
+    {
+      "anchor": "известные-проблемы-и-ограничения",
+      "anchor_aliases": [],
+      "body_markdown": "\n\n- Симптом: `project.patch.yml` не совпадает с тем, что выдаёт генератор.\n- Причина: раньше патч правили руками (убирали `llm-pi-ai`, ставили\n  `modelSelectionSettings: false`).\n- Решение: генерировать с явными флагами\n  `--no-llm --no-model-selection`; `smoke.sh` сверяет результат побайтно.\n- Файлы: `.dsh/project.patch.yml`, `.agents/skills/harness-management/children/environment-sync/scripts/generate-dsh-config.py`\n\n\n- Симптом: `powershell.exe: command not found` в агентской оболочке.\n- Причина: `PATH` не содержит `/mnt/c/...`, хотя interop включён.\n- Решение: `run-ps1.sh` ищет движок сам, приоритет у pwsh в WSL.\n- Файлы: `.dsh/scripts/run-ps1.sh`, `.dsh/adapters/shell.md`\n\n\n- Симптом: `list_subagent_models` возвращает `no LLM providers`.\n- Причина: `llm-pi-ai` не входит в патч.\n- Решение и цена включения: [04-модели.md](./deepseek-harness-04-modeli.md).\n- Файлы: `.dsh/models.overlay.json`, `.dsh/project.patch.yml`\n\n\n- Симптом: новых `mcp__*` нет в списке инструментов.\n- Причина: патч применяется при старте профиля.\n- Решение: перезапуск `dsh --patch .dsh/project.patch.yml web --no-open`.\n\n---\n",
+      "id": "s10",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Известные проблемы и ограничения"
+    },
+    {
+      "anchor": "история-изменений",
+      "anchor_aliases": [],
+      "body_markdown": "\n- 2026-10-20: создан из plan/07-dsh-final.md и plan/06b-dsh-scripts-and-testing.md\n- 2026-10-20: аудит DSH; исправлены факты оболочки (node есть, powershell.exe не в PATH),\n  добавлены `run-ps1.sh` и `smoke.sh`, описан реальный состав MCP (14) и моделей (1)\n\n#deepseek #harness #structure\n- 2026-10-31: зафиксирован перенос DSH kit через copy-dsh-kit.ps1 и актуальный состав 23 скилов\n",
+      "id": "s11",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "История изменений"
+    }
+  ],
+  "sources": [
+    {
+      "availability": "present",
+      "id": "S-legacy",
+      "kind": "doc",
+      "observation": "legacy doc.md",
+      "observed_at": null,
+      "path": null,
+      "pointer": null,
+      "revision": null,
+      "sha256": "f601229d8c8a172cdbaf7e9a6fe10a1775800810f3f6d9118b5bd443c15ddff6"
+    }
+  ],
+  "stages": [],
+  "summary": null,
+  "tags": [
+    {
+      "reason": "документация харнеса",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:harness"
+    },
+    {
+      "reason": "описание DeepSeek Harness",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:deepseek"
+    },
+    {
+      "reason": "стандарт и поиск по документации",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:documentation"
+    }
+  ],
+  "tracker": null
+}

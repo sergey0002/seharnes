@@ -1,0 +1,22 @@
+{
+  "$schema": "x",
+  "schema": "AUTODOC-SOURCE-1",
+  "source_id": "source:1111111111111111111111111111111111111111111111111111111111111111",
+  "canonical_path": "docs/a.md",
+  "source_domain": "documentation",
+  "media_type": "text/markdown",
+  "byte_size": 1,
+  "sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "mode_policy": "read-only",
+  "redaction": {
+    "status": "none"
+  },
+  "classification": "canonical",
+  "source_of_truth": true,
+  "generated": false,
+  "provenance": [],
+  "raw": "x",
+  "raw_encoding": "utf-8",
+  "raw_available": true,
+  "external": false
+}

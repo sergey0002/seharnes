@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/preza-parity-1.json",
+  "title": "PREZA-PARITY-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema",
+    "legacy_root",
+    "legacy_output",
+    "sections",
+    "assets",
+    "inventory"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "PREZA-PARITY-1"
+    },
+    "legacy_root": {
+      "type": "string"
+    },
+    "legacy_output": {
+      "type": "string"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/inventoryItem"
+      },
+      "minItems": 14
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      },
+      "minItems": 1
+    },
+    "inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_sections",
+        "lifecycle",
+        "schema_notes",
+        "faq",
+        "command_notes",
+        "file_overrides",
+        "commands",
+        "types",
+        "flows",
+        "schemas",
+        "templates",
+        "file_notes",
+        "checks",
+        "live_facts",
+        "svg"
+      ],
+      "properties": {
+        "entity_sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "lifecycle": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "schema_notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "faq": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "command_notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "file_overrides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "flows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "schemas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "templates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "file_notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "live_facts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        },
+        "svg": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItem"
+          },
+          "minItems": 1
+        }
+      }
+    }
+  },
+  "$defs": {
+    "inventoryItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "source",
+        "content_digest",
+        "target_page",
+        "status",
+        "source_refs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_digest": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target_page": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "preserved",
+            "transformed",
+            "deprecated",
+            "unknown"
+          ]
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "value": {}
+      },
+      "additionalProperties": true
+    },
+    "asset": {
+      "type": "object",
+      "required": [
+        "id",
+        "digest",
+        "target",
+        "status",
+        "source_refs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "preserved",
+            "transformed",
+            "deprecated",
+            "unknown"
+          ]
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

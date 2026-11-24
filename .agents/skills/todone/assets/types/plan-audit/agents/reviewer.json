@@ -1,0 +1,26 @@
+{
+  "name": "reviewer",
+  "role": "reviewer",
+  "tools": [
+    "read",
+    "grep",
+    "bash"
+  ],
+  "boundaries": [
+    "не менять план",
+    "не менять код и тесты",
+    "не создавать implementation-задачи"
+  ],
+  "return_contract": {
+    "fields": [
+      "verdict",
+      "findings",
+      "refs",
+      "handoff"
+    ],
+    "shape": "json: verdict, блокирующие findings с адресами и указатели",
+    "persist": "artifacts/audit.json",
+    "pointer": "ttask artifact add <id> --kind report --path artifacts/audit.json"
+  },
+  "brief": "_shared/subagent-brief.md"
+}

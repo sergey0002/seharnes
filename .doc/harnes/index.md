@@ -76,10 +76,14 @@ roadmap и предложения с проверенными по коду ст
 | [state/25-codeception-tools-move-2026-11-11.md](./state/25-codeception-tools-move-2026-11-11.md) | Перенос рабочей копии Codeception в `.tools/codeception`: симлинки задач, docker-маунт корня, хостовый запуск с `register_argc_argv`, список файлов и проверки |
 | [state/26-tools.md](./state/26-tools.md) | Каталог `.tools`: окружения Docker, Codeception, MCP php-toolchain, сканеры и 14 системных утилит `.tools/scripts`, порты, границы и правила |
 | [wsl-port-forwarding.md](./wsl-port-forwarding.md) | WSL port forwarding в nat режиме: проблема localhostForwarding, решение через netsh + Task Scheduler, полный список портов |
+| [wsl-to-server.md](./wsl-to-server.md) | Перенос всего WSL на Ubuntu-сервер: rsync домашнего каталога, nginx, юниты, что не переносится |
 | [jsondoc.md](./jsondoc.md) | КАНОН: нормативная спецификация JSONdoc-движка (схемы, CLI, batch, миграция, стадии, этапы J00-J17). Выжимка state/06 |
 | [testaudit.md](./testaudit.md) | КАНОН: воспроизводимое тестирование, раздел 9 ветки логики. Выжимка state/02 раздел 1a |
 | [tests.md](./tests.md) | КАНОН QA: принципы, слои, чек-лист 13 категорий раздел 7, стандарт отчета раздел 8 |
 | [dirtree.md](./dirtree.md) | КАНОН: раскладка каталогов харнеса, назначение `.agents/`, `.cursor/`, `.tools/`, размещение скриптов, архитектура скила |
+| [shared-tools-move.md](./shared-tools-move.md) | Hermes, OpenHands и disk-scan вынесены в `/home/newuser/projects/.tools`, в проекте остались симлинки |
+| [semantic-router.md](./semantic-router.md) | vLLM Semantic Router в `/home/newuser/projects/.tools/semantic-router`, панель `http://127.0.0.1:8900` |
+| [i18n-backup.md](./i18n-backup.md) | Бэкап русского Hermes и OpenHands и восстановление после обновления образа |
 | [skill-format.md](./skill-format.md) | КАНОН: структура скила, README, `skill.json`, дочерние скилы, правила путей и проверки |
 | [component-docs.md](./component-docs.md) | КАНОН: как документируются скилы, скрипты и MCP, шаблоны и проверки |
 | [component-install.md](./component-install.md) | КАНОН: установка нового скила, скрипта и MCP во все среды и проекты, чеклист и проверки |
@@ -158,6 +162,8 @@ roadmap и предложения с проверенными по коду ст
 | triz-contradiction-resolution | [triz-contradiction-resolution](../../.agents/skills/exhaustive-research-decision-v6/children/triz-contradiction-resolution/README.md) |
 | variant-feature-evaluation | [variant-feature-evaluation](../../.agents/skills/exhaustive-research-decision-v6/children/variant-feature-evaluation/README.md) |
 
+| Локальные скилы проекта | [todone](../../.agents/skills/todone/README.md) |
+
 ### Группировка менеджеров
 
 | Менеджер | Дочерние скилы |
@@ -175,6 +181,10 @@ roadmap и предложения с проверенными по коду ст
 ---
 
 ## deepseek-harness-* - документация харнеса DeepSeek Harness
+
+Среда DeepSeek Harness удалена 2026-11-18: пакет `@deepseek-ai/dsh`, каталог
+`~/.dsh`, юниты `dsh-web*`, каталоги `.dsh` в проектах. Раздел оставлен как
+история, для работы он не нужен.
 
 Документация DSH переведена в `.doc/architecture/`: JSON-канон и
 сгенерированный MD-вид. Правки через `jsondoc apply` плюс `render`.
@@ -295,6 +305,8 @@ readmy_doc.md, synh_harnes/README.md переведены).
 
 ## История изменений
 
+- 2026-11-14: добавлен `wsl-to-server.md`, перенос всего WSL на Ubuntu-сервер.
+- 2026-11-14: добавлен `shared-tools-move.md`. Hermes, OpenHands и disk-scan описаны как общие стеки `/home/newuser/projects/.tools`.
 - 2026-11-11: удалены ссылки на снятые скилы `business-analyst` и `task-business-analysis`; бизнес-анализ остался только историческим документом `state/17-business-analyst.md`, упоминание `business-rules` убрано.
 - 2026-11-11: добавлен канон раскладки каталогов `dirtree.md`; раскладка из `readmy.md` и `state/01-canon-envs.md` заменена ссылкой. Устаревший инвентарь `readmy.md` удален, файл стал указателем.
 - 2026-11-10: добавлен скил `audit-plan` в таблицу скилов и в группировку `task-router`; аудит плана вынесен из `prepare-plan`.

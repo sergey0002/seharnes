@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/autodoc-preza-migration-1.json",
+  "title": "AUTODOC-PREZA-MIGRATION-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema",
+    "legacy_root",
+    "legacy_output",
+    "sections",
+    "assets",
+    "inventory",
+    "parity",
+    "facts_baseline"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "AUTODOC-PREZA-MIGRATION-1"
+    },
+    "legacy_root": {
+      "type": "string"
+    },
+    "legacy_output": {
+      "type": "string"
+    },
+    "sections": {
+      "type": "array",
+      "items": {}
+    },
+    "assets": {
+      "type": "array",
+      "items": {}
+    },
+    "facts_baseline": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "inventory": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "parity": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

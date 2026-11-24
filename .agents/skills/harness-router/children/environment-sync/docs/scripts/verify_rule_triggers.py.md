@@ -22,6 +22,7 @@ tags: [harness, script, verify_rule_triggers, parity, verification]
 - Antigravity: `always_on` / `glob` / `model_decision` / `manual`
 - DSH: инлайн `(always)` в `DSH-RULES.md` / on-demand таблица (остальные)
 - Codex: только копия файла, нет trigger engine — always в `rules-index.md` head, остальные в tail
+- OpenCode: `instructions` list (always) / `.opencode/rules-index.md` (остальные)
 
 Скрипт читает все сгенерированные views и сверяет trigger и размещение каждого правила во всех средах. Дополнительно проверяет, что `gate: true` правила остаются inline, а `attach: glob` правила имеют автоматический trigger или generated glob-блок. JSON содержит `status`, `rules`, `kinds`, `gates`, `attach_globs` и `errors`.
 
@@ -47,6 +48,8 @@ tags: [harness, script, verify_rule_triggers, parity, verification]
 | --dsh |  | string | нет | DSH-RULES.md | Путь к DSH правилам |
 | --codex |  | string | нет | .codex/rules | Путь к Codex правилам |
 | --codex-index |  | string | нет | .codex/rules-index.md | Путь к Codex rules-index |
+| --opencode |  | string | нет | opencode.json | Путь к OpenCode конфигу |
+| --opencode-index |  | string | нет | .opencode/rules-index.md | Путь к OpenCode rules-index |
 
 ## Коды выхода
 | Код | Значение | Действие вызывающего |
@@ -67,6 +70,8 @@ tags: [harness, script, verify_rule_triggers, parity, verification]
 - `DSH-RULES.md` — текст (head = always inlined, tail = on-demand таблица)
 - `.codex/rules/**/*.md` — наличие копий
 - `.codex/rules-index.md` — head (always) / tail (on-demand)
+- `opencode.json` — `instructions` массив
+- `.opencode/rules-index.md` — текст индекса
 
 **Пишет:**
 - stdout: JSON:
@@ -110,6 +115,7 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/verify_r
 - DSH: парсит по маркерам `<!-- rule: <name> (always) -->` в head и `.cursor/rules/<rel>` в tail таблице.
 - Codex: парсит `rules-index.md` по разделителю `## По требованию` (на русском, как генерирует `generate-agent-configs.py`).
 - Kilo: парсит `kilo.jsonc` как JSONC (пропускает `//` комментарии), берёт `instructions` массив.
+- OpenCode: парсит `opencode.json` как JSON, берёт `instructions`; файлы правил лежат в `.opencode/rules/`.
 
 ## Связи
 - Вызывается: `sync-agent-views.sh` (после генерации), CI pipeline, ручной запуск.
@@ -120,3 +126,4 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/verify_r
 ## История изменений
 - 2026-11-07: полная документация на основе анализа кода
 - 2026-11-09: добавлена проверка visibility-контрактов гейтов и glob-триггеров
+- 2026-11-20: добавлена среда OpenCode (`--opencode`, `--opencode-index`)

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "FLOW-CHOICE-1",
+  "request_id": "choice:fixture:1",
+  "decision_id": "select_change_flow",
+  "question": "Какой маршрут применить к этому изменению?",
+  "selection": "single",
+  "options": [
+    {"id": "quick_fix", "label": "Быстрый fix", "description": "минимальный flow", "flow": "quick-fix"},
+    {"id": "standard_change", "label": "Обычное изменение", "description": "полный flow", "flow": "issue-delivery"}
+  ],
+  "default": "standard_change",
+  "allow_custom_response": false,
+  "policy_scope": "flow_run"
+}

@@ -1,0 +1,25 @@
+{
+  "name": "developer",
+  "role": "developer",
+  "tools": [
+    "read",
+    "edit",
+    "bash"
+  ],
+  "boundaries": [
+    "не менять тип и id",
+    "не трогать чужие записи"
+  ],
+  "return_contract": {
+    "fields": [
+      "files_changed",
+      "commands_run",
+      "evidence",
+      "verdict"
+    ],
+    "shape": "json: файлы, команды, свидетельства, вердикт",
+    "persist": "artifacts/report.json",
+    "pointer": "ttask artifact add <id> --kind report --path artifacts/report.json"
+  },
+  "brief": "_shared/subagent-brief.md"
+}

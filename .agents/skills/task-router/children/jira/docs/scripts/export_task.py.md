@@ -4,13 +4,13 @@
 type: script
 status: actual
 argv: manual
-updated: 2026-11-07
+updated: 2026-11-19
 related: [../../SKILL.md]
 tags: [harness, script, export_task, jira]
 -->
 
 ## Суть
-Python-скрипт для экспорта задачи Jira в Markdown-файл `.doc/tasks/{N}/task.md`. Работает без PHP и Docker — минимальный фолбэк, когда основной экспортер (`server.php`) недоступен. Загружает задачу через REST API v3 с раскрытием changelog, пагинирует комментарии, конвертирует ADF (Atlassian Document Format) в Markdown, сохраняет метаданные, описание, историю изменений и все комментарии в хронологическом порядке.
+Python-скрипт для экспорта задачи Jira в Markdown-файл `.doc/tasks/{N}/task.md`. Работает без PHP и Docker — минимальный фолбэк, когда основной экспортер (`server.php`) недоступен. Загружает задачу через REST API v3 с раскрытием changelog, пагинирует комментарии, скачивает вложения задачи в `.doc/tasks/{N}/attachments/`, конвертирует ADF (Atlassian Document Format) в Markdown, сохраняет метаданные, описание, историю изменений и все комментарии в хронологическом порядке.
 
 ## Когда запускать
 - Когда `server.php` (MCP-сервер) не запускается (нет PHP, нет Docker, нет зависимостей)
@@ -32,18 +32,20 @@ Python-скрипт для экспорта задачи Jira в Markdown-фай
 ## Что читает и что пишет
 **Читает:**
 - `config.env` (рядом со скриптом или по `JIRA_CONFIG_FILE`) — `JIRA_BASE_URL`, `JIRA_PROJECT_KEY`, `JIRA_EMAIL`, `JIRA_API_TOKEN`
-- Jira REST API: `/rest/api/3/issue/{KEY}?expand=changelog`, `/rest/api/3/issue/{KEY}/comment` (пагинация по 100)
+- Jira REST API: `/rest/api/3/issue/{KEY}?expand=changelog`, `/rest/api/3/issue/{KEY}/comment` (пагинация по 100), `/rest/api/3/attachment/content/{id}` (вложения)
 
 **Пишет:**
-- `.doc/tasks/{N}/task.md` — полный Markdown с метаданными, описанием, комментариями, историей изменений
+- `.doc/tasks/{N}/task.md` — полный Markdown с метаданными, описанием, вложениями, комментариями, историей изменений
+- `.doc/tasks/{N}/attachments/` — файлы вложений задачи
 - Создаёт директорию `.doc/tasks/{N}/` если нет
 
 **Сеть:**
 - Несколько HTTPS-запросов к Jira Cloud API (Basic Auth)
+- HTTPS к media CDN Jira при скачивании вложений; 303-редирект открывается без учётных данных
 
 ## Побочные эффекты
-- network requests (Jira API)
-- file writes (создаёт task.md и директории)
+- network requests (Jira API, скачивание вложений)
+- file writes (создаёт task.md, директории и файлы вложений)
 - Не меняет данные в Jira (только чтение)
 
 ## Окружение и зависимости
@@ -76,12 +78,13 @@ Key: CT-2538
 Title: Исправить расчёт скидки при оплате бонусами
 Comments: 12
 Changes: 8
+Attachments: 5
 ```
 
 ## Ограничения
 - Только Jira Cloud REST API v3 (не Server/DC)
-- Не экспортирует вложения (attachments) — только текст комментариев и changelog
-- ADF-конвертер покрывает базовые узлы (text, link, code, strong, heading, list, codeBlock, mention, emoji, rule, inlineCard, hardBreak, doc, paragraph, listItem, blockquote, tableCell, tableHeader, bulletList, orderedList). Сложные таблицы и медиа могут потеряться
+- Вложения скачиваются в `.doc/tasks/{N}/attachments/`, повторный запуск не перекачивает файл того же размера; файл больше 50 МБ пропускается
+- ADF-конвертер покрывает базовые узлы (text, link, code, strong, heading, list, codeBlock, mention, emoji, rule, inlineCard, hardBreak, doc, paragraph, listItem, blockquote, tableCell, tableHeader, bulletList, orderedList). Сложные таблицы и медиа могут потеряться; медиа-узлы в тексте остаются заглушкой `[attachment]`, сами файлы перечислены в секции `## Attachments`
 - Не кэширует запросы — каждый запуск бьёт в API заново
 - Не проверяет права на просмотр — 403 вернётся как ошибка
 - Не создаёт `task.json` (JSONdoc) — только `task.md`
@@ -93,4 +96,5 @@ Changes: 8
 - Конфиг совместим с `diag-auth.php` и `server.php`
 
 ## История изменений
+- 2026-11-19: добавлено скачивание вложений в `.doc/tasks/{N}/attachments/` и секция Attachments в task.md
 - 2026-11-07: заполнена полная документация по коду (был draft)

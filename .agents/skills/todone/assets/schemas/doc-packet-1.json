@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/doc-packet-1.json",
+  "title": "DOC-PACKET-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "packet_id", "workspace_id", "purpose", "task_refs", "doc_keys", "selected_modules", "claims", "refs", "decision_digest", "limits", "truncation"],
+  "properties": {
+    "$schema": {"type": "string"}, "schema": {"const": "DOC-PACKET-1"},
+    "packet_id": {"type": "string", "minLength": 1}, "workspace_id": {"type": "string", "minLength": 1},
+    "release_context": {"type": "object"}, "purpose": {"type": "string", "minLength": 1},
+    "task_refs": {"type": "array"}, "doc_keys": {"type": "array"},
+    "changed_files": {"type": "array"}, "changed_symbols": {"type": "array"},
+    "selected_modules": {"type": "array"}, "claims": {"type": "array"},
+    "refs": {"type": "array"}, "test_map": {"type": "array"}, "decision_digest": {},
+    "limits": {"type": "object"}, "truncation": {"type": "object"},
+    "unknowns": {"type": "array"}, "conflicts": {"type": "array"}, "stale": {"type": "array"}
+  }
+}

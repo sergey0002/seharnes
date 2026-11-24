@@ -1,0 +1,28 @@
+{
+  "id": "fix",
+  "name": "Дефект",
+  "class": "product",
+  "gates": {
+    "tests": "required",
+    "evidence": true,
+    "reproduce": true,
+    "acceptance_min": 2,
+    "change_kind_required": true,
+    "close": "work"
+  },
+  "fields": [
+    {
+      "name": "reproduce",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "как воспроизвести дефект: команда и наблюдаемое поведение",
+      "example": "python -m unittest tests.test_x — получаем ValueError"
+    }
+  ],
+  "editor": "any",
+  "capabilities": [],
+  "checks": [],
+  "profile": null
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "FLOW-DOC-1",
+  "policy_key": "documentation",
+  "required": true,
+  "confirmation": "effective_policy",
+  "question": {
+    "id": "DOC-CONFIRM-1",
+    "text": "Обновить документацию?",
+    "choices": ["document_now", "skip_once", "switch_to_manual", "cancel"],
+    "default": "document_now"
+  },
+  "on_decline": "block|skip_with_reason|manual_only",
+  "automation": "ask",
+  "cadence": "aggregate",
+  "update_after": "all_tests",
+  "verify": "on_close",
+  "enforcement": "advisory",
+  "retain_impact_record": true
+}

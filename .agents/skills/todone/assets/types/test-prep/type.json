@@ -1,0 +1,40 @@
+{
+  "id": "test-prep",
+  "name": "Тексты тестов до реализации",
+  "class": "product",
+  "executor": {
+    "role": "tester",
+    "tier": "balanced",
+    "mode": "subagent"
+  },
+  "gates": {
+    "tests": "not_required",
+    "handoff": "required",
+    "acceptance_min": false,
+    "close": "work"
+  },
+  "fields": [
+    {
+      "name": "tests",
+      "type": "array",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "исполняемые тестовые сценарии с TEST-N и командой",
+      "example": "TEST-1: python3 -m unittest tests.test_parser"
+    },
+    {
+      "name": "acceptance_map",
+      "type": "object",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "связь исходных AC-N с TEST-N",
+      "example": "AC-1 → TEST-1; AC-2 → TEST-2"
+    }
+  ],
+  "editor": "any",
+  "capabilities": [],
+  "checks": [],
+  "profile": null
+}

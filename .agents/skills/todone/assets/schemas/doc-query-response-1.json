@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/doc-query-response-1.json",
+  "title": "DOC-QUERY-RESPONSE-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "mode", "query_fingerprint", "scope", "summaries", "modules", "machine", "claims", "refs", "unknowns", "conflicts", "stale", "limits", "truncation"],
+  "properties": {
+    "schema": {"const": "DOC-QUERY-RESPONSE-1"}, "mode": {"type": "string"},
+    "query_fingerprint": {"type": "string"}, "scope": {"type": "object"},
+    "summaries": {"type": "array"}, "modules": {"type": "array"}, "machine": {"type": "array"},
+    "claims": {"type": "array"}, "refs": {"type": "array"}, "unknowns": {"type": "array"},
+    "conflicts": {"type": "array"}, "stale": {"type": "array"}, "limits": {"type": "object"},
+    "truncation": {"type": "object"}
+  }
+}

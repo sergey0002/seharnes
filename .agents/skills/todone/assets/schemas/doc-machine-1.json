@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/doc-machine-1.json",
+  "title": "DOC-MACHINE-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "doc_key", "doc_kind", "revision", "profile", "payload", "source_refs", "claim_refs"],
+  "properties": {
+    "$schema": {"type": "string"}, "schema": {"const": "DOC-MACHINE-1"},
+    "doc_key": {"type": "string", "minLength": 1}, "doc_kind": {"type": "string", "minLength": 1},
+    "revision": {"type": "integer", "minimum": 1}, "profile": {"type": "string", "minLength": 1},
+    "payload": {"type": "object"}, "source_refs": {"type": "array"},
+    "claim_refs": {"type": "array"}, "extensions": {"type": "object"}
+  }
+}

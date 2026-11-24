@@ -43,6 +43,8 @@ def validate(environments: dict, kit: dict, root: Path | None = None) -> list[st
             errors.append("environment entry must be an object")
             continue
         env_id = env.get("id")
+        if not isinstance(env.get("enabled", True), bool):
+            errors.append(f"{env_id}: enabled must be boolean")
         if not env_id:
             errors.append("environment id is required")
         elif env_id in ids:

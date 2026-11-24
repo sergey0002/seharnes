@@ -1,0 +1,13 @@
+{
+  "schema": "FLOW-STEP-CONTROL-1",
+  "enabled_by_default": true,
+  "confirmation": "effective_policy",
+  "question": {
+    "id": "REVIEW-CONFIRM-1",
+    "text": "Запустить внешний review для этого изменения?",
+    "choices": ["run_now", "skip_once", "cancel"],
+    "default": "run_now"
+  },
+  "on_decline": "skip_with_reason",
+  "on_disabled": "skip_with_reason"
+}

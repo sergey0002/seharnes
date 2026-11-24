@@ -31,7 +31,7 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 import scan_local_skills as scanlib  # noqa: E402
 
-ALLOWED_DIRS = {"scripts", "references", "assets", "tests", "children"}
+ALLOWED_DIRS = {"scripts", "docs", "references", "assets", "tests", "children"}
 SKIP_PARTS = {".git", "__pycache__", ".data", ".state", "node_modules", "vendor"}
 NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SECRET_RE = re.compile(

@@ -23,7 +23,7 @@ tags: [harness, sync, compact, git]
 | `--root` | Корень установленного харнеса. |
 | `--check` | Показать generated paths без удаления. |
 | `--apply` | Удалить перечисленные generated paths. |
-| `--force` | Удалить без проверки содержимого Qoder и обёрток. |
+| `--force` | Разрешить удаление известных копий правил и скилов Qoder при расхождении с каноном. Ограничения по путям сохраняются. |
 
 ## Коды выхода
 
@@ -31,11 +31,11 @@ tags: [harness, sync, compact, git]
 
 ## Что читает и что пишет
 
-Читает `.agents/skills` и generated views. В `--apply` удаляет только известный список: `.qoder/skills`, `.qoder/rules`, `.qoder/settings.json`, `.qwen/skills`, `.qwen/rules`, `.qwen/settings.json`, `.dsh/skills`, `.codex/rules`, `.codex/rules-index.md`, `.codex/mcp.json`, `.codex/config.toml`, `.kilo/rules`, `.kilo/rules-index.md`, `.kilo/mcp.json`, `.kilo/kilo.jsonc`, `.kilo/kilo-permissions.fragment.jsonc`, `.agents/rules`, `.agents/mcp.json`, `.agents/mcp_config.json`, `.agents/skills.json`, `.cursor/tools/composer.phar`, `.codex/tools/composer.phar`, `.doc/skil_data/environment-sync`, `.doc/skil_data/mirror`, `.doc/harnes/state/.validate-rules-last.json`, `DSH-RULES.md`. Отдельно из `AGENTS.md` удаляется только generated bootstrap-блок, авторский текст сохраняется.
+Читает пути из `generated` в `harness-core/assets/environments.json`. Удаляет совпавшие копии правил, скилов и скриптов пофайлово, затем убирает опустевшие каталоги. В смешанных настройках очищает управляемые секции. Из `AGENTS.md` удаляет только bootstrap между маркерами, оставляя текст с обеих сторон.
 
 ## Побочные эффекты
 
-Без `--force` Qoder-дерево удаляется только при полном совпадении с каноном, а Qwen/DSH — только если это маркированные discovery-обёртки. Локальные изменения блокируют удаление.
+Без `--force` изменённые копии правил и скилов Qoder блокируют удаление. Ручной DSH patch и локальные файлы вне списка управляемых копий сохраняются. Скрипт не проходит через симлинки в родительских каталогах.
 
 ## Окружение и зависимости
 
@@ -50,7 +50,7 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/compact_
 
 ## Ограничения
 
-Скрипт не удаляет `.dsh/adapters`, `.dsh/scripts`, `.dsh/tests`, `.codex/lib`, `.codex/go-task.ps1`, `.serena` и `.tools`. Composer phar не восстанавливается миграцией: Composer ставится в окружение через `.cursor/tools/README.md` и `composer install`. После удаления нужен `sync-agent-views.sh` или `harness_transfer render`.
+Скрипт не удаляет служебные инструменты, локальные настройки и кэш графа Mirror. Старые копии без признаков происхождения могут остаться. После удаления используйте `sync-agent-views.sh` или `harness_transfer render`.
 
 ## Связи
 
@@ -59,3 +59,4 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/compact_
 ## История изменений
 
 - 2026-11-13: добавлена компактная очистка generated views.
+- 2026-11-20: список представлений берётся из реестра; `AGENTS.md` сохраняет текст после bootstrap.

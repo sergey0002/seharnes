@@ -1,0 +1,15 @@
+{
+  "schema": "INTAKE-1",
+  "session_id": "bad",
+  "trigger": "постановка задачи",
+  "state": "collecting",
+  "root": "/fixture",
+  "created_at": "2026-01-01T00:00:00Z",
+  "updated_at": "2026-01-01T00:00:00Z",
+  "entries": [],
+  "questions": [
+    {"id": "Q-001", "status": "open", "text": "one"},
+    {"id": "Q-002", "status": "open", "text": "two"}
+  ],
+  "answers": [], "options": [], "decisions": [], "risks": [], "remaining_questions": ["Q-001", "Q-002"], "provenance": [], "history": []
+}

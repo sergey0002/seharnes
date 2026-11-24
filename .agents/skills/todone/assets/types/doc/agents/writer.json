@@ -1,0 +1,24 @@
+{
+  "name": "writer",
+  "role": "writer",
+  "tools": [
+    "read",
+    "edit",
+    "bash"
+  ],
+  "boundaries": [
+    "не документировать нереализованное",
+    "не менять код продукта"
+  ],
+  "return_contract": {
+    "fields": [
+      "docs_changed",
+      "render_check",
+      "verdict"
+    ],
+    "shape": "json: документы и проверка рендера",
+    "persist": "artifacts/docs.json",
+    "pointer": "ttask artifact add <id> --kind report --path artifacts/docs.json"
+  },
+  "brief": "_shared/subagent-brief.md"
+}

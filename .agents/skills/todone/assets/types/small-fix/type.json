@@ -1,0 +1,26 @@
+{
+  "id": "small-fix",
+  "name": "Мелкая правка",
+  "class": "product",
+  "gates": {
+    "tests": "not_required",
+    "acceptance_min": 2,
+    "change_kind_required": true,
+    "close": "work"
+  },
+  "fields": [
+    {
+      "name": "why_no_test",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "почему тест не нужен: что именно не меняется в поведении",
+      "example": "опечатка в строке подсказки, поведение команды не меняется"
+    }
+  ],
+  "editor": "any",
+  "capabilities": [],
+  "checks": [],
+  "profile": null
+}

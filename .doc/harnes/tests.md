@@ -3,7 +3,7 @@
 <!-- meta
 type: index
 status: actual
-updated: 2026-11-10
+updated: 2026-11-20
 related: [../doc_rules.md]
 tags: [qa, e2e, codeception, tests]
 -->
@@ -217,6 +217,7 @@ docker exec -w /var/www/html copytrust-dev-php-apache-1 php vendor/doctrine/migr
 ### 5.4.1. Основной стенд PHP 7.4
 
 Стенд `.tools/docker-dev` работает на PHP 7.4:
+- Канон в git - `tools/docker-dev` (этот путь использует CI). `.tools/docker-dev` - локальная копия для запуска стенда, она исключена через `.git/info/exclude`. Правки Dockerfile вносятся в `tools/` и переносятся в `.tools/`.
 - Образ: `copytrust-dev-php-apache:latest`, Dockerfile `.tools/docker-dev/php-apache/Dockerfile` (`php:7.4-apache`, расширения mbstring/gd/zip/intl/soap/sockets).
 - Пересборка: `cd .tools/docker-dev && docker compose -f compose.yaml build php-apache && docker compose -f compose.yaml up -d --no-deps php-apache`.
 - URL: `http://127.0.0.1:8030/`, контейнер `copytrust-dev-php-apache-1`, MySQL `copytrust-dev-mysql-1` на 8031.
@@ -372,6 +373,7 @@ Docker в сценариях выбора образа подменяется т
 
 ## История изменений
 
+- 2026-11-20: §5.4.1 - уточнено, что канон Dockerfile в git это `tools/docker-dev`, а `.tools/docker-dev` локальная копия; задача #2624 перевела `tools/` и PHPStan на PHP 7.4.
 - 2026-11-11: добавлен скрипт очистки прогонов старше 14 дней `cleanup-test-runs.py`; дата берётся из содержимого прогона, dry-run по умолчанию.
 - 2026-11-11: браузерные доказательства `platform-browser-test` перенесены из `.doc/skil_data/copytrust/browser-test/` в `.doc/tasks/{N}/test-runs/{дата}_{platform}-browser/`; путь проверяет `validate_structure.py`.
 - 2026-11-10: рабочая копия Codeception перенесена из `.doc/codeception/` в `.tools/codeception/`; обновлены пути симлинков задач, скрипты, правила и документация харнеса.

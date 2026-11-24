@@ -28,6 +28,7 @@ import sys
 from pathlib import Path
 
 import rule_model
+from environment_policy import enabled_ids
 
 TRIGGER_BY_KIND = {
     rule_model.ALWAYS: "always_on",
@@ -72,6 +73,29 @@ def check_kilo(rel: str, kind: str, instructions: list[str], index: str, errors:
         errors.append(f"kilo {rule}: {kind} rule missing from rules-index")
 
 
+def read_opencode_instructions(path: Path) -> list[str]:
+    if not path.is_file():
+        return []
+    try:
+        return list(json.loads(path.read_text(encoding="utf-8")).get("instructions", []))
+    except json.JSONDecodeError:
+        return []
+
+
+def check_opencode(rel: str, kind: str, instructions: list[str], index: str, errors: list[str], rule: str) -> None:
+    target = f".opencode/rules/{rel}"
+    injected = target in instructions
+    in_index = target in index
+    if kind == rule_model.ALWAYS and not injected:
+        errors.append(f"opencode {rule}: always rule missing from instructions")
+    if kind == rule_model.ALWAYS and in_index:
+        errors.append(f"opencode {rule}: always rule listed in rules-index")
+    if kind != rule_model.ALWAYS and injected:
+        errors.append(f"opencode {rule}: {kind} rule injected at start")
+    if kind != rule_model.ALWAYS and not in_index:
+        errors.append(f"opencode {rule}: {kind} rule missing from rules-index")
+
+
 def check_trigger_file(path: Path, kind: str, errors: list[str], label: str, rule: str) -> dict:
     if not path.exists():
         errors.append(f"{label} {rule}: missing {path}")
@@ -103,6 +127,8 @@ def main() -> int:
     parser.add_argument("--dsh", default="DSH-RULES.md")
     parser.add_argument("--codex", default=".codex/rules")
     parser.add_argument("--codex-index", default=".codex/rules-index.md")
+    parser.add_argument("--opencode", default="opencode.json")
+    parser.add_argument("--opencode-index", default=".opencode/rules-index.md")
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
@@ -111,7 +137,8 @@ def main() -> int:
         print(f"canonical rules dir not found: {canonical}", file=sys.stderr)
         return 1
 
-    instructions = read_kilo_instructions(root / args.kilo)
+    active = set(enabled_ids(root))
+    instructions = read_kilo_instructions(root / args.kilo) if "kilo" in active else []
     index_path = root / args.kilo_index
     index = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
 
@@ -122,6 +149,10 @@ def main() -> int:
     codex_index_path = root / args.codex_index
     codex_text = codex_index_path.read_text(encoding="utf-8") if codex_index_path.exists() else ""
     codex_head, _, codex_tail = codex_text.partition("## По требованию")
+
+    opencode_instructions = read_opencode_instructions(root / args.opencode)
+    opencode_index_path = root / args.opencode_index
+    opencode_index = opencode_index_path.read_text(encoding="utf-8") if opencode_index_path.exists() else ""
 
     errors: list[str] = []
     counts = {kind: 0 for kind in rule_model.KINDS}
@@ -140,15 +171,22 @@ def main() -> int:
         if rule_model.needs_glob(fields):
             attach_globs += 1
 
-        check_kilo(rel, kind, instructions, index, errors, rule)
+        if "kilo" in active:
+            check_kilo(rel, kind, instructions, index, errors, rule)
+        if "opencode" in active:
+            check_opencode(rel, kind, opencode_instructions, opencode_index, errors, rule)
 
         flat = flat_md(relative)
-        check_trigger_file(root / args.qoder / flat, kind, errors, "qoder", rule)
-        check_trigger_file(root / args.antigravity / flat, kind, errors, "antigravity", rule)
+        if "qoder" in active:
+            check_trigger_file(root / args.qoder / flat, kind, errors, "qoder", rule)
+        if "agents" in active:
+            check_trigger_file(root / args.antigravity / flat, kind, errors, "antigravity", rule)
 
         qwen_rule = root / args.qwen / flat
         qwen_skill = root / args.qwen_skills / ("rule-" + flat_stem(relative)) / "SKILL.md"
-        if kind in (rule_model.ALWAYS, rule_model.CONDITIONAL, rule_model.MANUAL):
+        if "qwen" not in active:
+            pass
+        elif kind in (rule_model.ALWAYS, rule_model.CONDITIONAL, rule_model.MANUAL):
             if not qwen_rule.exists():
                 errors.append(f"qwen {rule}: missing {qwen_rule}")
             else:
@@ -162,18 +200,20 @@ def main() -> int:
             errors.append(f"qwen {rule}: missing {qwen_skill}")
 
         key = rule.replace("/", "-")
-        if kind == rule_model.ALWAYS:
+        if "dsh" not in active:
+            pass
+        elif kind == rule_model.ALWAYS:
             if f"<!-- rule: {key} (always) -->" not in dsh_head:
                 errors.append(f"dsh {rule}: always rule not inlined")
         elif f".cursor/rules/{rel}" not in dsh_tail:
             errors.append(f"dsh {rule}: {kind} rule missing from on-demand table")
 
-        if not (root / args.codex / rel).exists():
+        if "codex" in active and not (root / args.codex / rel).exists():
             errors.append(f"codex {rule}: missing rule copy")
         codex_target = f".codex/rules/{rel}"
-        if kind == rule_model.ALWAYS and codex_target not in codex_head:
+        if "codex" in active and kind == rule_model.ALWAYS and codex_target not in codex_head:
             errors.append(f"codex {rule}: always rule missing from rules-index")
-        elif kind != rule_model.ALWAYS and codex_target not in codex_tail:
+        elif "codex" in active and kind != rule_model.ALWAYS and codex_target not in codex_tail:
             errors.append(f"codex {rule}: {kind} rule missing from rules-index")
 
         # Visibility contract: a gate must be injected everywhere, and a path
@@ -186,7 +226,10 @@ def main() -> int:
             if kind != rule_model.CONDITIONAL:
                 errors.append(f"{rule}: attach glob requires globs or paths (got {kind})")
             else:
-                for label, text in (("kilo", index), ("codex", codex_tail), ("dsh", dsh_tail)):
+                for label, text in (("kilo", index), ("codex", codex_tail), ("dsh", dsh_tail),
+                                    ("opencode", opencode_index)):
+                    if label not in active:
+                        continue
                     if "<!-- glob-triggers -->" not in text:
                         errors.append(f"{label} {rule}: generated glob block missing")
                     for glob in rule_model.rule_paths(fields):

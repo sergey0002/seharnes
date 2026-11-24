@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "updated_by": "fixture",
+  "tools": [
+    {
+      "capability": "code-graph",
+      "command": "fixture-code-graph",
+      "note": "приёмочный заменитель среды"
+    },
+    {
+      "capability": "memory",
+      "command": "fixture-memory",
+      "note": "приёмочный заменитель среды"
+    },
+    {
+      "capability": "web-search",
+      "command": "fixture-web-search",
+      "note": "приёмочный заменитель среды"
+    },
+    {
+      "capability": "git",
+      "command": "fixture-git",
+      "note": "приёмочный заменитель среды"
+    },
+    {
+      "capability": "test-runner",
+      "command": "fixture-test-runner",
+      "note": "приёмочный заменитель среды"
+    },
+    {
+      "capability": "docs-store",
+      "command": "fixture-docs-store",
+      "note": "приёмочный заменитель среды"
+    }
+  ]
+}

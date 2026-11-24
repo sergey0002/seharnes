@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/doc-claim-1.json",
+  "title": "DOC-CLAIM-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "doc_key", "revision", "claims"],
+  "properties": {
+    "$schema": {"type": "string"}, "schema": {"const": "DOC-CLAIM-1"},
+    "doc_key": {"type": "string", "minLength": 1}, "revision": {"type": "integer", "minimum": 1},
+    "claims": {"type": "array", "items": {"type": "object"}}
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "id": "jira-feature",
+  "name": "Задача из Jira: возможность",
+  "entry": "source",
+  "max_batch": 5,
+  "instruction": "instruction.md",
+  "steps": [
+    {
+      "id": "intake",
+      "type": "intake",
+      "input_from": [],
+      "output": [
+        "refs",
+        "raw_gaps",
+        "draft_child"
+      ],
+      "executor": {
+        "role": "researcher",
+        "tier": "cheap",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "handoff",
+      "brief": "формализовать сырой вход"
+    },
+    {
+      "id": "research",
+      "type": "research",
+      "input_from": [
+        "intake"
+      ],
+      "output": [
+        "refs",
+        "handoff"
+      ],
+      "executor": {
+        "role": "researcher",
+        "tier": "cheap",
+        "mode": "subagent"
+      },
+      "parallel": true,
+      "optional": false,
+      "gate_out": "handoff",
+      "brief": "исследовать код и документацию"
+    },
+    {
+      "id": "planning",
+      "type": "planning",
+      "input_from": [
+        "intake"
+      ],
+      "output": [
+        "acceptance",
+        "refs",
+        "plan.md"
+      ],
+      "executor": {
+        "role": "planner",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": true,
+      "optional": false,
+      "gate_out": "acceptance",
+      "brief": "собрать план реализации"
+    },
+    {
+      "id": "test-prep",
+      "type": "test-prep",
+      "input_from": [
+        "intake"
+      ],
+      "output": [
+        "tests",
+        "handoff"
+      ],
+      "executor": {
+        "role": "tester",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": true,
+      "optional": false,
+      "gate_out": "handoff",
+      "brief": "подготовить тесты"
+    },
+    {
+      "id": "feature",
+      "type": "feature",
+      "input_from": [
+        "research",
+        "planning",
+        "test-prep"
+      ],
+      "output": [
+        "report.json",
+        "evidence",
+        "docs"
+      ],
+      "executor": {
+        "role": "developer",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "tests",
+      "brief": "реализовать утверждённый план"
+    },
+    {
+      "id": "code-review",
+      "type": "code-review",
+      "input_from": [
+        "feature"
+      ],
+      "output": [
+        "verdict",
+        "review.json"
+      ],
+      "executor": {
+        "role": "reviewer",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": true,
+      "gate_out": "close",
+      "brief": "разобрать дифф"
+    },
+    {
+      "id": "testing",
+      "type": "testing",
+      "input_from": [
+        "feature"
+      ],
+      "output": [
+        "verdict",
+        "evidence"
+      ],
+      "executor": {
+        "role": "tester",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "tests",
+      "brief": "прогнать общие тесты"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "D-001",
+  "task": "T-001",
+  "children": [],
+  "result": "",
+  "implementation": [],
+  "files_changed": [],
+  "algorithm": [],
+  "verification": [],
+  "evidence": [],
+  "acceptance_status": [],
+  "attempts": [],
+  "deviations": [],
+  "remaining_risks": [],
+  "events": [],
+  "completed_at": null,
+  "completed_by": null
+}

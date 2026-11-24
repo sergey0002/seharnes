@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/autodoc-audit-packet-1.json",
+  "title": "AUTODOC-AUDIT-PACKET-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema",
+    "packet_id",
+    "bundle_id",
+    "purpose",
+    "selected_entity_refs",
+    "selected_relation_refs",
+    "findings",
+    "unknowns",
+    "limits",
+    "truncation",
+    "return_contract"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "AUTODOC-AUDIT-PACKET-1"
+    },
+    "packet_id": {
+      "type": "string"
+    },
+    "bundle_id": {
+      "type": "string"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "selected_entity_refs": {
+      "type": "array",
+      "items": {}
+    },
+    "selected_relation_refs": {
+      "type": "array",
+      "items": {}
+    },
+    "findings": {
+      "type": "array",
+      "items": {}
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {}
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "truncation": {
+      "type": "boolean"
+    },
+    "return_contract": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "created_at": {
+      "type": "string"
+    }
+  }
+}

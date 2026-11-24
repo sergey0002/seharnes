@@ -47,7 +47,7 @@ tags: [harness, mcp, tracker, jira]
 
 | Инструмент | Параметры | Зачем |
 |---|---|---|
-| `export_task_md` | `issue_id`: номер `2538`, ключ `CT-2538` или URL | записать `task.md` |
+| `export_task_md` | `issue_id`: номер `2538`, ключ `CT-2538` или URL | записать `task.md` и скачать вложения в `attachments/` |
 | `list_release_tasks` | `release_version`: `5.7.2` или `releases/5.7.2` | задачи релиза |
 
 ---

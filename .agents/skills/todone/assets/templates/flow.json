@@ -1,0 +1,8 @@
+{
+  "id": "custom-flow",
+  "name": "Пользовательский поток",
+  "entry": "text",
+  "max_batch": 1,
+  "instruction": "instruction.md",
+  "steps": []
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "TASK-AUDIT-1",
+  "audit_id": "audit:intake-fixture:T-002",
+  "target_ref": "T-002",
+  "root": "/fixture",
+  "queue": "site",
+  "created_at": "2026-01-01T00:00:00Z",
+  "updated_at": "2026-01-01T00:00:00Z",
+  "actor": "alice",
+  "mode": "read_only",
+  "verdict": "approved",
+  "findings": [],
+  "remaining_questions": [],
+  "remaining_risks": [],
+  "refs_checked": [],
+  "code_checked": [],
+  "task_checked": {"id": "T-002"},
+  "docs_checked": {"status": "bounded_local_refs_only"},
+  "provenance": [{"source_kind": "task", "source_ref": "T-002", "digest": "sha256:x"}],
+  "audit_task_ref": null
+}

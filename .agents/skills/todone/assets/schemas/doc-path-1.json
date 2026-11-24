@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/doc-path-1.json",
+  "title": "DOC-PATH-1 documentation workspace pointer",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "docs_path"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema": {"const": "DOC-PATH-1"},
+    "root": {"type": "string"},
+    "docs_path": {"type": "string", "minLength": 1},
+    "manifest": {"type": "string", "minLength": 1}
+  }
+}

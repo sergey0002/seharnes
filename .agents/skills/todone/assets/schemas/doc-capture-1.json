@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/doc-capture-1.json",
+  "title": "DOC-CAPTURE-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "capture_id", "source", "task_refs", "doc_keys", "release_context", "user_intent", "changed_files", "redaction", "provenance", "status"],
+  "properties": {
+    "$schema": {"type": "string"}, "schema": {"const": "DOC-CAPTURE-1"},
+    "capture_id": {"type": "string", "minLength": 1}, "source": {"type": "object"},
+    "task_refs": {"type": "array", "items": {"type": "string"}},
+    "doc_keys": {"type": "array", "items": {"type": "string"}},
+    "release_context": {"type": "object"}, "user_intent": {"type": "string", "minLength": 1},
+    "changed_files": {"type": "array", "items": {"type": "string"}},
+    "decision_digest": {}, "transcript_digest": {"type": ["string", "null"]},
+    "redaction": {"type": "object"}, "provenance": {"type": "array"},
+    "status": {"enum": ["captured", "packet_ready", "draft", "needs_review", "approved", "rejected", "applied"]}
+  }
+}

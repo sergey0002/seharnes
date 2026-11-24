@@ -1,0 +1,26 @@
+{
+  "name": "planner",
+  "role": "planner",
+  "tools": [
+    "read",
+    "grep"
+  ],
+  "boundaries": [
+    "не менять код",
+    "не копировать результат ребёнка в родителя"
+  ],
+  "return_contract": {
+    "fields": [
+      "approach",
+      "changes",
+      "outcome",
+      "check",
+      "implementation_plan",
+      "slice_list"
+    ],
+    "shape": "json: цель, текущий вариант, будущий вариант, проверка",
+    "persist": "artifacts/plan.md",
+    "pointer": "ttask artifact add <id> --kind spec --path artifacts/plan.md"
+  },
+  "brief": "_shared/subagent-brief.md"
+}

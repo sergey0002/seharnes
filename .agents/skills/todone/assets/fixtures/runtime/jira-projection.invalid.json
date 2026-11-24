@@ -1,0 +1,19 @@
+{
+  "schema": "JIRA-MIRROR-1",
+  "profile": "wrong-profile",
+  "revision": 0,
+  "external": [],
+  "normalized": {},
+  "fields": {},
+  "comments": {},
+  "custom_fields": {},
+  "dates": {},
+  "attachments": [],
+  "links": {},
+  "relations": {},
+  "worklogs": null,
+  "changelog": null,
+  "properties": null,
+  "unknown_fields": {},
+  "completeness": {"status": "unknown", "resources": {"comments": {"state": "unknown"}}}
+}

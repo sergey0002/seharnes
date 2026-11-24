@@ -1,0 +1,8 @@
+{
+  "policy": "DOC-POLICY-1",
+  "automation": "manual",
+  "enforcement": "advisory",
+  "cadence": "explicit",
+  "update_after": "explicit_command",
+  "verify": "on_close"
+}

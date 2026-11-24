@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/flow-step-control-1.json",
+  "title": "FLOW-STEP-CONTROL-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "enabled_by_default", "confirmation", "question", "on_decline", "on_disabled"],
+  "properties": {
+    "schema": {"const": "FLOW-STEP-CONTROL-1"},
+    "enabled_by_default": {"type": "boolean"},
+    "confirmation": {"enum": ["effective_policy", "always", "never"]},
+    "question": {"$ref": "#/$defs/question"},
+    "on_decline": {"enum": ["block", "skip_with_reason", "route", "cancel", "manual_only"]},
+    "on_disabled": {"enum": ["block", "skip_with_reason", "route", "cancel", "manual_only"]},
+    "policy_key": {"type": ["string", "null"]},
+    "scope": {"type": ["string", "null"]}
+  },
+  "$defs": {
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "text", "choices", "default"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 1},
+        "choices": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "default": {"type": "string", "minLength": 1},
+        "selection": {"enum": ["boolean", "single", "multiple", "text"]},
+        "allow_custom_response": {"type": "boolean"}
+      }
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "id": "release-testing",
+  "name": "Проверка релиза",
+  "entry": "text",
+  "max_batch": 3,
+  "instruction": "instruction.md",
+  "steps": [
+    {
+      "id": "test-prep",
+      "type": "test-prep",
+      "input_from": [],
+      "output": [
+        "tests",
+        "handoff"
+      ],
+      "executor": {
+        "role": "tester",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "handoff",
+      "brief": "подготовить план прогона"
+    },
+    {
+      "id": "testing",
+      "type": "testing",
+      "input_from": [
+        "test-prep"
+      ],
+      "output": [
+        "verdict",
+        "evidence"
+      ],
+      "executor": {
+        "role": "tester",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": false,
+      "gate_out": "tests",
+      "brief": "прогнать релиз"
+    },
+    {
+      "id": "doc",
+      "type": "doc",
+      "input_from": [
+        "testing"
+      ],
+      "output": [
+        "docs"
+      ],
+      "executor": {
+        "role": "writer",
+        "tier": "balanced",
+        "mode": "subagent"
+      },
+      "parallel": false,
+      "optional": true,
+      "gate_out": "docs",
+      "brief": "проверить документацию"
+    }
+  ]
+}

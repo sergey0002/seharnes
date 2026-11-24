@@ -1,0 +1,7 @@
+{
+  "schema": "FLOW-DOC-1",
+  "policy_key": "documentation",
+  "required": true,
+  "confirmation": "effective_policy",
+  "on_decline": "block"
+}

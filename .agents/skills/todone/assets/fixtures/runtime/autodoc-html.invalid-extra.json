@@ -1,0 +1,15 @@
+{
+  "$schema": "x",
+  "schema": "AUTODOC-HTML-1",
+  "html_id": "html:test",
+  "bundle_id": "autodoc:test",
+  "bundle_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "generator": {
+    "name": "fixture"
+  },
+  "output_path": ".",
+  "pages": [],
+  "assets": [],
+  "diagrams": [],
+  "unknown_extra": true
+}

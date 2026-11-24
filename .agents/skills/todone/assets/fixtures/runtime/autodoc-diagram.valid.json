@@ -1,0 +1,12 @@
+{
+  "$schema": "x",
+  "schema": "AUTODOC-DIAGRAM-1",
+  "diagram_id": "flow:fixture",
+  "kind": "flow",
+  "title": "Fixture",
+  "nodes": [],
+  "edges": [],
+  "legend": [],
+  "source_entity_refs": [],
+  "layout": "stable-list"
+}

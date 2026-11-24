@@ -1,0 +1,14 @@
+{
+  "schema": "FLOW-TRANSITION-1",
+  "transition_id": "transition:fixture",
+  "from_flow": "issue-delivery",
+  "from_run": "issue-delivery:R-7",
+  "from_step": "planning",
+  "transition": "switch_flow",
+  "target_flow": "critical-change",
+  "target_step": "intake",
+  "choice_ref": "choice:fixture:1",
+  "carry_refs": ["main:T-042", "artifact://plan"],
+  "requested_by": "user",
+  "status": "requested"
+}

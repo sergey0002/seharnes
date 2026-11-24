@@ -44,7 +44,7 @@ def rebase_links(text: str, source: Path, target: Path) -> str:
         if not path or ":" in path or path.startswith("/") or " " in path:
             return match.group(0)
         resource = source.parent / path
-        if not resource.exists():
+        if resource.resolve() == target.resolve() or not resource.exists():
             return match.group(0)
         relative = Path(os.path.relpath(resource.resolve(), target.parent.resolve())).as_posix()
         return "](" + relative + (sep + anchor if sep else "") + ")"

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/doc-policy-1.json",
+  "title": "DOC-POLICY-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy", "automation", "enforcement", "cadence", "update_after", "verify"],
+  "properties": {
+    "policy": {"const": "DOC-POLICY-1"},
+    "automation": {"enum": ["ask", "always", "manual", "disabled"]},
+    "enforcement": {"enum": ["advisory", "required", "critical"]},
+    "cadence": {"enum": ["slice", "aggregate", "both", "explicit"]},
+    "update_after": {"enum": ["implementation", "slice_tests", "all_tests", "explicit_command"]},
+    "verify": {"enum": ["on_update", "after_final_tests", "on_close"]},
+    "render": {"type": "string"}, "audit": {"type": "string"},
+    "updated_at": {"type": "string"}, "updated_by": {"type": "string"},
+    "reason": {"type": "string"}
+  }
+}

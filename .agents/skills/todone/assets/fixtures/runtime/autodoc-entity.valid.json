@@ -1,0 +1,11 @@
+{
+  "$schema": "x",
+  "schema": "AUTODOC-ENTITY-1",
+  "entity_id": "type:fixture",
+  "kind": "type",
+  "namespace": "types",
+  "status": "read",
+  "source_refs": [],
+  "provenance": [],
+  "normalized": {}
+}

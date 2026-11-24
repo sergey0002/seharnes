@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/workspace-1.json",
+  "title": "WORKSPACE-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "workspace_id", "product_id", "docs_path", "policy"],
+  "properties": {
+    "$schema": {"type": "string"}, "schema": {"const": "WORKSPACE-1"},
+    "workspace_id": {"type": "string", "minLength": 1}, "product_id": {"type": "string", "minLength": 1},
+    "root": {"type": "string"}, "docs_path": {"type": "string", "minLength": 1},
+    "task_registry": {"type": "string"}, "default_release": {}, "release_registry": {"type": "string"},
+    "catalog_path": {"type": "string"}, "contract_versions": {"type": "object"},
+    "policy": {"$ref": "doc-policy-1.json"}
+  }
+}

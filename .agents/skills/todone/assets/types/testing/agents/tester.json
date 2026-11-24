@@ -1,0 +1,24 @@
+{
+  "name": "tester",
+  "role": "tester",
+  "tools": [
+    "read",
+    "bash"
+  ],
+  "boundaries": [
+    "не менять код",
+    "не рисовать свидетельство"
+  ],
+  "return_contract": {
+    "fields": [
+      "verdict",
+      "commands_run",
+      "evidence",
+      "blocked"
+    ],
+    "shape": "json: verdict по AC-N и свидетельства",
+    "persist": "artifacts/testing.json",
+    "pointer": "ttask artifact add <id> --kind tests --path artifacts/testing.json"
+  },
+  "brief": "_shared/subagent-brief.md"
+}

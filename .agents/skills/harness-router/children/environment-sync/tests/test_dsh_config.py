@@ -142,6 +142,8 @@ class DshConfigTests(unittest.TestCase):
 
     def test_smoke_generator_parity_uses_real_check(self):
         smoke = SCRIPT.parents[6] / '.dsh/scripts/smoke.sh'
+        if not smoke.is_file():
+            self.skipTest("optional DSH runtime kit is not installed")
         text = smoke.read_text(encoding='utf-8')
         section = text.split('echo "== generator parity"', 1)[1].split('echo "== patch contents"', 1)[0]
         scripts = self.root / '.agents/skills/harness-router/children/environment-sync/scripts'

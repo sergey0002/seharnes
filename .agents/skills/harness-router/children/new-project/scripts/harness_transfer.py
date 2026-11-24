@@ -231,11 +231,12 @@ def _profile_selection(args) -> tuple[list[str], list[str], set[str]]:
                  ".codex/mcp.json", ".codex/config.toml", ".kilo/mcp.json", ".kilo/kilo.jsonc",
                  ".kilo/kilo-permissions.fragment.jsonc", ".qoder/rules/", ".qoder/settings.json",
                  ".qwen/rules/", ".qwen/settings.json", ".dsh/project.patch.yml",
-                 ".dsh/models.overlay.json", "DSH-RULES.md")
+                 ".dsh/models.overlay.json", ".opencode/rules/", ".opencode/rules-index.md",
+                 ".opencode/permissions.fragment.json", "opencode.json", "DSH-RULES.md")
     secrets = ("mcp.env", ".env", "config.env")
     paths, roots, allowed = [], set(), set()
     for path in files:
-        if path.startswith((".kilo/", ".qoder/", ".qwen/", ".dsh/", ".codex/", ".serena/",
+        if path.startswith((".kilo/", ".qoder/", ".qwen/", ".opencode/", ".dsh/", ".codex/", ".serena/",
                              ".cursor/tools/", ".codex/tools/")):
             continue
         if path.startswith(".tools/") and not path.startswith(".tools/scripts/"):
@@ -252,7 +253,7 @@ def _profile_selection(args) -> tuple[list[str], list[str], set[str]]:
     defaults = [".doc/harnes/astra_plan", ".doc/harnes/idea", ".doc/harnes/plan",
                 ".doc/harnes/audit", ".doc/harnes/state/.validate-rules-last.json",
                 ".doc/skil_data", ".doc/tasks", ".doc/architecture", ".doc/archive", ".doc/qa",
-                ".cursor/tools", ".codex/tools", ".kilo", ".qoder", ".qwen", ".dsh", ".codex", ".serena"]
+                ".cursor/tools", ".codex/tools", ".kilo", ".qoder", ".qwen", ".opencode", ".dsh", ".codex", ".serena"]
     args.exclude = sorted(set(list(getattr(args, "exclude", None) or []) + defaults))
     return sorted(roots), sorted(paths), allowed
 

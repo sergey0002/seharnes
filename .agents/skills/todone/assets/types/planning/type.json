@@ -1,0 +1,70 @@
+{
+  "id": "planning",
+  "name": "План реализации",
+  "class": "research",
+  "gates": {
+    "tests": "not_required",
+    "acceptance_min": 2,
+    "close": "result_is_knowledge"
+  },
+  "fields": [
+    {
+      "name": "approach",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "чем меняем: способ, затронутые модули, отвергнутые варианты и причина",
+      "example": "меняем модуль экспорта; вариант с новым сервисом отклонён: нужен один процесс"
+    },
+    {
+      "name": "changes",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "что меняем: на каждый пункт файл, символ, текущее и новое поведение",
+      "example": "scripts/export.py: build_rows — сейчас возвращает список, будет возвращать итератор"
+    },
+    {
+      "name": "outcome",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "что получим: наблюдаемое поведение, а не перечень правок",
+      "example": "большой экспорт сохраняет приемлемое время выполнения"
+    },
+    {
+      "name": "check",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "как проверить: команда и ожидаемый вывод",
+      "example": "python3 -m unittest tests.test_export — OK, 12 тестов"
+    },
+    {
+      "name": "implementation_plan",
+      "type": "object",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "структурированный план и его связь с исходными AC-N",
+      "example": "{\"goal\": \"...\", \"slices\": [S-1, S-2]}"
+    },
+    {
+      "name": "slice_list",
+      "type": "array",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "список независимых slices: slice_id, type, scope, depends_on, ac, tests, done_when",
+      "example": "[{\"slice_id\": \"S-1\", \"type\": \"feature\", \"title\": \"...\", \"scope\": \"...\", \"depends_on\": [], \"ac\": [\"AC-1\"], \"tests\": [\"TEST-1\"], \"done_when\": \"...\"}]"
+    }
+  ],
+  "editor": "any",
+  "capabilities": [],
+  "checks": [],
+  "profile": null
+}

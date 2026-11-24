@@ -143,6 +143,11 @@ def test_native_discovery_contract() -> None:
         legacy = root / ".codex/skills/unique/SKILL.md"
         legacy.parent.mkdir(parents=True)
         legacy.write_text("local work", encoding="utf-8")
+        cursor_legacy = root / ".cursor/skills/unique/SKILL.md"
+        cursor_legacy.parent.mkdir(parents=True)
+        cursor_legacy.write_text("local Cursor work", encoding="utf-8")
+        legacy_agents = root / ".codex/AGENTS.md"
+        legacy_agents.write_text("# Legacy\nCodex: read `.codex/rules-index.md` for mandatory and on-demand rules.\n", encoding="utf-8")
         generator.sync_discovery(root)
         generator.generate_codex(root)
         text = (root / "AGENTS.md").read_text(encoding="utf-8")
@@ -150,7 +155,9 @@ def test_native_discovery_contract() -> None:
         assert "model_instructions_file" not in config.read_text(encoding="utf-8")
         assert "approval_policy" in config.read_text(encoding="utf-8")
         assert not (root / ".codex/skills").exists()
-        assert list((root / ".doc/skil_data/environment-sync/backups").rglob("SKILL.md"))
+        assert not (root / ".cursor/skills").exists()
+        assert not legacy_agents.exists()
+        assert not (root / ".doc/skil_data/environment-sync/backups").exists()
         manifest = json.loads((root / ".agents/skills.json").read_text(encoding="utf-8"))
         assert manifest["entries"] == [{"path": ".agents/skills/router/children/child"}]
         assert "router/children/child/SKILL.md" in (root / ".dsh/skills/child/SKILL.md").read_text(encoding="utf-8")
@@ -158,6 +165,7 @@ def test_native_discovery_contract() -> None:
         generator.sync_discovery(root)
         generator.generate_codex(root)
         assert (root / "AGENTS.md").read_text(encoding="utf-8") == text
+        assert not (root / ".doc/skil_data/environment-sync/backups").exists()
         wrapper = root / ".dsh/skills/child/SKILL.md"
         wrapper.write_text("user edit", encoding="utf-8")
         assert generator.sync_discovery(root, check=True)
@@ -183,6 +191,8 @@ def test_relocated_links() -> None:
         source.write_text("---\ndescription: a\n---\n" + body, encoding="utf-8")
         target.parent.mkdir(parents=True)
         target.write_text(relocated, encoding="utf-8")
+        self_link = "[Mirror](../../.agents/rules/a.md)"
+        assert rule_model.rebase_links(self_link, source, target) == self_link
         assert parity.compare_rules(source.parent, target.parent, allow_extra=True) == [f"{target.parent}: rules missing b"]
 
 
@@ -307,8 +317,8 @@ def test_mcp_view_invariants() -> None:
 
 def test_windows_global_config_replaced() -> None:
     script = (SCRIPTS / "sync-agent-views.sh").read_text(encoding="utf-8")
-    block = script.split('if [ -n "$WIN_HOME" ] && [ -d "$WIN_HOME/.gemini/config" ]; then', 1)[1]
-    block = 'if [ -n "$WIN_HOME" ] && [ -d "$WIN_HOME/.gemini/config" ]; then' + block.split('\necho "--- Generating DeepSeek', 1)[0]
+    guard = 'if [[ -n "$WIN_HOME" && -d "$WIN_HOME/.gemini/config" ]]; then'
+    block = guard + script.split(guard, 1)[1].split('\n        fi', 1)[0] + '\nfi'
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
         target = root / ".gemini" / "config" / "mcp_config.json"
@@ -547,12 +557,45 @@ def test_qoder_rules_and_skills() -> None:
         assert not (root / ".qoder" / "rules" / "local.md").exists()
         managed = root / ".qoder" / "rules" / "always.md"
         managed.write_text("local edit\n", encoding="utf-8")
+        managed_skill = root / ".qoder/skills/demo/SKILL.md"
+        managed_skill.write_text("local skill edit\n", encoding="utf-8")
         assert generator.main(["--root", str(root), "--preflight"]) == 0
         assert managed.read_text(encoding="utf-8") == "local edit\n"
         assert generator.main(["--root", str(root)]) == 0
-        backups = list((root / ".doc/skil_data/environment-sync/backups/qoder-preflight").glob("*/rules/always.md"))
-        assert len(backups) == 1 and backups[0].read_text(encoding="utf-8") == "local edit\n"
+        assert not (root / ".doc").exists()
         assert "trigger: always_on" in managed.read_text(encoding="utf-8")
+        assert managed_skill.read_bytes() == (skill / "SKILL.md").read_bytes()
+        assert generator.main(["--root", str(root)]) == 0
+        assert not (root / ".doc").exists()
+
+
+def test_qoder_binary_payload_preserved() -> None:
+    generator = load_qoder_generator()
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        (root / ".cursor/rules").mkdir(parents=True)
+        (root / ".cursor/mcp.json").write_text('{"mcpServers": {}}', encoding="utf-8")
+        skills = root / ".agents/skills"
+        image = skills / "demo/scripts/imd/pixel.png"
+        image.parent.mkdir(parents=True)
+        png = bytes.fromhex(
+            "89504e470d0a1a0a0000000d4948445200000001000000010804000000b51c0c02"
+            "0000000b4944415478da6364f80f00010501012718e3660000000049454e44ae426082"
+        )
+        assert b"\r\n" in png
+        image.write_bytes(png)
+        (skills / "demo/SKILL.md").write_bytes(b"# Demo\r\n")
+        view = root / ".qoder/skills"
+        for _ in range(2):
+            assert generator.main(["--root", str(root)]) == 0
+            assert (view / "demo/scripts/imd/pixel.png").read_bytes() == png
+            assert (view / "demo/SKILL.md").read_bytes() == b"# Demo\n"
+            assert generator.main(["--root", str(root), "--check"]) == 0
+            assert parity.compare(skills, view) == []
+            assert not (root / ".doc").exists()
+        (view / "demo/scripts/imd/pixel.png").write_bytes(png.replace(b"\r\n", b"\n"))
+        assert generator.main(["--root", str(root), "--check"]) == 1
+        assert parity.compare(skills, view)
 
 
 def test_qoder_mcp_render() -> None:
@@ -630,8 +673,11 @@ def test_sync_qoder_preflight_before_writes() -> None:
         root = Path(directory)
         script_dir = root / ".agents/skills/harness-router/children/environment-sync/scripts"
         script_dir.mkdir(parents=True)
-        for name in ("sync-agent-views.sh", "generate-qoder-config.py", "rule_model.py"):
+        for name in ("sync-agent-views.sh", "render_agent_views.py", "environment_policy.py", "compact_agent_views.py", "generate-qoder-config.py", "rule_model.py", "verify_parity.py"):
             (script_dir / name).write_bytes((SCRIPTS / name).read_bytes())
+        registry = script_dir.parents[1] / "harness-core/assets/environments.json"
+        registry.parent.mkdir(parents=True)
+        registry.write_bytes((SCRIPTS.parents[1] / "harness-core/assets/environments.json").read_bytes())
         (root / ".cursor/rules").mkdir(parents=True)
         (root / ".cursor/mcp.json").write_text('{"mcpServers": {}}', encoding="utf-8")
         canonical = root / ".agents/skills/demo/SKILL.md"
@@ -876,8 +922,7 @@ def test_qoder_qwen_strict_mirror_transitions() -> None:
                 assert generator.main(["--root", str(root)]) == 3
                 assert settings_path.read_bytes() == before
                 assert generator.main(["--root", str(root), "--replace-managed-mcp"]) == 0
-                backups = list((root / ".doc/skil_data/environment-sync/backups/qoder-preflight").glob("*/settings.json"))
-                assert len(backups) == 1 and backups[0].read_bytes() == before
+                assert not (root / ".doc").exists()
             else:
                 assert generator.main(["--root", str(root)]) == 0
             result = json.loads(settings_path.read_text(encoding="utf-8"))
@@ -893,14 +938,14 @@ def test_qoder_qwen_strict_mirror_transitions() -> None:
             assert generator.main(["--root", str(root), "--check"]) == 0
             assert generator.main(["--root", str(root)]) == 0
             assert json.loads(settings_path.read_text(encoding="utf-8")) == result
+            assert not (root / ".doc/skil_data/environment-sync/backups").exists()
 
 
 def test_sync_native_artifact_path() -> None:
     script = (SCRIPTS / "sync-agent-views.sh").read_text(encoding="utf-8")
-    assert 'NATIVE_MCP_ARTIFACT="${ROOT_DIR}/.doc/skil_data/harness-router/antigravity_mcp_config.json"' in script
-    assert '"$ROOT_DIR" --out "$NATIVE_MCP_ARTIFACT"' in script
-    assert 'copy_file_view "$NATIVE_MCP_ARTIFACT" "$env_dir/mcp.json"' in script
-    assert 'copy_file_view "$NATIVE_MCP_ARTIFACT" "$env_dir/mcp_config.json"' in script
+    renderer = (SCRIPTS / "render_agent_views.py").read_text(encoding="utf-8")
+    assert '.doc/skil_data/harness-router/antigravity_mcp_config.json' in script and '.doc/skil_data/harness-router/antigravity_mcp_config.json' in renderer
+    assert 'for name in ("mcp.json", "mcp_config.json")' in renderer
     assert 'ln -sf "$NATIVE_MCP_ARTIFACT" "$GLOBAL_GEMINI_DIR/mcp_config.json"' in script
     assert ".doc/skil_data/harness-core/antigravity_mcp_config.json" not in script
 
@@ -976,6 +1021,7 @@ def main() -> int:
         test_kilo_rule_selection,
         test_windows_wsl_render,
         test_qoder_rules_and_skills,
+        test_qoder_binary_payload_preserved,
         test_qoder_mcp_render,
         test_sync_qoder_preflight_before_writes,
         test_qwen_rules_and_mcp,

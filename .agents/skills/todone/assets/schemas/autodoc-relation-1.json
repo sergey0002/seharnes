@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/autodoc-relation-1.json",
+  "title": "AUTODOC-RELATION-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema",
+    "relation_id",
+    "from",
+    "to",
+    "kind",
+    "resolution",
+    "source_refs",
+    "provenance"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "AUTODOC-RELATION-1"
+    },
+    "relation_id": {
+      "type": "string"
+    },
+    "from": {
+      "type": "string"
+    },
+    "to": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "resolution": {
+      "enum": [
+        "resolved",
+        "unresolved",
+        "ambiguous",
+        "unknown"
+      ]
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {}
+    },
+    "provenance": {
+      "type": "array",
+      "items": {}
+    }
+  }
+}

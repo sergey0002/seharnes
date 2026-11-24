@@ -102,10 +102,10 @@ tags: [harness, layout, canon, scripts, tools]
 | `.tools/codeception/` | Автотесты Codeception и их окружения |
 | `.tools/docker-dev/` | Dev-стенд: PHP 7.4 + Apache, MySQL, compose |
 | `.tools/docker-test/` | Test-стенд |
-| `.tools/disk-scan/` | Сканирование диска |
-| `.tools/hermes/` | Стек Hermes |
+| `.tools/disk-scan/` | Симлинк на общий стек `/home/newuser/projects/.tools/disk-scan` |
+| `.tools/hermes/` | Симлинк на общий стек `/home/newuser/projects/.tools/hermes` |
 | `.tools/mcp-servers/` | Локальные MCP-серверы, включая `php-toolchain` |
-| `.tools/openhands/` | Стек OpenHands |
+| `.tools/openhands/` | Симлинк на общий стек `/home/newuser/projects/.tools/openhands` |
 | `.tools/php85-scan/` | Сканер PHP 8.5 |
 
 Правила размещения:
@@ -215,5 +215,6 @@ tags: [harness, layout, canon, scripts, tools]
 
 ## История изменений
 
+- 2026-11-14: Hermes, OpenHands и disk-scan в таблице `.tools/` помечены как симлинки на `/home/newuser/projects/.tools`.
 - 2026-11-11: уточнено, что синхронизация удаляет legacy `.codex/mcp-servers/` вместе с `.agents/mcp-servers/`; цель переноса PHP CLI приведена к `.tools/php-cli/`.
 - 2026-11-11: документ создан. Раскладка каталогов перенесена из `readmy.md` раздел 2 и `state/01-canon-envs.md` раздел 1, вместо копий поставлены ссылки. Добавлены правила `.tools/{name}/`, размещения скриптов и архитектуры скила. Устаревший инвентарь `readmy.md` удален, файл стал указателем.

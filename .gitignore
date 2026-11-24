@@ -90,6 +90,11 @@
 /.qoder/rules/
 /.qwen/skills/
 /.qwen/rules/
+# OpenCode v2 generated view (rules, index, MCP, permissions).
+/.opencode/rules/
+/.opencode/rules-index.md
+/.opencode/permissions.fragment.json
+/opencode.json
 /.dsh/skills/
 /.serena/memories/
 /.serena/cache/
@@ -103,6 +108,9 @@
 **/*.phar
 **/node_modules/
 **/vendor/
+# Portable skill resource: the todone renderer ships its mermaid bundle.
+!/.agents/skills/todone/scripts/tdcore/vendor/
+!/.agents/skills/todone/scripts/tdcore/vendor/**
 **/venv/
 **/.venv/
 **/.venv-*/

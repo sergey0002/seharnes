@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/jira-mirror-1.json",
+  "title": "JIRA-MIRROR-1 structured local snapshot projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "profile", "revision", "provenance", "raw", "external",
+    "normalized", "fields", "comments", "custom_fields", "dates",
+    "attachments", "links", "relations", "worklogs", "changelog",
+    "properties", "unknown_fields", "completeness"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema": {"const": "JIRA-MIRROR-1"},
+    "profile": {"const": "jira-cloud-rest-v3-local"},
+    "revision": {"type": "integer", "minimum": 1},
+    "provenance": {"type": "object", "additionalProperties": true},
+    "raw": {},
+    "external": {"type": "object", "additionalProperties": true},
+    "normalized": {"type": "object", "additionalProperties": true},
+    "fields": {"type": "object", "additionalProperties": true},
+    "comments": {"type": "array", "items": {"type": "object", "additionalProperties": true}},
+    "custom_fields": {"type": "object", "additionalProperties": true},
+    "dates": {"type": "object", "additionalProperties": true},
+    "attachments": {"type": "array", "items": {"type": "object", "additionalProperties": true}},
+    "links": {"type": "object", "additionalProperties": true},
+    "relations": {"type": "object", "additionalProperties": true},
+    "worklogs": {},
+    "changelog": {},
+    "properties": {},
+    "unknown_fields": {"type": "object", "additionalProperties": true},
+    "completeness": {
+      "type": "object",
+      "required": ["status", "resources", "raw_preserved"],
+      "properties": {
+        "status": {"enum": ["complete", "partial"]},
+        "resources": {"type": "object", "additionalProperties": {"type": "object"}},
+        "raw_preserved": {"const": true}
+      },
+      "additionalProperties": true
+    }
+  }
+}

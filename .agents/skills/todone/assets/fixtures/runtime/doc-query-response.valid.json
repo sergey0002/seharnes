@@ -1,0 +1,16 @@
+{
+  "schema": "DOC-QUERY-RESPONSE-1",
+  "mode": "catalog",
+  "query_fingerprint": "sha256:fixture",
+  "scope": {"workspace_id": "workspace:fixture"},
+  "summaries": [],
+  "modules": [],
+  "machine": [],
+  "claims": [],
+  "refs": [],
+  "unknowns": [],
+  "conflicts": [],
+  "stale": [],
+  "limits": {"modules": 12, "chars": 24000},
+  "truncation": {"truncated": false, "omitted_refs": []}
+}

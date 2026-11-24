@@ -1,0 +1,20 @@
+{
+  "$schema": "x",
+  "schema": "AUTODOC-AUDIT-PACKET-1",
+  "packet_id": "packet:test",
+  "bundle_id": "autodoc:test",
+  "purpose": "fixture",
+  "selected_entity_refs": [],
+  "selected_relation_refs": [],
+  "findings": [],
+  "unknowns": [],
+  "limits": {
+    "entities": 1
+  },
+  "truncation": false,
+  "return_contract": {
+    "fields": [
+      "findings"
+    ]
+  }
+}

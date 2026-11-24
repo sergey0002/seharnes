@@ -58,7 +58,7 @@ final class TaskMarkdownBuilder
         );
     }
 
-    public function build($issue, array $comments, array $histories, $browseUrl)
+    public function build($issue, array $comments, array $histories, $browseUrl, array $attachments = array())
     {
         $fields = isset($issue['fields']) && is_array($issue['fields']) ? $issue['fields'] : array();
 
@@ -81,6 +81,16 @@ final class TaskMarkdownBuilder
             $lines[] = '## Description';
             $lines[] = '';
             $lines[] = $description;
+        }
+
+        $attachmentLines = $this->buildAttachmentLines($attachments);
+        if (!empty($attachmentLines)) {
+            $lines[] = '';
+            $lines[] = '## Attachments';
+            $lines[] = '';
+            foreach ($attachmentLines as $line) {
+                $lines[] = $line;
+            }
         }
 
         if (!empty($entries)) {
@@ -112,6 +122,59 @@ final class TaskMarkdownBuilder
         }
 
         return rtrim(implode("\n", $lines)) . "\n";
+    }
+
+    /**
+     * Markdown list of files saved next to task.md.
+     *
+     * @param array<int, array<string, mixed>> $attachments
+     * @return array<int, string>
+     */
+    private function buildAttachmentLines(array $attachments)
+    {
+        $lines = array();
+        if (empty($attachments)) {
+            return $lines;
+        }
+
+        foreach ($attachments as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $path = isset($item['path']) ? (string) $item['path'] : '';
+            $name = isset($item['filename']) ? (string) $item['filename'] : '';
+            $size = isset($item['size']) ? (int) $item['size'] : 0;
+
+            if ($path !== '') {
+                $label = $name !== '' ? $name : basename($path);
+                $line = '- [' . $label . '](' . $path . ')';
+                if ($size > 0) {
+                    $line .= ' - ' . $this->formatSize($size);
+                }
+                $lines[] = $line;
+                continue;
+            }
+
+            if ($name !== '') {
+                $status = isset($item['status']) ? (string) $item['status'] : 'failed';
+                $lines[] = '- ' . $name . ' - not downloaded (' . $status . ')';
+            }
+        }
+
+        return $lines;
+    }
+
+    private function formatSize($bytes)
+    {
+        if ($bytes >= 1048576) {
+            return round($bytes / 1048576, 1) . ' MB';
+        }
+        if ($bytes >= 1024) {
+            return round($bytes / 1024, 1) . ' KB';
+        }
+
+        return $bytes . ' B';
     }
 
     /**

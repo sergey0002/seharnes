@@ -80,6 +80,7 @@ Kilo читает `.agents/skills/` по умолчанию.
 
 | Скил | Карточка | Канон |
 |---|---|---|
+| todone | [todone](../../../.agents/skills/todone/README.md) | `../../../.agents/skills/todone/SKILL.md` |
 | variant-feature-evaluation | [variant-feature-evaluation](../../../.agents/skills/exhaustive-research-decision-v6/children/variant-feature-evaluation/README.md) | `../../../.agents/skills/exhaustive-research-decision-v6/children/variant-feature-evaluation/SKILL.md` |
 | triz-contradiction-resolution | [triz-contradiction-resolution](../../../.agents/skills/exhaustive-research-decision-v6/children/triz-contradiction-resolution/README.md) | `../../../.agents/skills/exhaustive-research-decision-v6/children/triz-contradiction-resolution/SKILL.md` |
 | research-assignment | [research-assignment](../../../.agents/skills/exhaustive-research-decision-v6/children/research-assignment/README.md) | `../../../.agents/skills/exhaustive-research-decision-v6/children/research-assignment/SKILL.md` |

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schemas/autodoc-audit-1.json",
+  "title": "AUTODOC-AUDIT-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema",
+    "audit_id",
+    "bundle_id",
+    "bundle_digest",
+    "algorithm_version",
+    "verdict",
+    "findings",
+    "remaining_risks",
+    "unknowns",
+    "provenance"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "AUTODOC-AUDIT-1"
+    },
+    "audit_id": {
+      "type": "string"
+    },
+    "bundle_id": {
+      "type": "string"
+    },
+    "bundle_digest": {
+      "type": "string"
+    },
+    "algorithm_version": {
+      "type": "string"
+    },
+    "verdict": {
+      "enum": [
+        "approved",
+        "changes_required",
+        "blocked",
+        "not_run"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {}
+    },
+    "remaining_risks": {
+      "type": "array",
+      "items": {}
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {}
+    },
+    "provenance": {
+      "type": "array",
+      "items": {}
+    },
+    "created_at": {
+      "type": "string"
+    }
+  }
+}

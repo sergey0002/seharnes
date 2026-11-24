@@ -17,6 +17,8 @@ import sys
 from pathlib import Path
 
 import rule_model
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from environment_policy import is_enabled
 
 
 ENV_VAR_RE = re.compile(r"\$\{env:([A-Za-z_][A-Za-z0-9_]*)\}")
@@ -36,26 +38,15 @@ def retire_skill_copy(root: Path, relative: str = ".codex/skills") -> None:
         return
     if not target.is_dir():
         raise ValueError(f"Unexpected skills path: {target}")
-    conflicts = []
-    for path in target.rglob("*"):
-        if path.is_file():
-            rel = path.relative_to(target)
-            canon = root / ".agents/skills" / rel
-            if not canon.is_file() or normalize_text(path.read_bytes()) != normalize_text(canon.read_bytes()):
-                conflicts.append(path)
-    for path in conflicts:
-        digest = hashlib.sha256(path.read_bytes()).hexdigest()[:16]
-        backup = root / ".doc/skil_data/environment-sync/backups" / digest / path.relative_to(root)
-        backup.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(path, backup)
     shutil.rmtree(target)
-    print(f"retired {relative}; backed up {len(conflicts)} differing file(s)")
+    print(f"retired {relative}")
 
 
 def bootstrap(root: Path) -> str:
-    lines = [BOOT_START, "", "## Harness startup", "",
-             "Codex: before work read `.codex/rules-index.md` and every mandatory rule listed there.",
-             "Use canonical skills in `.agents/skills`; do not create a second skill mirror.", ""]
+    lines = [BOOT_START, "", "## Harness startup", ""]
+    if is_enabled(root, "codex"):
+        lines.append("Codex: before work read `.codex/rules-index.md` and every mandatory rule listed there.")
+    lines.extend(["Use canonical skills in `.agents/skills`; do not create a second skill mirror.", ""])
     for path in sorted((root / ".cursor/rules").rglob("*.mdc")):
         if rule_model.is_gate(rule_model.rule_frontmatter(path)):
             key = path.relative_to(root / ".cursor/rules").with_suffix("").as_posix()
@@ -89,8 +80,21 @@ def discovery_files(root: Path) -> dict[Path, str]:
 
 def sync_discovery(root: Path, check: bool = False) -> list[str]:
     expected = discovery_files(root)
+    if not is_enabled(root, "agents"):
+        expected.pop(root / ".agents/skills.json", None)
+    if not is_enabled(root, "qwen"):
+        for path in list(expected):
+            if ".qwen/skills/" in path.as_posix():
+                expected.pop(path)
+    if not is_enabled(root, "dsh"):
+        for path in list(expected):
+            if ".dsh/skills/" in path.as_posix():
+                expected.pop(path)
     receipt = root / ".doc/skil_data/environment-sync/discovery.json"
     old = json.loads(receipt.read_text(encoding="utf-8")) if receipt.is_file() else {}
+    for path in expected:
+        if any(parent.is_symlink() for parent in (path, *path.parents) if parent != root and parent.is_relative_to(root)):
+            raise ValueError(f"Linked discovery path: {path.relative_to(root)}")
     errors = []
     for path, content in expected.items():
         rel = path.relative_to(root).as_posix()
@@ -101,18 +105,31 @@ def sync_discovery(root: Path, check: bool = False) -> list[str]:
         elif actual != content:
             if actual is not None and hashlib.sha256(actual.encode()).hexdigest() != old.get(rel):
                 raise ValueError(f"Refusing to overwrite unmanaged discovery file: {rel}")
-    if errors or check:
-        if (root / ".codex/skills").exists():
-            errors.append("duplicate Codex skill mirror")
-        if (root / ".cursor/skills").exists():
-            errors.append("duplicate Cursor skill mirror")
-        return errors
+    obsolete = []
     for rel, digest in old.items():
+        if not (rel == ".agents/skills.json" or re.fullmatch(r"\.(qwen|dsh)/skills/[a-z0-9-]+/SKILL\.md", rel)):
+            raise ValueError(f"Invalid discovery receipt path: {rel}")
         path = root / rel
+        if any(parent.is_symlink() for parent in (path, *path.parents) if parent != root and parent.is_relative_to(root)):
+            raise ValueError(f"Linked discovery path: {rel}")
         if path not in expected and path.is_file():
             if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
                 raise ValueError(f"Edited obsolete discovery file: {rel}")
-            path.unlink()
+            obsolete.append(path)
+    if check:
+        errors.extend(f"obsolete discovery file: {p.relative_to(root)}" for p in obsolete)
+        for relative in (".codex/skills", ".cursor/skills"):
+            if (root / relative).exists():
+                errors.append(f"duplicate skill mirror: {relative}")
+        return errors
+    for path in obsolete:
+        path.unlink()
+        try:
+            if path.parent.parent.name == "skills":
+                path.parent.rmdir()
+                path.parent.parent.rmdir()
+        except OSError:
+            pass
     for path, content in expected.items():
         write_text(path, content)
     write_text(receipt, json.dumps({p.relative_to(root).as_posix(): hashlib.sha256(c.encode()).hexdigest()
@@ -356,22 +373,11 @@ def generate_codex(root: Path) -> None:
             raise FileNotFoundError(f"Canonical directory missing: {source}")
     codex.mkdir(exist_ok=True)
 
-    source_agents = root / "AGENTS.md"
-    if not source_agents.is_file():
-        raise FileNotFoundError(f"Canonical instructions missing: {source_agents}")
-    original = source_agents.read_text(encoding="utf-8")
-    if (BOOT_START in original) != (BOOT_END in original):
-        raise ValueError("Incomplete harness bootstrap markers")
-    original = re.sub(re.escape(BOOT_START) + r".*?" + re.escape(BOOT_END), "", original, flags=re.S).rstrip()
+    write_bootstrap(root)
     legacy = codex / "AGENTS.md"
     if legacy.is_file() and legacy.read_text(encoding="utf-8").strip().endswith(
             "Codex: read `.codex/rules-index.md` for mandatory and on-demand rules."):
-        digest = hashlib.sha256(legacy.read_bytes()).hexdigest()[:16]
-        backup = root / ".doc/skil_data/environment-sync/backups" / digest / ".codex/AGENTS.md"
-        backup.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(legacy, backup)
         legacy.unlink()
-    write_text(source_agents, original + "\n\n" + bootstrap(root))
     # Project AGENTS.md is discovered natively; do not replace built-in instructions.
     config = codex / "config.toml"
     if config.is_file():
@@ -631,6 +637,22 @@ def generate_kilo(root: Path) -> None:
                    json.dumps({"permission": permissions}, indent=2, ensure_ascii=False))
 
 
+def write_bootstrap(root: Path) -> None:
+    path = root / "AGENTS.md"
+    original = path.read_text(encoding="utf-8")
+    if original.count(BOOT_START) != original.count(BOOT_END) or original.count(BOOT_START) > 1:
+        raise ValueError("Invalid harness bootstrap markers")
+    if BOOT_START in original:
+        start, end = original.index(BOOT_START), original.index(BOOT_END)
+        if end < start:
+            raise ValueError("Invalid harness bootstrap marker order")
+        updated = original[:start] + bootstrap(root) + original[end + len(BOOT_END):]
+    else:
+        updated = original.rstrip() + "\n\n" + bootstrap(root) + "\n"
+    if updated != original:
+        path.write_text(updated, encoding="utf-8")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("root", nargs="?", type=Path, default=Path.cwd())
@@ -647,8 +669,12 @@ def main() -> None:
         print(json.dumps({"status": "failed" if errors else "passed", "errors": errors}))
         raise SystemExit(bool(errors))
     sync_discovery(root)
-    generate_codex(root)
-    generate_kilo(root)
+    if is_enabled(root, "codex"):
+        generate_codex(root)
+    else:
+        write_bootstrap(root)
+    if is_enabled(root, "kilo"):
+        generate_kilo(root)
     print(f"Generated native Codex and Kilo views in {root}")
 
 

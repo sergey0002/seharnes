@@ -76,7 +76,7 @@ python3 .agents/skills/harness-router/children/mirror/scripts/harness_mirror.py 
 python3 .agents/skills/harness-router/children/mirror/scripts/harness_mirror.py set --node rule:doc-rules --block b003 --content new-section.md
 ```
 
-Писать можно только в канон. Старая версия узла уходит в `nodes/.history/`, файл пересобирается и проверяется, при расхождении исходник восстанавливается. То же доступно из браузера через `PUT /api/node` при запущенном `serve`. Зеркала пересобирает существующий `sync-agent-views.sh`.
+Писать можно только в канон. Файл пересобирается и проверяется, при расхождении исходник восстанавливается из байтов в памяти. Постоянные резервные копии и история версий не создаются. Перед `scan`, `build`, `rebuild` и синхронизацией не создавай архивы tar и каталоги `manual-backups`. То же доступно из браузера через `PUT /api/node` при запущенном `serve`. Зеркала пересобирает существующий `sync-agent-views.sh`.
 
 ### H6. Проверка
 

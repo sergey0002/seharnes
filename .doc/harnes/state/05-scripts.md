@@ -3,7 +3,7 @@
 <!-- meta
 type: architecture
 status: actual
-updated: 2026-11-11
+updated: 2026-11-19
 related: [../index.md, ./07-workflows.md, ../doc_rules.md]
 tags: [harness, scripts]
 -->
@@ -153,6 +153,12 @@ arch JSON, иначе legacy скан. Скоринг не дублируетс�
 ./.agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh
 ```
 
+Синхронизация и Mirror не сохраняют резервные копии заменяемых файлов и историю
+узлов. Архивирование перед `sync`, `rebuild` и `doctor` отключено. Каталоги
+`environment-sync/manual-backups` и `environment-sync/backups` удалены.
+Проверки неизвестных файлов, ссылок и MCP-серверов Qoder продолжают блокировать
+конфликты. Mirror сохраняет откат текущей записи при ошибке проверки.
+
 ---
 
 ## 5. Прочие контуры
@@ -182,6 +188,7 @@ arch JSON, иначе legacy скан. Скоринг не дублируетс�
 
 ## История изменений
 
+- 2026-11-19: отключены резервные копии environment-sync и история узлов Mirror; удалены накопленные архивы после повторного архивирования при проверках харнеса.
 - 2026-11-11: каталоги `.doc/skil_data/analytics` и `.doc/skil_data/business-analyst` удалены как легаси; аналитика читается из `.agents/skills/task-router/children/analytics/` и пишет в `.doc/task-analytics/out/`; нативный MCP-артефакт Antigravity указан в `harness-router`.
 - 2026-11-11: пул `.cursor/scripts` удалён. Лаунчеры MCP и инструменты перенесены в `scripts/` скилов, системные утилиты в `.tools/scripts`, `verify_parity.py` в `environment-sync`. Документы скриптов переехали в `{skill}/docs/scripts`, для `.tools` в `harness-core/docs/scripts/tools`. MCP-конфиг, sync, systemd units и реестр обновлены.
 - 2026-11-11: php-toolchain перенесён в `.tools/mcp-servers`; `node-mcp.sh` запускает `server.js` по новому пути.

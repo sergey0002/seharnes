@@ -1,0 +1,20 @@
+{
+  "name": "@todone/autodoc-mermaid-runtime",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pinned offline Mermaid runtime and Node adapter for todone autodoc",
+  "type": "commonjs",
+  "dependencies": {
+    "linkedom": "0.18.12",
+    "mermaid": "12.3.0"
+  },
+  "autodocRuntime": {
+    "package": "mermaid",
+    "version": "12.3.0",
+    "file": "mermaid.min.js",
+    "license": "MIT",
+    "adapter": "render.cjs",
+    "domHost": "dom-host.cjs (bundled linkedom 0.18.12)",
+    "offline": true
+  }
+}

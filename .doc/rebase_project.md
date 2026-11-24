@@ -1,4 +1,4 @@
-> Актуализация 2026-11-12: проверенный контракт профилей и безопасной замены описан в [state/14-project-migration.md](harnes/state/14-project-migration.md). Перенос теперь сам запускает локальный sync в Target. Full включает документацию разработки харнеса; Core исключает authoring/task/Jira и панель. Старые указания о ручном post-export sync и .codex/skills ниже являются историческими.
+> Актуализация 2026-11-13: перенос выполняет `new-project/scripts/harness_transfer.py` (`plan`, `approve`, `apply`, `verify`, `rollback`). Имена Full и Core ниже исторические: текущие профили Core, Developer и Project, legacy Full отображается в Developer. `clean`, автоматический `git init`, запись `.git/info/exclude` и `PURGE` не выполняются. CLI apply поддерживает обычные файлы, `AGENTS.md` (managed block) и `.cursor/mcp.json`; generated views и остальные adapter config ждут общего Python-renderer. Docker, панель, supervisor, Windows-деплой и серверное окружение в текущую задачу не входят. Старые указания ниже являются историческими.
 
 # Перенос AI-kit и локальной среды разработки
 
@@ -1616,7 +1616,7 @@ repo:^src-serve-git-3434/repos/your-project$
 
 Совместимость: [export-rebase-project.ps1](../.agents/skills/harness-router/children/new-project/scripts/export-rebase-project.ps1) → делегирует в канон.
 
-Создаёт каталог Target, копирует kit по этому документу, пишет `.git/info/exclude`, готовит `mcp.env` из example, scrub токенов в `mcp.json`, правит Serena `project_name`, заменяет абсолютные пути образца на Target в конфигах и лаунчерах, очищает `component_registry.json` от удалённых скилов и runtime-путей, при Target=`C:\...` патчит Win-лаунчеры MCP, в конце **must-check** и `EXPORT_NEXT_STEPS.md` с полным чеклистом запуска.
+Создаёт каталог Target, копирует kit по этому документу, готовит `mcp.env` из example, scrub токенов в `mcp.json`, правит Serena `project_name`, заменяет абсолютные пути образца на Target в конфигах и лаунчерах, очищает `component_registry.json` от удалённых скилов и runtime-путей, при Target=`C:\...` патчит Win-лаунчеры MCP, в конце выполняет **must-check** и создаёт `EXPORT_NEXT_STEPS.md`. Git по умолчанию не изменяется; запись exclude требует явного `-ManageGitExclude`.
 
 Повторный запуск в тот же каталог не удаляет файлы Target. До копирования скрипт печатает, сколько файлов перезапишется, добавится и сохранится вне kit. После копирования пишет `.doc/.rebase-report.md` и `.doc/.rebase-report.json`: документация проекта, задачи, кастомные скилы, правила и скрипты, перезаписанные файлы kit. Полный список сохранённого лежит в `.doc/.rebase-preserved.txt`. Точное зеркало с удалением лишнего включается флагом `-MirrorKit`.
 
@@ -1655,7 +1655,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .agents/skills/harness-r
 | `-SkipRuntimeDeps` | off | nm/vendor **копируются** по умолчанию |
 | `-RunSetup` | off | `.cursor/setup.ps1` + `.codex/setup.ps1` |
 | `-SkipMcpMerge` | off | не сохранять Target-only MCP (boost/…) |
-| `-SkipGitInit` / `-SkipExclude` / `-SkipSiblingConfig` | off | отключить шаги |
+| `-InitGit` / `-ManageGitExclude` | off | явно разрешить создание Git и/или изменение локального exclude; origin не задаётся |
+| `-SkipGitInit` / `-SkipExclude` | off | совместимые запреты; при конфликте с соответствующим opt-in запуск отклоняется |
+| `-SkipSiblingConfig` | off | не создавать соседнюю `.config` |
 | `-SkipBackup` / `-SkipReview` | off | не сохранять бэкап / не запускать разбор после переноса |
 | `-MirrorKit` | off | точное зеркало: удаляет в Target файлы, которых нет в образце (`rsync --delete` / `robocopy /PURGE`). Режим `clean` включает это поведение |
 

@@ -1,0 +1,34 @@
+{
+  "id": "testing",
+  "name": "Прогон тестов и вердикт",
+  "class": "product",
+  "executor": {
+    "role": "tester",
+    "tier": "balanced",
+    "mode": "subagent"
+  },
+  "gates": {
+    "tests": "required",
+    "evidence": true,
+    "acceptance": "verdict_required",
+    "acceptance_min": false,
+    "close": "work"
+  },
+  "capabilities": [
+    "test-runner"
+  ],
+  "fields": [
+    {
+      "name": "verdict",
+      "type": "string",
+      "required": true,
+      "enum": null,
+      "pattern": null,
+      "message": "вердикт по критериям: met, not_met или blocked на каждый",
+      "example": "AC-1 met, AC-2 met, AC-3 blocked: нет доступа к сети"
+    }
+  ],
+  "editor": "any",
+  "checks": [],
+  "profile": null
+}

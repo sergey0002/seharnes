@@ -582,7 +582,7 @@ function Rewrite-SourcePaths {
         $files.Add((Join-Path $Root $rel))
     }
     # .dsh kit не обходим: его файлы связаны хешами kit.manifest.json.
-    foreach ($dir in @('.cursor', '.codex', '.kilo', '.agents', '.qoder', '.qwen')) {
+    foreach ($dir in @('.cursor', '.codex', '.kilo', '.agents', '.qoder', '.qwen', '.opencode')) {
         $base = Join-Path $Root $dir
         if (-not (Test-Path $base)) { continue }
         Get-ChildItem -Path $base -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
@@ -1025,6 +1025,7 @@ function Write-GitExclude([string]$RepoRoot, [switch]$IncludeDocs) {
 /.kilo/
 /.qoder/
 /.qwen/
+/.opencode/
 /.antigravity/
 /.gemini/
 /.dsh/
@@ -1036,6 +1037,7 @@ $docLine
 /php_error.log
 .kilocode/
 kilo.json
+opencode.json
 
 # Local dev tooling tree (new convention)
 /.tools/
@@ -1075,6 +1077,8 @@ kilo.json
             $missing = @()
             if ($existing -notmatch '(?m)^/\.qoder/$') { $missing += '/.qoder/' }
             if ($existing -notmatch '(?m)^/\.qwen/$') { $missing += '/.qwen/' }
+            if ($existing -notmatch '(?m)^/\.opencode/$') { $missing += '/.opencode/' }
+            if ($existing -notmatch '(?m)^opencode\.json$') { $missing += 'opencode.json' }
             if ($missing.Count -gt 0) {
                 $insert = ($missing -join "`n")
                 $existing = $existing -replace '(?m)^/\.kilo/$', "/.kilo/`n$insert"
@@ -1151,7 +1155,7 @@ function Resolve-SerenaPort([string]$Root, [string]$SourceRoot, [int]$Requested)
         $textExt = @('.md', '.mdc', '.json', '.jsonc', '.mjs', '.js', '.cjs', '.ts',
             '.sh', '.ps1', '.yml', '.yaml', '.toml', '.txt')
         $changed = 0
-        foreach ($dir in @('.cursor', '.codex', '.kilo', '.agents', '.qoder', '.qwen', '.dsh')) {
+        foreach ($dir in @('.cursor', '.codex', '.kilo', '.agents', '.qoder', '.qwen', '.opencode', '.dsh')) {
             $base = Join-Path $Root $dir
             if (-not (Test-Path $base)) { continue }
             Get-ChildItem -Path $base -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
@@ -1942,7 +1946,7 @@ if (-not (Test-Path (Join-Path $Source '.doc\rebase_project.md'))) {
 Assert-CodePrismTransferSafe -SourceRoot $Source -TargetRoot $Target
 
 $kitScanDirs = @(
-    '.cursor', '.codex', '.agents', '.kilo', '.qoder', '.qwen', '.serena', '.dsh',
+    '.cursor', '.codex', '.agents', '.kilo', '.qoder', '.qwen', '.opencode', '.serena', '.dsh',
     '.doc\web', '.doc\harnes', '.doc\qa', '.doc\codeception',
     '.tools\scripts', '.tools\mcp-servers', '.tools\docker-dev\php-apache',
     '.tools\php85-scan', '.tools\codeception\scripts', '.tools\codeception\tests\_envs'
@@ -1981,7 +1985,7 @@ $previewAdded = @()
 $backupTargetAll = @()
 $conflictStamp = (Get-Date).ToString('yyyyMMdd-HHmmss-fff') + '-' + ([guid]::NewGuid().ToString('N').Substring(0,8))
 $targetExists = Test-Path $Target
-$targetKitDirs = @('.cursor', '.codex', '.agents', '.kilo', '.qoder', '.qwen', '.dsh', '.serena', '.doc') |
+$targetKitDirs = @('.cursor', '.codex', '.agents', '.kilo', '.qoder', '.qwen', '.opencode', '.dsh', '.serena', '.doc') |
     Where-Object { Test-Path (Join-Path $Target $_) }
 if (-not $targetExists) {
     $preflightSkipped = $true

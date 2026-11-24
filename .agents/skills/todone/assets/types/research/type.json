@@ -1,0 +1,20 @@
+{
+  "id": "research",
+  "name": "Исследование кода и документации",
+  "class": "research",
+  "gates": {
+    "tests": "not_required",
+    "handoff": "required",
+    "acceptance_min": false,
+    "close": "result_is_knowledge",
+    "refs": true
+  },
+  "capabilities": [
+    "code-graph",
+    "memory"
+  ],
+  "fields": [],
+  "editor": "any",
+  "checks": [],
+  "profile": null
+}

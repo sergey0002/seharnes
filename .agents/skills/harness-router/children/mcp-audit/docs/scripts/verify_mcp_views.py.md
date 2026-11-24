@@ -24,6 +24,7 @@ tags: [harness, script, verify_mcp_views]
 | --kilo |  | Path | нет |  | Путь к `.kilo/kilo.jsonc` |
 | --expanded |  | Path | нет | [] | View с раскрытыми путями (повторяемый: .agents/mcp.json, .codex/mcp.json, .qoder/settings.json) |
 | --qwen |  | Path | нет |  | Путь к `.qwen/settings.json` |
+| --opencode |  | Path | нет |  | Путь к `opencode.json` (серверы под `mcp.servers`, отключение через `disabled`) |
 | --codex-toml |  | Path | нет |  | Путь к `.codex/config.toml` |
 
 ## Коды выхода
@@ -38,6 +39,7 @@ tags: [harness, script, verify_mcp_views]
 - `.kilo/kilo.jsonc` — Kilo view (mcp object с enabled флагами, JSONC с комментариями)
 - Expanded views (`.agents/mcp.json`, `.codex/mcp.json`, `.qoder/settings.json`) — mcpServers с disabled флагами
 - `.qwen/settings.json` — Qwen view (mcpServers + mcp.excluded для disabled)
+- `opencode.json` — OpenCode view (`mcp.servers`, отключение через `disabled`; лишние локальные серверы допускаются)
 - `.codex/config.toml` — Codex TOML (секции `[mcp_servers.name]`)
 
 **Пишет:**
@@ -105,3 +107,4 @@ python3 .agents/skills/harness-router/children/mcp-audit/scripts/verify_mcp_view
 ## История изменений
 - 2026-11-07: полная документация на основе кода (status: actual)
 - 2026-11-09: проверка Codex TOML читает именованные секции и сверяет состояние серверов.
+- 2026-11-20: добавлена проверка OpenCode (`--opencode`, серверы под `mcp.servers`).

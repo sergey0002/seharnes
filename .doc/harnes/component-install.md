@@ -1,12 +1,12 @@
 # Установка скила, скрипта и MCP
 
-> Актуализация 2026-11-13: текущие профили называются Core, Developer и Project. Имена Full и Core ниже исторические; legacy Full отображается в Developer. Основной перенос выполняет `harness_transfer.py`, а не старый `rebase_project.ps1`.
+> Актуализация 2026-11-13: текущие профили называются Core, Developer и Project. Имена Full и Core ниже исторические; legacy Full отображается в Developer. Основной перенос выполняет `harness_transfer.py`, а не старый `rebase_project.ps1`. Среда DeepSeek Harness удалена 2026-11-18, шаги DSH ниже исторические.
 
 <!-- meta
 type: rules
 status: actual
 version: 1.0
-updated: 2026-11-11
+updated: 2026-11-18
 related: [./index.md, ./skill-format.md, ./component-docs.md, ./mcp/README.md, ./mcp/rules-placement.md, ./state/13-agent-migration.md, ./state/14-project-migration.md, ../plan/harnesmigrations.md, ../plan/harnesaudit-2026-11-02.md]
 tags: [harness, install, skills, scripts, mcp, migration, dsh]
 -->
@@ -82,8 +82,9 @@ tags: [harness, install, skills, scripts, mcp, migration, dsh]
 
 ### 2.3 DSH
 
-DSH читает канонические скилы через `skill(name)` из `{SKILLS_ROOT}`. Новый скил
-не нужно копировать в `.dsh`. Нужно:
+Среда DeepSeek Harness удалена 2026-11-18, шаги этого раздела оставлены как
+история и при установке компонентов не выполняются. DSH читал канонические
+скилы через `skill(name)` из `{SKILLS_ROOT}`. Новый скил не нужно копировать в `.dsh`. Нужно:
 
 - обновить счетчик и маршрут в `dsh-router`, если скил входит в рабочий цикл;
 - проверить, что `skill(name)` видит скил после перезапуска DSH;
@@ -343,6 +344,7 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/generate
 
 ## История изменений
 
+- 2026-11-18: среда DeepSeek Harness удалена; шаги раздела 2.3 DSH помечены историческими.
 - 2026-11-11: локальные MCP-серверы размещаются в `.tools/mcp-servers/{name}/`; добавлены строка таблицы и шаг установки без копий в представления сред.
 - 2026-11-09: уточнено, что `.agents/skills` является каноном, а не зеркалом.
 - 2026-11-02: создан документ установки скила, скрипта и MCP с проверками сред,

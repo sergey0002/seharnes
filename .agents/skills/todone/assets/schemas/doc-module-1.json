@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todone.local/schema/doc-module-1.json",
+  "title": "DOC-1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "workspace_id", "doc_key", "doc_kind", "canonical_path", "revision", "status", "summary"],
+  "properties": {
+    "$schema": {"type": "string"}, "schema": {"const": "DOC-1"},
+    "workspace_id": {"type": "string", "minLength": 1}, "doc_key": {"type": "string", "minLength": 3},
+    "doc_kind": {"type": "string", "minLength": 1}, "canonical_path": {"type": "string", "minLength": 1},
+    "machine_path": {"type": ["string", "null"]}, "claims_path": {"type": ["string", "null"]},
+    "revision": {"type": "integer", "minimum": 1},
+    "status": {"enum": ["draft", "active", "proposed", "verified", "conflicted", "stale", "retired", "superseded"]},
+    "summary": {"type": "string"}, "audience": {"type": "array"}, "scope": {"type": "object"},
+    "content_format": {"type": "string"}, "machine_format": {"type": ["string", "null"]},
+    "source_task_refs": {"type": "array"}, "source_refs": {"type": "array"}, "source_fingerprints": {"type": "array"},
+    "supersedes": {"type": ["string", "null"]}, "created_at": {"type": "string"}, "updated_at": {"type": "string"},
+    "updated_by": {"type": "string"}, "generated": {"type": "boolean"}, "checks": {"type": "object"}
+  }
+}

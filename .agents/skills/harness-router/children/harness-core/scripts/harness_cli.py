@@ -25,7 +25,7 @@ import profile_manifest
 
 SKILL = Path(__file__).resolve().parents[1]
 ROOT_FILES = ["AGENTS.md", "mcp.index.md", ".codeprism.toml", ".cbmignore"]
-HARNESS_DIRS = [".cursor", ".codex", ".kilo", ".agents", ".qoder", ".qwen", ".dsh", ".serena", ".doc/skil_data/harness-core"]
+HARNESS_DIRS = [".cursor", ".codex", ".kilo", ".agents", ".qoder", ".qwen", ".opencode", ".dsh", ".serena", ".doc/skil_data/harness-core"]
 
 
 def _run(cmd: list[str], cwd: Path, timeout: int = 1800) -> tuple[int, str]:
@@ -106,6 +106,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         print(json.dumps({"status": "failed", "errors": [str(error)]}, ensure_ascii=False))
         return 2
     errors.extend(config.validate(envs, kit, root))
+    active = {env['id'] for env in envs['environments'] if env.get('enabled', True)} if not errors else set()
     for env in envs.get("environments", []):
         if not env.get("enabled", True):
             continue
@@ -126,17 +127,23 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         gate_checks = [
             ("mirror-check", [sys.executable, str(base / "mirror/scripts/harness_mirror.py"), "check"]),
             ("parity", [sys.executable, str(base / "environment-sync/scripts/verify_parity.py"),
-                        "--canonical", ".agents/skills", "--view", ".qoder/skills",
-                        "--rules-canonical", ".cursor/rules",
-                        "--rules-view", ".codex/rules", "--rules-view", ".kilo/rules",
-                        "--rules-view", ".agents/rules", "--rules-view", ".qoder/rules",
+                         "--canonical", ".agents/skills",
+                         "--rules-canonical", ".cursor/rules",
+                         *[arg for env in ('codex', 'kilo', 'agents', 'qoder') if env in active
+                           for arg in ('--rules-view', f'.{env}/rules')],
+                         *(['--view', '.qoder/skills'] if 'qoder' in active else []),
                         "--manifest", ".doc/skil_data/harness-core/parity-report.json", "--check"]),
             ("qwen-view", [sys.executable, str(base / "environment-sync/scripts/generate-qwen-config.py"),
                            "--root", str(root), "--check"]),
+            ("opencode-view", [sys.executable, str(base / "environment-sync/scripts/generate-opencode-config.py"),
+                               "--root", str(root), "--check"]),
             ("mcp-views", [sys.executable, str(base / "mcp-audit/scripts/verify_mcp_views.py"),
-                           "--canonical", ".cursor/mcp.json", "--kilo", ".kilo/kilo.jsonc",
-                           "--expanded", ".agents/mcp.json", "--expanded", ".qoder/settings.json",
-                           "--qwen", ".qwen/settings.json", "--codex-toml", ".codex/config.toml"]),
+                            "--canonical", ".cursor/mcp.json",
+                            *[arg for env, flag, path in (
+                                ('kilo', '--kilo', '.kilo/kilo.jsonc'), ('agents', '--expanded', '.agents/mcp.json'),
+                                ('qoder', '--expanded', '.qoder/settings.json'), ('qwen', '--qwen', '.qwen/settings.json'),
+                                ('opencode', '--opencode', 'opencode.json'), ('codex', '--codex-toml', '.codex/config.toml'),
+                            ) if env in active for arg in (flag, path)]]),
             ("registry", [sys.executable, str(base / "improvement/scripts/validate_registry.py")]),
             ("rules", [sys.executable, str(base / "improvement/scripts/validate_rules.py"),
                        "--rules-dir", ".cursor/rules", "--skills-dir", ".agents/skills"]),
@@ -160,9 +167,13 @@ def cmd_doctor(args: argparse.Namespace) -> int:
             print(json.dumps({"status": "failed", "errors": ["unknown gates: " + ", ".join(unknown)]}))
             return 2
         for name, command in gate_checks:
-            if getattr(args, "compact", False) and name in {"parity", "qwen-view", "mcp-views", "render-check", "mirror-check", "registry", "docs-components", "native-discovery"}:
+            if getattr(args, "compact", False) and name in {"parity", "qwen-view", "opencode-view", "mcp-views", "render-check", "mirror-check", "registry", "docs-components", "native-discovery"}:
                 continue
             if selected is not None and name not in selected:
+                continue
+            if (name.endswith('-view') and name.removesuffix('-view') not in active
+                    or name == 'mcp-views' and len(command) == 4):
+                gate_details[name] = {'status': 'skipped', 'reason': 'environment disabled'}
                 continue
             code, output = _run(command, root, 300)
             structure_report = None

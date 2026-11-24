@@ -1,0 +1,10 @@
+{
+  "schema": "DOC-1",
+  "workspace_id": "workspace:fixture",
+  "doc_key": "entity/order",
+  "doc_kind": "entity",
+  "canonical_path": "docs/entities/order.md",
+  "revision": 1,
+  "status": "unknown",
+  "summary": "Order entity"
+}

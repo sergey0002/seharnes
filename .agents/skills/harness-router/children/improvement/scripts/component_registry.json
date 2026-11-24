@@ -854,6 +854,14 @@
         "prepare-plan",
         "git-task-blame"
       ]
+    },
+    "todone": {
+      "required_files": [
+        ".agents/skills/todone/SKILL.md",
+        ".agents/skills/todone/README.md",
+        ".agents/skills/todone/skill.json"
+      ],
+      "config_paths": []
     }
   }
 }

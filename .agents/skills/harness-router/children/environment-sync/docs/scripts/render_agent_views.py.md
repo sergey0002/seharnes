@@ -22,6 +22,7 @@ tags: [harness, sync, views, renderer]
 |---|---|
 | `--root` | Существующий корень проекта, чьи views нужно собрать. |
 | `--check` | Проверить views существующими `--check` режимами генераторов без записи. |
+| `--replace-managed-mcp` | Передать генератору Qoder разрешение обновить проверенные управляемые записи MCP. |
 
 ## Коды выхода
 
@@ -29,7 +30,7 @@ tags: [harness, sync, views, renderer]
 
 ## Что читает и что пишет
 
-Читает `.cursor/rules`, `.agents/skills`, `.cursor/mcp.json`, `.dsh` и существующие настройки. В режиме записи меняет только generated views и `.agents/rules`; в режиме `--check` не пишет.
+Читает канон, существующие настройки и переключатели `enabled` из реестра сред. В режиме записи обновляет bootstrap `AGENTS.md`, генерирует включённые представления и очищает отключённые. В режиме `--check` не пишет.
 
 ## Побочные эффекты
 
@@ -37,7 +38,7 @@ tags: [harness, sync, views, renderer]
 
 ## Окружение и зависимости
 
-Python 3. Нужны генераторы `generate-agent-configs.py`, `generate-codex-mcp.py`, `generate-mcp-config.py`, `generate-qoder-config.py`, `generate-qwen-config.py`, `generate-antigravity-rules.py` и `generate-dsh-config.py` в том же каталоге.
+Python 3. Нужны генераторы `generate-agent-configs.py`, `generate-codex-mcp.py`, `generate-mcp-config.py`, `generate-qoder-config.py`, `generate-qwen-config.py`, `generate-opencode-config.py`, `generate-antigravity-rules.py` и `generate-dsh-config.py` в том же каталоге.
 
 ## Примеры
 

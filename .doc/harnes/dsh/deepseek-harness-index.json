@@ -1,0 +1,289 @@
+{
+  "artifacts": [],
+  "business_logic": {
+    "facts": [],
+    "linked_rule_ids": [],
+    "unconfirmed": []
+  },
+  "checks": [],
+  "decisions": [],
+  "files": [],
+  "findings": [],
+  "git_events": [],
+  "git_state": null,
+  "history": [
+    {
+      "actor": "migration",
+      "at": "2026-10-21T05:57:43Z",
+      "id": "migrate-arch-deepseek-harness-index-2",
+      "source_ids": [],
+      "summary": "deepseek_harnes -> architecture"
+    },
+    {
+      "actor": "agent-review",
+      "at": "2026-10-21T22:41:07Z",
+      "id": "tags2-deepseek-harness-index-fc47bf",
+      "source_ids": [],
+      "summary": "tag harness documentation"
+    },
+    {
+      "actor": "project-doc",
+      "at": "2026-11-02T01:52:37Z",
+      "id": "dsh-skills-root-deepseek-harness-index-20261102",
+      "source_ids": [],
+      "summary": "switch skill canon to .agents/skills"
+    }
+  ],
+  "id": "architecture:deepseek-harness-index",
+  "jira_report": null,
+  "kind": "architecture",
+  "metadata": {
+    "branch": null,
+    "doc_type": "architecture",
+    "release": null,
+    "source_status": "actual",
+    "status": "unknown",
+    "task_id": null,
+    "task_type": "unknown",
+    "title": "DeepSeek Harness - точка входа",
+    "updated_at": "1970-01-01T00:00:00Z"
+  },
+  "notes": [],
+  "progress": [],
+  "relations": [],
+  "requirements": [],
+  "revision": 3,
+  "schema_version": "1.0",
+  "section_order": [
+    "s0",
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "s8",
+    "s9",
+    "s10",
+    "s12",
+    "s13",
+    "s14",
+    "s15",
+    "s16"
+  ],
+  "sections": [
+    {
+      "anchor": "deepseek-harness---точка-входа",
+      "anchor_aliases": [],
+      "body_markdown": "\n<!-- meta\ntype: index\nstatus: actual\nupdated: 2026-10-20\nrelated: [../harnes/index.md, ../harnes/doc_rules.md, ../harnes/plan/07-dsh-final.md]\ntags: [deepseek, harness, dsh, index]\n-->\n\n---\n",
+      "id": "s0",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "DeepSeek Harness - точка входа"
+    },
+    {
+      "anchor": "суть",
+      "anchor_aliases": [],
+      "body_markdown": "\nДокументация харнеса DeepSeek Harness для проекта CopyTrust. Харнес - тонкий\nслой поверх канонических скилов и правил `.cursor/`, который даёт DSH тот же\nцикл работы с задачей, что Cursor, Codex и Kilo: переход к задаче, план, аудит\nплана, реализация, тест, отправка в git.\n\nХарнес касается только DeepSeek Harness. Канон `.cursor/` и зеркала других\nсред (`.codex/`, `.kilo/`, `.agents/`, `.antigravity/`, `.gemini/`) не меняются.\nФайлы харнеса живут в `.dsh/`, `DSH-RULES.md` и этой папке документации.\n\n> **AI:** читай этот doc если работаешь с DeepSeek Harness в этом проекте или\n> переносишь харнес на другой сервер.\n> **Сначала:** [02-установка.md](./deepseek-harness-02-ustanovka.md) если разворачиваешь заново,\n> [03-workflow.md](./deepseek-harness-03-workflow.md) если выполняешь задачу.\n> **Не читай целиком:** этот index - только навигация.\n> **См. также:** [../harnes/index.md](../harnes/index.md) - устройство всего\n> харнеса, [../harnes/doc_rules.md](../harnes/doc_rules.md) - правила документации.\n\n---\n",
+      "id": "s1",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Суть"
+    },
+    {
+      "anchor": "быстрый-старт",
+      "anchor_aliases": [],
+      "body_markdown": "\n```bash",
+      "id": "s2",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Быстрый старт"
+    },
+    {
+      "anchor": "1.-проверить,-что-харнес-живой",
+      "anchor_aliases": [],
+      "body_markdown": "bash .dsh/scripts/smoke.sh --task 2622\n",
+      "id": "s3",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "1. проверить, что харнес живой"
+    },
+    {
+      "anchor": "2.-перейти-к-задаче",
+      "anchor_aliases": [],
+      "body_markdown": "bash .dsh/scripts/run-ps1.sh .agents/skills/gototask/scripts/gototask.ps1 \\\n  -TaskNumber 2622 -Action inspect\n```\n\nЕсли `smoke.sh` упал, читай [02-установка.md](./deepseek-harness-02-ustanovka.md), раздел\n\"Если что-то не поднялось\".\n\n---\n",
+      "id": "s4",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "2. перейти к задаче"
+    },
+    {
+      "anchor": "навигация",
+      "anchor_aliases": [],
+      "body_markdown": "",
+      "id": "s5",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Навигация"
+    },
+    {
+      "anchor": "[01-устройство.md](./deepseek-harness-01-ustroystvo.md)",
+      "anchor_aliases": [],
+      "body_markdown": "Что включает харнес: файлы `.dsh/`, слои, границы, связь с каноном, отличие от Cursor.\nТеги: `deepseek` `harness` `structure`\n",
+      "id": "s6",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "[01-устройство.md](./deepseek-harness-01-ustroystvo.md)"
+    },
+    {
+      "anchor": "[02-установка.md](./deepseek-harness-02-ustanovka.md)",
+      "anchor_aliases": [],
+      "body_markdown": "Как развернуть: pwsh, генерация патча с флагами, запуск с `--patch`, проверка.\nТеги: `deepseek` `deploy` `setup`\n",
+      "id": "s7",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "[02-установка.md](./deepseek-harness-02-ustanovka.md)"
+    },
+    {
+      "anchor": "[03-workflow.md](./deepseek-harness-03-workflow.md)",
+      "anchor_aliases": [],
+      "body_markdown": "Цикл задачи: переход, классификация размера, план, аудит, реализация, тест, git.\nТеги: `deepseek` `workflow` `task`\n",
+      "id": "s8",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "[03-workflow.md](./deepseek-harness-03-workflow.md)"
+    },
+    {
+      "anchor": "[04-модели.md](./deepseek-harness-04-modeli.md)",
+      "anchor_aliases": [],
+      "body_markdown": "Что доступно сейчас (одна модель) и как включить xai, anthropic, google.\nТеги: `deepseek` `models` `routing`\n",
+      "id": "s9",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "[04-модели.md](./deepseek-harness-04-modeli.md)"
+    },
+    {
+      "anchor": "[05-скрипты.md](./deepseek-harness-05-skripty.md)",
+      "anchor_aliases": [],
+      "body_markdown": "Оболочка, шим `run-ps1.sh`, `smoke.sh`, скрипты канона, 14 MCP-серверов.\nТеги: `deepseek` `scripts` `mcp`\n",
+      "id": "s10",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "[05-скрипты.md](./deepseek-harness-05-skripty.md)"
+    },
+    {
+      "anchor": "[07-сценарии.md](./deepseek-harness-07-scenarios.md)",
+      "anchor_aliases": [],
+      "body_markdown": "Прогон сценариев (переход, план, аудит, тест, MCP, доки): результаты и находки N-1..N-10.\nТеги: `deepseek` `scenarios` `tests`\n\n---\n",
+      "id": "s12",
+      "level": 3,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "[07-сценарии.md](./deepseek-harness-07-scenarios.md)"
+    },
+    {
+      "anchor": "быстрый-поиск-по-тегам",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Тег | Документы |\n|-----|-----------|\n| `harness` | [01](./deepseek-harness-01-ustroystvo.md) |\n| `structure` | [01](./deepseek-harness-01-ustroystvo.md) |\n| `deploy` | [02](./deepseek-harness-02-ustanovka.md) |\n| `setup` | [02](./deepseek-harness-02-ustanovka.md) |\n| `workflow` | [03](./deepseek-harness-03-workflow.md) |\n| `task` | [03](./deepseek-harness-03-workflow.md) |\n| `models` | [04](./deepseek-harness-04-modeli.md) |\n| `routing` | [04](./deepseek-harness-04-modeli.md) |\n| `scripts` | [05](./deepseek-harness-05-skripty.md) |\n| `mcp` | [05](./deepseek-harness-05-skripty.md) |\n| `scenarios` | [07](./deepseek-harness-07-scenarios.md) |\n\n---\n",
+      "id": "s13",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Быстрый поиск по тегам"
+    },
+    {
+      "anchor": "статус-документации",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Документ | Статус | Обновлён |\n|----------|--------|----------|\n| [01-устройство.md](./deepseek-harness-01-ustroystvo.md) | актуально | 2026-10-20 |\n| [02-установка.md](./deepseek-harness-02-ustanovka.md) | актуально | 2026-10-20 |\n| [03-workflow.md](./deepseek-harness-03-workflow.md) | актуально | 2026-10-20 |\n| [04-модели.md](./deepseek-harness-04-modeli.md) | актуально | 2026-10-20 |\n| [05-скрипты.md](./deepseek-harness-05-skripty.md) | актуально | 2026-10-20 |\n| [07-сценарии.md](./deepseek-harness-07-scenarios.md) | актуально | 2026-10-20 |\n\n---\n",
+      "id": "s14",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Статус документации"
+    },
+    {
+      "anchor": "связи",
+      "anchor_aliases": [],
+      "body_markdown": "\n- [Харнес (канон и среды)](../harnes/index.md) - устройство всего харнеса, канон `.cursor/`\n- [Состояние сред](../harnes/state/01-canon-envs.md) - канон, 5 зеркал, DSH-слой, синк\n- [H-тесты DSH](../harnes/h-test-report.md) - исходные проверки адаптера и их статусы\n- [Правила документации](../harnes/doc_rules.md) - стандарт `.doc/`, читать первым\n- [План DSH workflow](../harnes/plan/07-dsh-final.md) - детальный план с гейтами\n- [Скрипты и тестирование](../harnes/plan/06b-dsh-scripts-and-testing.md) - карта скриптов, H-тесты\n\n---\n",
+      "id": "s15",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Связи"
+    },
+    {
+      "anchor": "история-изменений",
+      "anchor_aliases": [],
+      "body_markdown": "\n- 2026-10-20: каталог создан, документация харнеса DSH вынесена из plan/07 в отдельную папку по правилам doc_rules.md\n- 2026-10-20: добавлен 07-сценарии.md, исправлены находки прогона (branchExists, exit-коды плана, digest, P7.4a, G13, ссылки в DSH-RULES)\n\n---\n\n#deepseek #harness #dsh #index",
+      "id": "s16",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "История изменений"
+    }
+  ],
+  "sources": [
+    {
+      "availability": "present",
+      "id": "S-legacy",
+      "kind": "doc",
+      "observation": "legacy doc.md",
+      "observed_at": null,
+      "path": null,
+      "pointer": null,
+      "revision": null,
+      "sha256": "ac2cbd46c5e6158b9127dc17a83fd3cd9de81f41ca690892f6527b7e6d06ee63"
+    }
+  ],
+  "stages": [],
+  "summary": null,
+  "tags": [
+    {
+      "reason": "документация харнеса",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:harness"
+    },
+    {
+      "reason": "описание DeepSeek Harness",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:deepseek"
+    },
+    {
+      "reason": "стандарт и поиск по документации",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:documentation"
+    }
+  ],
+  "tracker": null
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "DOC-QUERY-1",
+  "mode": "for-task",
+  "workspace_id": "workspace:fixture",
+  "task_refs": ["main:T-042"],
+  "release_context": {"release": "5.7.3"},
+  "files": ["src/order.py"],
+  "symbols": ["Order"],
+  "doc_keys": ["entity/order"],
+  "limits": {"modules": 12, "chars": 24000},
+  "include_history": 0
+}
