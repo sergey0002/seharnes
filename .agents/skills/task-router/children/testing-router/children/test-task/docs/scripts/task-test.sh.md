@@ -3,7 +3,7 @@
 <!-- meta
 type: script
 status: actual
-updated: 2026-11-07
+ updated: 2026-11-24
 related: [../../SKILL.md]
 tags: [harness, script, task-test, testing, codeception, playwright]
 -->
@@ -64,6 +64,9 @@ bash .agents/skills/task-router/children/testing-router/children/test-task/scrip
 # Только браузерный слой с фильтром по группе
 bash .agents/skills/task-router/children/testing-router/children/test-task/scripts/task-test.sh 2236 --phase browser --group item-draft
 
+# Один метод Codeception без запуска остальных тестов группы
+bash .agents/skills/task-router/children/testing-router/children/test-task/scripts/task-test.sh 2236 --phase browser --filter testMethodName
+
 # Изолированный прогон стадии 2 плана
 bash .agents/skills/task-router/children/testing-router/children/test-task/scripts/task-test.sh 2236 --phase stage --stage-num 2
 
@@ -83,4 +86,5 @@ bash .agents/skills/task-router/children/testing-router/children/test-task/scrip
 Гейт: `harness doctor` → `test-task` → `test-priority.mdc` порядок прогона.
 
 ## История изменений
+- 2026-11-24: зафиксирован PHP 8.3 runner, аргументы `--filter`, `--html` и `--xml` передаются раздельно.
 - 2026-11-07: документ составлен из исходника, статус actual, все аргументы и коды выхода сверены

@@ -1,0 +1,303 @@
+{
+  "artifacts": [],
+  "business_logic": {
+    "facts": [],
+    "linked_rule_ids": [],
+    "unconfirmed": []
+  },
+  "checks": [],
+  "decisions": [],
+  "files": [],
+  "findings": [
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-1",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s11",
+      "severity": null,
+      "source_ids": [],
+      "statement": ".git/info/exclude не переносится",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": ".git/info/exclude не переносится"
+    },
+    {
+      "cause": null,
+      "file_ids": [],
+      "id": "П-2",
+      "kind": "pitfall",
+      "resolution": null,
+      "section_id": "s11",
+      "severity": null,
+      "source_ids": [],
+      "statement": "генератор без флагов меняет поведение",
+      "status": "observed",
+      "superseded_by": null,
+      "symptom": null,
+      "title": "генератор без флагов меняет поведение"
+    }
+  ],
+  "git_events": [],
+  "git_state": null,
+  "history": [
+    {
+      "actor": "migration",
+      "at": "2026-10-21T05:57:43Z",
+      "id": "migrate-arch-deepseek-harness-02-ustanovka-2",
+      "source_ids": [],
+      "summary": "deepseek_harnes -> architecture"
+    },
+    {
+      "actor": "agent-review",
+      "at": "2026-10-21T22:41:08Z",
+      "id": "tags2-deepseek-harness-02-ustanovka-faa54d",
+      "source_ids": [],
+      "summary": "tag harness documentation"
+    },
+    {
+      "actor": "project-doc",
+      "at": "2026-10-31T02:10:12Z",
+      "id": "arch-deepseek-harness-02-ustanovka-dsh-kit-20261031-01",
+      "source_ids": [],
+      "summary": "Документирование переноса DSH kit и проверок после миграции"
+    },
+    {
+      "actor": "user",
+      "at": "2026-11-11T05:31:15Z",
+      "id": "arch-dsh02-remove-leantime-20261111",
+      "source_ids": [],
+      "summary": "Снят ключ удалённого локального PM"
+    }
+  ],
+  "id": "architecture:deepseek-harness-02-ustanovka",
+  "jira_report": null,
+  "kind": "architecture",
+  "metadata": {
+    "branch": null,
+    "doc_type": "architecture",
+    "release": null,
+    "source_status": "actual",
+    "status": "unknown",
+    "task_id": null,
+    "task_type": "unknown",
+    "title": "Установка и перенос на сервер",
+    "updated_at": "1970-01-01T00:00:00Z"
+  },
+  "notes": [],
+  "progress": [],
+  "relations": [],
+  "requirements": [],
+  "revision": 4,
+  "schema_version": "1.0",
+  "section_order": [
+    "s0",
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s13",
+    "s5",
+    "s6",
+    "s7",
+    "s8",
+    "s9",
+    "s10",
+    "s11",
+    "s12"
+  ],
+  "sections": [
+    {
+      "anchor": "установка-и-перенос-на-сервер",
+      "anchor_aliases": [],
+      "body_markdown": "\n<!-- meta\ntype: config\nstatus: actual\nupdated: 2026-10-31\ntags: [deepseek, deploy, setup]\n-->\n\n---\n",
+      "id": "s0",
+      "level": 1,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Установка и перенос на сервер"
+    },
+    {
+      "anchor": "суть",
+      "anchor_aliases": [],
+      "body_markdown": "\nПорядок развёртывания харнеса DSH на новой машине или сервере. Харнес это\nкаталог `.dsh/`, файл `DSH-RULES.md` в корне репозитория и генератор\n`.agents/skills/harness-management/children/environment-sync/scripts/generate-dsh-config.py`. В git это не попадает.\n\nПереносимая часть `.dsh` копируется `copy-dsh-kit.ps1`. Файлы\n`.dsh/project.patch.yml` и `DSH-RULES.md` генерируются из `.cursor` на целевой\nмашине.\n\n> **AI:** читай этот doc при переносе харнеса или новой установке.\n> **Сначала:** [01-устройство.md](./deepseek-harness-01-ustroystvo.md) - состав.\n> **Не читай целиком:** шаги выполняй по одному, проверяй `smoke.sh`.\n> **См. также:** [../harnes/state/09-transfer.md](../harnes/state/09-transfer.md) - перенос проекта.\n",
+      "id": "s1",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Суть"
+    },
+    {
+      "anchor": "предусловия-на-сервере",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Компонент | Требование |\n|---|---|\n| DeepSeek Harness | установлен, `dsh` в PATH (проверено на 0.2.1-rc.2) |\n| WSL | репозиторий и агент внутри WSL |\n| python3 | 3.9+ |\n| git | любой свежий |\n| node | 20+ (нужен самому dsh и npx-серверам MCP) |\n| PowerShell 7 | портативный pwsh в `~/.local/pwsh/pwsh` |\n| API-ключи | зависят от модели: deepseek-account через UI, либо `DEEPSEEK_API_KEY`, `XAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY` |\n| MCP-серверы | Docker `copytrust-dev-php-apache-1`, Sourcegraph `127.0.0.1:7080`, mysql `127.0.0.1:8031` |\n\n---\n",
+      "id": "s2",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Предусловия на сервере"
+    },
+    {
+      "anchor": "шаг-1---поставить-портативный-pwsh",
+      "anchor_aliases": [],
+      "body_markdown": "\nБез него PowerShell-скрипты канона уходят в `powershell.exe` и работают\nв 30-80 раз медленнее (замеры в [05-скрипты.md](./deepseek-harness-05-skripty.md)).\n\n```bash\nmkdir -p ~/.local/pwsh\ncurl -sSL -o /tmp/pwsh.tar.gz \\\n  https://github.com/PowerShell/PowerShell/releases/download/v7.4.6/powershell-7.4.6-linux-x64.tar.gz\ntar -xzf /tmp/pwsh.tar.gz -C ~/.local/pwsh\nchmod +x ~/.local/pwsh/pwsh\nDOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 ~/.local/pwsh/pwsh -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'\n```\n\nОжидаемо: `7.4.6`. Флаг `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1` нужен, потому\nчто в WSL нет `libicu`. Шим ставит его сам, руками запоминать не надо.\n\n---\n",
+      "id": "s3",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Шаг 1 - поставить портативный pwsh"
+    },
+    {
+      "anchor": "шаг-2---перенести-файлы-харнеса",
+      "anchor_aliases": [],
+      "body_markdown": "\nПереносимая часть kit:\n\n```\n.dsh/\n  skills/dsh-router/SKILL.md\n  adapters/            (8 файлов)\n  scripts/             (run-ps1.sh, smoke.sh, stage-artifacts.py, usage-metrics.py, jdocmunch-mcp.sh)\n  tests/               (3 файла)\n  models.overlay.json\n```\n\nПеренос в новый проект:\n\n```bash\npwsh -NoProfile -File .agents/skills/harness-management/children/new-project/scripts/copy-dsh-kit.ps1 -Source <образец> -Target <новый>\npwsh -NoProfile -File .agents/skills/harness-management/children/new-project/scripts/copy-dsh-kit.ps1 -Source <образец> -Target <новый> -Check\n```\n\nСкрипт не копирует `.dsh/project.patch.yml`, `DSH-RULES.md`, `__pycache__` и\nбэкапы `models.overlay.json`.\n\nПлюс генератор с флагами:\n\n```\n.agents/skills/harness-management/children/environment-sync/scripts/generate-dsh-config.py  (--no-llm, --no-model-selection)\n```\n\nНа новом сервере `.git/info/exclude` создаётся заново. Добавить:\n\n```\n/.dsh/\n/DSH-RULES.md\n```\n",
+      "id": "s4",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Шаг 2 - перенести файлы харнеса"
+    },
+    {
+      "anchor": "шаг-3---сгенерировать-патч-и-правила",
+      "anchor_aliases": [],
+      "body_markdown": "\n```bash\npython3 .agents/skills/harness-management/children/environment-sync/scripts/generate-dsh-config.py --root . --no-llm --no-model-selection\n```\n\nФлаги обязательны на этой машине:\n\n- `--no-llm` - не добавлять `llm-pi-ai`, пока роутинг моделей не нужен;\n- `--no-model-selection` - ставить `modelSelectionSettings: false`, иначе\n  строка настроек ругается при старте вне preset-контекста.\n\nОжидаемый вывод: `\"mcp_servers\"` содержит 14 имён, `\"entries\": 15`,\n`\"overlay_entries\": 3` (model_selection, subagent, workflow; `llm-pi-ai` отброшен),\n`\"skipped\"` перечисляет xdebug, deepwiki, bitbucket-task.\n\n---\n",
+      "id": "s5",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Шаг 3 - сгенерировать патч и правила"
+    },
+    {
+      "anchor": "шаг-4---секреты",
+      "anchor_aliases": [],
+      "body_markdown": "\n`.dsh/project.patch.yml` содержит живые значения в `env` (SOURCEGRAPH_MCP_TOKEN,\nMYSQL_PASSWORD). Файл вне git, обращаться как с `.cursor/mcp.env`.\nГенератор инлайнит значения из `.cursor/mcp.env`.\n\n---\n",
+      "id": "s6",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Шаг 4 - секреты"
+    },
+    {
+      "anchor": "шаг-5---запуск",
+      "anchor_aliases": [],
+      "body_markdown": "\n```bash\ndsh --patch .dsh/project.patch.yml web --no-open\n```\n\nБез `--patch` MCP-инструменты и overlay не поднимутся.\n\n---\n",
+      "id": "s7",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Шаг 5 - запуск"
+    },
+    {
+      "anchor": "шаг-6---проверка",
+      "anchor_aliases": [],
+      "body_markdown": "\n```bash\nbash .dsh/scripts/smoke.sh --task 2622\n```\n\nОжидаемо: `SMOKE: passed`. Что проверяется:\n\n| Проверка | Ожидание |\n|---|---|\n| движок PowerShell | портативный pwsh 7.4.6 |\n| python3, git, node | версии печатаются |\n| генератор | `DSH-RULES.md` и патч совпадают с выходом генератора, `--check` |\n| патч | MCP-клиентов 14, `llm-pi-ai` нет, `modelSelectionSettings: false` |\n| скилы | 23 канона, 23 зеркала, dsh-router, корректный frontmatter |\n| правила | по 16 в `.codex`, `.kilo`, `.agents`, `.antigravity`, `.gemini` |\n| DSH kit | `.dsh/skills`, `adapters`, `scripts`, `tests`, `models.overlay.json` |\n| скрипты | `jsondoc plan` |\n| тесты | `test_dsh_config.py`, `test_dsh_kit.py` |\n| задача | `gototask inspect` и `task-diff inspect` отдают JSON |\n\nMCP-инструменты из bash не проверить: открыть сессию и убедиться, что в\ntool-каталоге есть `mcp__codebase-memory-mcp__*`, `mcp__sourcegraph__*`,\n`mcp__git__*`, `mcp__mysql__*`, `mcp__serena__*`.\n",
+      "id": "s8",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Шаг 6 - проверка"
+    },
+    {
+      "anchor": "если-что-то-не-поднялось",
+      "anchor_aliases": [],
+      "body_markdown": "\n| Симптом | Причина | Действие |\n|---|---|---|\n| `pwsh: couldn't find ICU` | нет libicu | запускать с `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1` (шим делает сам) |\n| `powershell.exe: not found` | PATH без `/mnt/c` | не вызывать напрямую, только через `run-ps1.sh` |\n| `warning: 1 entry did not activate` (`modelSelectionSettings`) | строка настроек вне preset | `--no-model-selection` |\n| `no LLM providers` | `llm-pi-ai` выключен | это норма для текущего профиля, см. [04-модели.md](./deepseek-harness-04-modeli.md) |\n| нет `mcp__*` | запуск без `--patch` | перезапуск с `--patch .dsh/project.patch.yml` |\n\n---\n",
+      "id": "s9",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Если что-то не поднялось"
+    },
+    {
+      "anchor": "связи",
+      "anchor_aliases": [],
+      "body_markdown": "\n- [Устройство](./deepseek-harness-01-ustroystvo.md) - состав\n- [Модели](./deepseek-harness-04-modeli.md) - включение тяжёлых моделей\n- [Скрипты](./deepseek-harness-05-skripty.md) - оболочка\n- [Перенос проекта](../harnes/state/09-transfer.md) - общий перенос CopyTrust\n\n---\n",
+      "id": "s10",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Связи"
+    },
+    {
+      "anchor": "известные-проблемы-и-ограничения",
+      "anchor_aliases": [],
+      "body_markdown": "\n\n- Симптом: после клонирования `.dsh/` в untracked.\n- Причина: exclude локальный, не коммитится.\n- Решение: вручную добавить `/.dsh/` и `/DSH-RULES.md`.\n\n\n- Симптом: после `generate-dsh-config.py --root .` появляются `llm-pi-ai` и\n  `modelSelectionSettings: true`, старт даёт warning.\n- Причина: флаги не переданы.\n- Решение: всегда `--no-llm --no-model-selection` на этой машине.\n\n---\n",
+      "id": "s11",
+      "level": 2,
+      "origin": "opaque",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Известные проблемы и ограничения"
+    },
+    {
+      "anchor": "история-изменений",
+      "anchor_aliases": [],
+      "body_markdown": "\n- 2026-10-20: создан\n- 2026-10-20: добавлены шаг установки pwsh, флаги генератора, `smoke.sh`,\n  таблица разбора сбоев\n\n#deepseek #deploy #setup\n- 2026-10-31: добавлен шаг 2a, перенос kit через copy-dsh-kit.ps1, обновлены проверки smoke: 23 скила, DSH kit, тесты\n",
+      "id": "s12",
+      "level": 2,
+      "origin": "imported",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "История изменений"
+    },
+    {
+      "anchor": "шаг-2a---перенести-kit-в-новый-проект",
+      "anchor_aliases": [],
+      "body_markdown": "\nКогда DSH kit нужен в другом проекте, не копируйте `.dsh` целиком. Используйте\n`copy-dsh-kit.ps1`.\n\n| Копируется | Создается заново |\n|---|---|\n| `.dsh/skills/` | `.dsh/project.patch.yml` |\n| `.dsh/adapters/` | `DSH-RULES.md` |\n| `.dsh/scripts/` | `__pycache__`, `.pytest_cache` |\n| `.dsh/tests/` | `models.overlay.json.bak-*` |\n| `.dsh/models.overlay.json` | - |\n\nПроверка полноты:\n\n```bash\npwsh -NoProfile -File .agents/skills/harness-management/children/new-project/scripts/copy-dsh-kit.ps1 -Source <образец> -Target <новый> -Check\n```\n\n`rebase_project.ps1` вызывает скрипт автоматически и добавляет `.dsh` пути в\nmust-check.\n",
+      "id": "s13",
+      "level": 2,
+      "origin": "authored",
+      "parent_id": null,
+      "source_ids": [],
+      "title": "Шаг 2a - перенести kit в новый проект"
+    }
+  ],
+  "sources": [
+    {
+      "availability": "present",
+      "id": "S-legacy",
+      "kind": "doc",
+      "observation": "legacy doc.md",
+      "observed_at": null,
+      "path": null,
+      "pointer": null,
+      "revision": null,
+      "sha256": "898e8df5a9770a5421a0ed90b9b412cb95fc8b2029a28c9eac910e029bde1996"
+    }
+  ],
+  "stages": [],
+  "summary": null,
+  "tags": [
+    {
+      "reason": "документация харнеса",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:harness"
+    },
+    {
+      "reason": "описание DeepSeek Harness",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:deepseek"
+    },
+    {
+      "reason": "стандарт и поиск по документации",
+      "source_ids": [],
+      "status": "confirmed",
+      "tag_id": "component:documentation"
+    }
+  ],
+  "tracker": null
+}

@@ -421,7 +421,7 @@ curl -sS \
 
 ## Связи
 
-- [Правила документации проекта](../harnes/doc_rules.md) - формат `.doc/`
+- Правила документации проекта (`../harnes/doc_rules.md`; missing in kit) - формат `.doc/`
 - Внешний канон: [developers.kaiten.ru](https://developers.kaiten.ru/)
 
 ---

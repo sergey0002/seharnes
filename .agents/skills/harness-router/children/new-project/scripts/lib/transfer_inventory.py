@@ -163,7 +163,7 @@ def discover_target_paths(root: Path, roots: list[str], *, max_entries: int = 20
                     for entry in entries:
                         child = relative + "/" + entry.name
                         if entry.name in {"__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache"} \
-                                or entry.name.endswith(".pyc"):
+                                or entry.name.endswith(".pyc") or ":" in entry.name:
                             continue
                         if _excluded(child, excludes):
                             continue

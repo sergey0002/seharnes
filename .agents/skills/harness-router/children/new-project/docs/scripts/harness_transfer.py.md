@@ -30,6 +30,7 @@ tags: [harness, transfer, preview, git]
 | `render` | Пересобирает generated views текущими доверенными генераторами. |
 | `compact` | Удаляет generated views и оставляет компактный канон. |
 | `adopt` | Строит read-only предпросмотр существующих файлов Target для legacy adopt. |
+| `export` | Перенос kit в проект через `export_kit.py`: профиль, режим, dry-run. |
 | `--check` | Проверить views без записи в `render` или показать generated paths в `compact`. |
 | `--apply` | Удалить generated paths в `compact`; без флагов `compact` тоже применяет. |
 | `--force` | Пропустить проверку содержимого в `compact`. |
@@ -52,6 +53,14 @@ tags: [harness, transfer, preview, git]
 | `--root` | Обнаружить файлы под относительным корнем; повторяется. |
 | `--exclude` | Исключить путь или префикс из выбранных файлов; повторяется. |
 | `--profile` | `core`, `developer` или `project`; без `--root`/`--path` профиль выбирает authored roots и файлы через `profile_manifest`. Generated views исключаются. |
+| `--mode` | Для `export`: `install`, `update` или `mirror`. |
+| `--project-name` | Для `export`: имя проекта для Serena и `GRAPHITI_GROUP_ID`. |
+| `--skip-runtime-deps` | Для `export`: не копировать `node_modules` и `vendor` инструментов. |
+| `--skip-tools` | Для `export`: не копировать `.tools`. |
+| `--exclude` | Для `export`: не копировать путь или префикс; повторяемый. |
+| `--keep` | Для `export`: путь принадлежит Target, не перезаписывать и не удалять; повторяемый. |
+| `--dry-run` | Для `export`: только посчитать состав, без записи. |
+| `--yes` | Для `export`: принято для совместимости, перенос не спрашивает подтверждение. |
 | `--operation` | `install` или `update`; `repair` отклоняется до записи. |
 | `--base-commit` | Исторический commit для сравнения; это не receipt. |
 | `--use-receipt` | Прочитать `.doc/web/state/transfer/receipt.json` Target. |

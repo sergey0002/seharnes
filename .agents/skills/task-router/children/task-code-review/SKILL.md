@@ -75,8 +75,8 @@ If a file contains both legacy code and task code, modify only the proven task h
 ## Minimality lens
 
 After ownership is proven, check whether the task hunk is larger than needed.
-Use the [ponytail review lens](../ponytail/references/review.md) and the
-[ponytail skill](../ponytail/SKILL.md). The lens only flags over-engineering:
+Use the ponytail review lens (`../ponytail/references/review.md`; missing in kit) and the
+ponytail skill (`../ponytail/SKILL.md`; missing in kit). The lens only flags over-engineering:
 required behavior, safety, error handling, tests and task ownership win.
 
 ## Guardrails

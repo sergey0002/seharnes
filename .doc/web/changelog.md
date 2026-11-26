@@ -241,7 +241,7 @@ tags: [panel, service, harness, pricing, providers, changelog]
 - Добавлены [install.sh](./install.sh), [install.ps1](./install.ps1), [verify.sh](./verify.sh), [bin/selfcheck.py](./bin/selfcheck.py).
 - Компоненты `web-panel` и `task-analytics` добавлены в `component_registry.json`, проверки в `harness-selfcheck.sh`.
 
-Канон переноса: [rebase_project.md](../14-project-migration.md), установка компонента: [component-install.md](../harnes/component-install.md).
+Канон переноса: rebase_project.md (`../14-project-migration.md`; missing in kit), установка компонента: [component-install.md](../harnes/component-install.md).
 
 ### 7. Фильтр диалогов по проекту
 
@@ -339,7 +339,7 @@ tags: [panel, service, harness, pricing, providers, changelog]
 
 - [Операционное описание панели](./README.md) - маршруты, запуск, безопасность
 - [Сервис панели](../harnes/state/22-panel-service.md) - устройство и эксплуатация
-- [Перенос харнеса](../14-project-migration.md) - профили, исключения, must-check
+- Перенос харнеса (`../14-project-migration.md`; missing in kit) - профили, исключения, must-check
 - [Установка компонента](../harnes/component-install.md) - обязательные проверки
 - [Цены](./config/prices.json) - актуальные коэффициенты и цены
 

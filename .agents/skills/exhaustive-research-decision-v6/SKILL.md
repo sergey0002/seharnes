@@ -1,6 +1,6 @@
 ---
 name: exhaustive-research-decision-v6
-description: Универсальный deep-research скилл: сырая мысль -> одобренный бриф -> поиск существующих решений с proven use -> единый criteria.csv (включая синтетические метрики) -> полная матрица candidate x criterion -> adopt/adapt/extend/compose, а build только при доказанном gap. Использовать для выбора СУБД, бекапов, библиотек, фреймворков, нейромоделей, видеокарт, стандартов документирования, методик, клинических досье, восстановления после пожара и любого сравнения или проектирования. Не привязан к open source; кандидатом может быть продукт, сервис, стандарт, железо, процесс или комбинация. High risk: досье + human gate, а не диагноз, назначение или разрешение работ.
+description: "Сравни и выбери решение: исследование, критерии, доказательства, reuse; не быстрая справка."
 compatibility: Requires Python 3.9+ only for scripts/check_gates.py; all other content is Markdown, CSV and JSON. Portable across any Agent Skills-compatible client.
 metadata:
   version: "6.1"

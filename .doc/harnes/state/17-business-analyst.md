@@ -145,7 +145,7 @@ gototask / task-intake / прямой запрос / prepare-plan P0.7
 
 Код и тесты находятся в `.agents/skills/business-analyst/scripts/` и `tests/`,
 рабочие данные в папку скила не записываются. Прямые записи registry/quarantine/
-knowledge запрещены. Подробности: [модель хранения](../../../.agents/skills/business-analyst/references/storage.md#канон-и-интерфейс).
+knowledge запрещены. Подробности: модель хранения (`../../../.agents/skills/business-analyst/references/storage.md#канон-и-интерфейс`; missing in kit).
 
 ### 3.2 Зона задачи
 
@@ -372,7 +372,7 @@ CBM отключается флагом `--no-cbm` или переменной `
 публикацию правила, факта, analysis и связей выполняет `analysis-complete` через
 `publish_transaction.py`. Скрипты не выполняют semantic matching: смысловые
 `comparisons` и `action` приходят из `review.json`, а валидатор проверяет полноту,
-evidence и допустимые relation. Подробности: [правило](../../../.agents/skills/business-analyst/references/storage.md#канон-и-интерфейс).
+evidence и допустимые relation. Подробности: правило (`../../../.agents/skills/business-analyst/references/storage.md#канон-и-интерфейс`; missing in kit).
 
 ### 4.7 `render_rules.py`
 
@@ -503,7 +503,7 @@ evidence и допустимые relation. Подробности: [правил
 Схемы этого списка описывают первоначальное ядро. Они не являются полной
 спецификацией новых entities/links/analyses: актуальный контракт драйвера
 проверяется его кодом и тестами, описан в
-[storage.md](../../../.agents/skills/business-analyst/references/storage.md#канон-и-интерфейс).
+storage.md (`../../../.agents/skills/business-analyst/references/storage.md#канон-и-интерфейс`; missing in kit).
 
 ---
 
@@ -534,7 +534,7 @@ Quarantine reasons:
 proposed/pending; такой статус не подтверждает реализацию. Успешная повторная
 проверка закрывает запись, обоснованное отклонение сохраняется как rejected,
 дубль связывается с существующим правилом. История не удаляется, next_check_at
-сам по себе не запускает модель. Контракт: [карантин](../../../.agents/skills/business-analyst/references/storage.md#жизненный-цикл-карантина).
+сам по себе не запускает модель. Контракт: карантин (`../../../.agents/skills/business-analyst/references/storage.md#жизненный-цикл-карантина`; missing in kit).
 
 ---
 
@@ -653,7 +653,7 @@ python3 .agents/skills/business-analyst/scripts/business_analyst.py --root . ana
 
 needs_analysis/needs_review передаётся атомарному скилу. Низкоуровневый auto не
 заменяет выполнение агента. Контекст готового анализа получают analysis-context;
-точные аргументы: [фасад](../../../.agents/skills/business-analyst/docs/scripts/business_analyst.py.md#аргументы).
+точные аргументы: фасад (`../../../.agents/skills/business-analyst/docs/scripts/business_analyst.py.md#аргументы`; missing in kit).
 
 Массовый shadow с лимитами и продолжением:
 
@@ -788,9 +788,9 @@ python3 -m unittest discover -s .agents/skills/business-analyst/tests -v
 
 ## Связи
 
-- [Атомарный анализ задачи](../../../.agents/skills/task-router/children/task-business-analysis/SKILL.md)
-- [Хранение бизнес-знаний](../../../.agents/skills/business-analyst/references/storage.md)
-- [Сверка правил агентом](../../../.agents/skills/business-analyst/references/reconciliation.md)
+- Атомарный анализ задачи (`../../../.agents/skills/task-router/children/task-business-analysis/SKILL.md`; missing in kit)
+- Хранение бизнес-знаний (`../../../.agents/skills/business-analyst/references/storage.md`; missing in kit)
+- Сверка правил агентом (`../../../.agents/skills/business-analyst/references/reconciliation.md`; missing in kit)
 
 - [Точка входа харнеса](../index.md)
 - [Скилы](./02-skills.md)
@@ -798,9 +798,9 @@ python3 -m unittest discover -s .agents/skills/business-analyst/tests -v
 - [Скрипты](./05-scripts.md)
 - [JSONdoc](./06-jsondoc.md)
 - [Workflows](./07-workflows.md)
-- [План business analyst](../../buisnes_analis/plan.md)
-- [Скил business-analyst](../../../.agents/skills/business-analyst/SKILL.md)
-- [Правило business-rules](../../../.cursor/rules/business-rules.mdc)
+- План business analyst (`../../buisnes_analis/plan.md`; missing in kit)
+- Скил business-analyst (`../../../.agents/skills/business-analyst/SKILL.md`; missing in kit)
+- Правило business-rules (`../../../.cursor/rules/business-rules.mdc`; missing in kit)
 
 ---
 

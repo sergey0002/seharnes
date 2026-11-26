@@ -55,7 +55,7 @@ def safe_path(root: Path, relative: str) -> Path:
     if any(part in ("", ".", "..") for part in parts) or "\\" in relative:
         raise ValueError(f"unsafe generated path: {relative}")
     if not (relative in {"opencode.json", "DSH-RULES.md", "DSH-BOOTSTRAP.md"}
-            or len(parts) > 1 and re.fullmatch(r"\.(codex|kilo|qoder|qwen|opencode|dsh)", parts[0])
+            or len(parts) > 1 and re.fullmatch(r"\.(codex|kilo|qoder|qwen|opencode|omp|dsh)", parts[0])
             or relative.startswith((".agents/rules/", ".agents/scripts/"))
             or relative in {".agents/rules", ".agents/scripts", ".agents/mcp.json", ".agents/mcp_config.json",
                             ".agents/skills.json", ".agents/mcp.env", ".cursor/tools/composer.phar",

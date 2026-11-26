@@ -95,7 +95,7 @@ diff задачи, не из `business_context`. Каждое требовани
      не пиши тест без контракта
 4. Если в task.md конкретный `clientId` — используй
    [`login-as-user`](../login-as-user/SKILL.md), а не абстрактного клиента.
-5. Вывод перед Фазой B. Ветки не выдумывать заново: правило в [testaudit §9](../../../.doc/harnes/testaudit.md#9-когда-проверять-и-что-считать-веткой).
+5. Вывод перед Фазой B. Ветки не выдумывать заново: правило в testaudit §9 (`../../../.doc/harnes/testaudit.md#9-когда-проверять-и-что-считать-веткой`; missing in kit).
 
 ```
 Подготовка теста задачи {N}
@@ -120,7 +120,7 @@ diff задачи, не из `business_context`. Каждое требовани
 ### B1. Каркас
 
 ```bash
-python3 .cursor/skills/task-router/children/prepare-task-test/scripts/new-task-test.py {N} {Slug} --title "краткое описание"
+python3 .agents/skills/task-router/children/prepare-task-test/scripts/new-task-test.py {N} {Slug} --title "краткое описание"
 ```
 
 Создаёт Cest с уже проставленными `@group task-{N}`, входом,
@@ -145,7 +145,7 @@ python3 .cursor/skills/task-router/children/prepare-task-test/scripts/new-task-t
 
 ### B3. Сам Cest
 
-Порядок методов в классе - по правилу [test-priority](../../../.cursor/rules/test-priority.mdc):
+Порядок методов в классе - по правилу test-priority (`../../../.cursor/rules/test-priority.mdc`; missing in kit):
 сначала методы R/S текущего этапа, затем ветки diff без S, затем regression соседних флоу.
 
 - `@group task-{N}` на каждом методе

@@ -98,7 +98,7 @@ Mermaid-схемы, скриншоты, все файлы, проверки и �
 Перед следующим шагом запусти из skills текущей среды:
 
 ```bash
-python3 .cursor/skills/task-router/children/task-change-report/scripts/workflow_contract.py \
+python3 .agents/skills/task-router/children/task-change-report/scripts/workflow_contract.py \
   --context .doc/tasks/{N}/reports/change-report/workflow-context.json --project-root .
 ```
 
@@ -191,7 +191,7 @@ python3 .codex/skills/task-router/children/reporting-router/children/task-change
   --task 2606 --project-root . --if-missing
 ```
 
-Для Cursor используется тот же файл через `.cursor/skills/task-router/children/task-change-report/`.
+Для Cursor используется тот же файл через `.agents/skills/task-router/children/task-change-report/`.
 
 Основные параметры:
 
@@ -233,7 +233,7 @@ stage-only отчёт, это blocker текущего renderer, а не пов�
    ```text
    file://wsl.localhost/{WSL_DISTRO_NAME}{path_to_report.html}
    ```
-   (например: `file://wsl.localhost/Ubuntu/home/newuser/projects/copytrust/testdeploydocker/.doc/tasks/{N}/reports/change-report/report.html`).
+   (например: `file://wsl.localhost/Ubuntu/home/newuser/projects/seharnes/.doc/tasks/{N}/reports/change-report/report.html`).
 3. В финальном ответе нельзя ограничиваться строкой `FILE:` или `WSL_URL:` из вывода скрипта. Полный `file://wsl.localhost/...` URL должен быть продублирован в сообщении чата.
 4. Предложить пользователю скопировать ссылку и вставить в адресную строку браузера Chrome (или кликнуть по ссылке).
 5. При запросе пользователя открыть в браузере или при флаге `--open` — сразу вызывать штатный Chrome на хосте Windows.
@@ -295,6 +295,6 @@ stage-only отчёт, это blocker текущего renderer, а не пов�
 
 ## Синхронизация сред
 
-Канон находится в `.cursor/skills/`. Представления Codex, Kilo, Antigravity,
+Канон находится в `.agents/skills/`. Представления Codex, Kilo, Antigravity,
 Gemini и Agents синхронизируются штатным adapter-скриптом, независимо не правятся.
 Во время работы загружай skills из каталога текущей среды.

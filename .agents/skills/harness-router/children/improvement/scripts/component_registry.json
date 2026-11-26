@@ -170,8 +170,7 @@
       ],
       "skill_dependencies": [
         "prepare-task-test",
-        "browser-verify",
-        "login-as-user"
+        "browser-verify"
       ]
     },
     "browser-verify": {
@@ -181,9 +180,7 @@
       "config_paths": [
         ".kilo/kilo.jsonc"
       ],
-      "skill_dependencies": [
-        "login-as-user"
-      ]
+      "skill_dependencies": []
     },
     "send-to-git": {
       "required_files": [
@@ -230,14 +227,6 @@
     "task-change-report": {
       "required_files": [
         ".agents/skills/task-router/children/reporting-router/children/task-change-report/SKILL.md"
-      ],
-      "config_paths": [
-        ".kilo/kilo.jsonc"
-      ]
-    },
-    "login-as-user": {
-      "required_files": [
-        ".agents/skills/login-as-user/SKILL.md"
       ],
       "config_paths": [
         ".kilo/kilo.jsonc"

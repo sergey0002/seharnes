@@ -1,8 +1,8 @@
 # MCP: graphify (legacy)
 
 > **Статус: legacy.** С 2026-11-02 Graphify не входит в `.cursor/mcp.json` и не
-> используется в задачах. Активный сервер - [codegraph](./codegraph.md), его
-> правило - [mcp/codegraph.mdc](../../../.cursor/rules/mcp/codegraph.mdc). Ниже
+> используется в задачах. Активный сервер - codegraph (`./codegraph.md`; missing in kit), его
+> правило - mcp/codegraph.mdc (`../../../.cursor/rules/mcp/codegraph.mdc`; missing in kit). Ниже
 > сохранено описание старого контракта для истории и разбора старых задач.
 
 <!-- meta
@@ -189,10 +189,10 @@ AST-граф кода для сообществ, god-узлов и кратча�
 ## Связи
 
 - [Карта MCP](./README.md) - общий список
-- [MCP-серверы](../state/04-mcp.md) - маршрут и правила
-- [MCP-стек](../state/15-mcp-stack.md) - юнит 9130, LRU контекстов
-- [Инструкция graphify](../../../.cursor/graphify-mcp.md) - вызовы и ограничения
-- [Docker-вариант](../../synh_harnes/graphify-docker/README.md) - когда systemd недоступен
+- MCP-серверы (`../state/04-mcp.md`; missing in kit) - маршрут и правила
+- MCP-стек (`../state/15-mcp-stack.md`; missing in kit) - юнит 9130, LRU контекстов
+- Инструкция graphify (`../../../.cursor/graphify-mcp.md`; missing in kit) - вызовы и ограничения
+- Docker-вариант (`../../synh_harnes/graphify-docker/README.md`; missing in kit) - когда systemd недоступен
 
 ---
 

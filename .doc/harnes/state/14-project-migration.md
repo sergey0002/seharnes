@@ -4,7 +4,7 @@
 type: architecture
 status: actual
 updated: 2026-11-13
-related: [../index.md, ./13-agent-migration.md, ../../.agents/skills/harness-router/children/migration-review/README.md, ../../rebase_project.md, ../../.agents/skills/harness-router/children/new-project/scripts/export-rebase-project.ps1]
+related: [../index.md, ./13-agent-migration.md, ../../.agents/skills/harness-router/children/migration-review/README.md, ../../rebase_project.md, ../../.agents/skills/harness-router/children/new-project/scripts/export_kit.py]
 tags: [harness, migration, transfer, rebase, export, kit, qoder]
 -->
 
@@ -13,10 +13,11 @@ tags: [harness, migration, transfer, rebase, export, kit, qoder]
 ## Суть
 
 Перенос агентского kit из этого репозитория в другой проект или на другую машину.
-Канон процедуры - `.doc/rebase_project.md`, исполняет `.agents/skills/harness-router/children/new-project/scripts/rebase_project.ps1`,
-локальный exclude пишет `.agents/skills/harness-router/children/new-project/scripts/rebase_project_gi.ps1`, обертка для совместимости -
-`.agents/skills/harness-router/children/new-project/scripts/export-rebase-project.ps1`. Переносится не приложение, а среда:
-правила, скилы, скрипты, MCP, QA-контур и документационные стандарты.
+Канон процедуры - `.doc/rebase_project.md`, исполняет `.agents/skills/harness-router/children/new-project/scripts/export_kit.py`.
+Переносится не приложение, а среда: правила, скилы, скрипты, MCP, QA-контур и
+документационные стандарты. Состав kit задаёт `harness-core/assets/kit.json`,
+включённость сред - `harness-core/assets/environments.json`; представления сред
+собираются уже в Target.
 
 > **Актуализация 2026-11-13.** Текущий перенос выполняет `new-project/scripts/harness_transfer.py` командами `plan`, `approve`, `apply`, `verify` и `rollback`. Имена `Full` и `Core` ниже исторические: текущие профили называются `Core`, `Developer` и `Project`, legacy `Full` отображается в `Developer`. Режим `clean`, автоматический `git init`, запись `.git/info/exclude` и `PURGE` не выполняются. Docker, панель, supervisor, Windows-деплой и серверное окружение в текущую задачу не входят. Разделы ниже сохранены как история старого механизма.
 
@@ -32,9 +33,9 @@ tags: [harness, migration, transfer, rebase, export, kit, qoder]
 | Файл | Роль |
 |---|---|
 | `.doc/rebase_project.md` | канон переноса, профили, Day0, День 1, ошибки П-1 - П-20 |
-| `.agents/skills/harness-router/children/new-project/scripts/rebase_project.ps1` | основной скрипт export, копирование и проверки |
-| `.agents/skills/harness-router/children/new-project/scripts/rebase_project_gi.ps1` | локальный `.git/info/exclude` плюс skip-worktree на Target |
-| `.agents/skills/harness-router/children/new-project/scripts/export-rebase-project.ps1` | обертка, делегирует в канон |
+| `.agents/skills/harness-router/children/new-project/scripts/export_kit.py` | основной скрипт export, копирование и проверки |
+| `.agents/skills/harness-router/children/new-project/scripts/lib/kit_selection.py` | состав kit и разделение эталонов и представлений |
+| `.agents/skills/harness-router/children/new-project/scripts/lib/transfer_modes.py` | режимы install, update и mirror |
 | `.doc/harnes/state/14-project-migration.md` | этот документ, краткая операционная карта |
 
 ---
@@ -65,25 +66,22 @@ tags: [harness, migration, transfer, rebase, export, kit, qoder]
 (секреты, индексы, venv, smoke) перечислена в разделе 8 и в
 `EXPORT_NEXT_STEPS.md`.
 
-```powershell
-# канон
-pwsh -NoProfile -File .agents/skills/harness-router/children/new-project/scripts/rebase_project.ps1 `
-  -Target "C:\laragon\www\myapp" -Profile Full -ProjectName myapp
+```bash
+# первый перенос
+python3 .agents/skills/harness-router/children/new-project/scripts/export_kit.py \
+  --source . --target /path/to/myapp --profile developer --mode install
 
-# обертка (те же флаги)
-pwsh -NoProfile -File .agents/skills/harness-router/children/new-project/scripts/export-rebase-project.ps1 `
-  -Target "C:\laragon\www\myapp" -Profile Full -ProjectName myapp
+# повторное обновление
+python3 .agents/skills/harness-router/children/new-project/scripts/export_kit.py \
+  --source . --target /path/to/myapp --profile developer --mode update
 ```
 
-Основные флаги: `-Profile Full|Core`, `-Mode migrate|clean|update`, `-ProjectName`,
-`-IncludeKilo`, `-SkipTools`, `-SkipRuntimeDeps`, `-SkipGitInit`, `-SkipExclude`,
-`-RunSetup`, `-SkipMcpMerge`, `-SkipSiblingConfig`, `-SkipBackup`, `-SkipReview`,
-`-MirrorKit`.
-Флаг `-MirrorKit` включает точное зеркало с удалением файлов Target вне kit; по
-умолчанию лишнее сохраняется. Режим `clean` включает это поведение.
+Основные флаги: `--profile core|developer|project`, `--mode install|update|mirror`,
+`--project-name`, `--skip-tools`, `--skip-runtime-deps`, `--dry-run`.
+Режим `mirror` удаляет файлы kit, которых нет в источнике, после backup.
 `sourcegraph-local/` не копируется. Источники MCP-серверов берутся из
 `.tools/mcp-servers`; runtime-зависимости `.tools/mcp-servers/php-toolchain/node_modules`
-копируются, если не передан `-SkipRuntimeDeps`.
+копируются, если не передан `--skip-runtime-deps`.
 
 ### Режимы переноса
 
@@ -129,7 +127,7 @@ python3 .agents/skills/harness-router/children/migration-review/scripts/review_m
 | Индексные конфиги | `.codeprism.toml` и `.cbmignore` копируются, если в Target их нет |
 | Документация | `web`, `qa` |
 | JSONdoc и бизнес-правила | движок живёт в `.agents/skills/documentation-router/children/task-doc/scripts` и переносится вместе со скилами; `buisnes_analis` в `.doc/archive` не копируется |
-| DSH kit | `.dsh/skills`, `.dsh/adapters`, `.dsh/scripts`, `.dsh/tests`, `.dsh/models.overlay.json` через `copy-dsh-kit.ps1` |
+| DSH kit | не переносится: среда отключена, файлы `.dsh` удалены |
 | Канон docs | `doc_rules.md`, `harnes/index.md`, `tests.md`, `testaudit.md`, `jsondoc.md`, `readmy.md`, `readmy_doc.md`, `rebase_project.*`, `mcp.index.md`, документы миграций |
 | Full дополнительно | `.jira`, `.tools/codeception` |
 | `.tools` | безопасный набор: `.tools/scripts`, `docker-dev/compose.yaml`, `docker-dev/php-apache`, `php85-scan`, `codeception/codeception.yml`, `codeception/composer.json`, `codeception/composer.lock`, `codeception/scripts`, `codeception/tests/_envs`; без `.env`, `dump.sql`, `vendor`, `_output`, `__pycache__` |
@@ -216,7 +214,7 @@ Core вырезает 10 task-скилов из `.cursor`, `.codex`, `.kilo`, `.
    `.doc/skil_data/jira/config.env`.
 3. В режиме `migrate` разобрать предложения `migration-review`; `sourcegraph-local/` при необходимости развернуть отдельно.
 4. CBM: `index_repository` на абсолютный путь корня.
-5. Среды: `bash .agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh` (регенерация зеркал, `.qoder`, `.qwen` и сгенерированной части `.dsh`). Kit уже перенесён `copy-dsh-kit.ps1`.
+5. Среды: `bash .agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh` (регенерация зеркал, `.qoder`, `.qwen` и сгенерированной части `.dsh`). DSH kit не переносится.
 6. Qoder и Qwen Code: открыть Target как проект, проверить `.qoder/rules`, `.qoder/skills`, `.qwen/rules` и MCP в `.qoder/settings.json` и `.qwen/settings.json`. Пользовательские настройки живут в `~/.qoder/settings.json` и `~/.qwen/settings.json`.
 7. Мастер настройки: `python3 .agents/skills/harness-router/children/project-setup/scripts/onboard-project.py --root . --check`, затем запуск с явными значениями. Скрипт проверяет MCP, выбирает свободные порты, строит codegraph, codeprism venv, jdocmunch и CBM, обновляет `MYSQL_*`, пишет `.doc/onboard-report.md`.
 7. Индексы и venv: `codegraph init --yes` в корне проекта, `uv venv` и `uv pip install`
@@ -261,7 +259,7 @@ Core вырезает 10 task-скилов из `.cursor`, `.codex`, `.kilo`, `.
 Синтаксис скриптов проверяется разбором PowerShell:
 
 ```powershell
-pwsh -NoProfile -Command "[void][System.Management.Automation.Language.Parser]::ParseFile('$PWD/.agents/skills/harness-router/children/new-project/scripts/rebase_project.ps1',[ref]$null,[ref]$null)"
+python3 -m py_compile .agents/skills/harness-router/children/new-project/scripts/export_kit.py
 ```
 
 ---
@@ -311,7 +309,7 @@ Linux: kit обновляет свои файлы и добавляет новы
 
 | Шаг | Поведение с существующими файлами |
 |---|---|
-| `rebase_project.ps1` (экспорт) | копирует поверх: одинаковые пути обновляются из kit, файлы Target вне kit остаются; удаление только с `-MirrorKit` |
+| `export_kit.py` (экспорт) | копирует поверх: одинаковые пути обновляются из kit, файлы Target вне kit остаются; удаление только в режиме `mirror` |
 | `sync-agent-views.sh` (синк) | обновляет файлы канона в зеркалах по путям (`.codex`, `.kilo`, `.agents`, `.qoder`, `.qwen`); файлы, которых нет в каноне, сохраняются и не удаляются |
 | `.cursor/mcp.json`, `.codex/config.toml` | серверы Target, которых нет в kit, возвращаются merge; одинаковые имена берутся из kit |
 | `.kilo/kilo.jsonc`, `.agents/mcp.json`, `.qoder/settings.json`, `.qwen/settings.json` | собираются из `.cursor/mcp.json`; Target-only сервер попадает в них только после merge в канон |
@@ -336,7 +334,7 @@ Git: `.gitignore` проекта не копируется и не переза�
 Скилы переноса: `.agents/skills/harness-router/children/new-project/SKILL.md` запускает экспорт и
 этап 0, `.agents/skills/harness-router/children/project-setup/SKILL.md` настраивает MCP, порты, индексы и
 git. Скрипты лежат в `scripts/` этих скилов; движок экспорта остается в
-`.agents/skills/harness-router/children/new-project/scripts/rebase_project.ps1`, потому что его вызывают синк и тесты.
+`.agents/skills/harness-router/children/new-project/scripts/export_kit.py`, потому что его вызывают CLI, тесты и `harness_transfer.py export`.
 
 До копирования скрипт печатает, сколько файлов перезапишется, добавится и
 сохранится вне kit. После копирования пишется отчёт:
@@ -377,8 +375,9 @@ Target-only MCP-сервер в `.cursor/mcp.json` сохранён.
 - [add-skill](../../../.agents/skills/harness-router/children/add-skill/README.md) - установка локального скила
 - [skill-authoring](../../../.agents/skills/harness-router/children/skill-authoring/README.md) - создание и аудит скила
 - [Канон переноса](../../rebase_project.md) - полная процедура и ошибки П-1 - П-20
-- [Основной скрипт](../../../.agents/skills/harness-router/children/new-project/scripts/rebase_project.ps1) - экспортирует kit в Target
-- [Обертка экспорта](../../../.agents/skills/harness-router/children/new-project/scripts/export-rebase-project.ps1) - делегирует основному скрипту
+- [Основной скрипт](../../../.agents/skills/harness-router/children/new-project/scripts/export_kit.py) - экспортирует kit в Target
+- [Перенос в seharnes](../seharnes-transfer.md) - пошаговая процедура для эталонного репозитория
+- [Режимы переноса](../../../.agents/skills/harness-router/children/new-project/scripts/lib/transfer_modes.py) - install, update и mirror
 - [Правила документации](../doc_rules.md) - стандарт `.doc/`
 - [Устаревший снимок](./09-transfer.md) - только историческая информация, не использовать как инструкцию
 - [Копирование приложения](../../../.agents/skills/harness-router/children/copy-project/README.md) - отдельная операция без kit
@@ -389,8 +388,7 @@ Target-only MCP-сервер в `.cursor/mcp.json` сохранён.
 
 - `.codegraph/` не переносится: до `codegraph init --yes` инструмент подсказывает команду.
 - `.codex/config.toml` собирается из канона: экспорт запускает `generate-codex-mcp.py`, синк заменяет MCP-секции. Target-only серверы сохраняются merge, ручная правка MCP-секций перезаписывается.
-- Kit `.dsh/skills`, `.dsh/adapters`, `.dsh/scripts`, `.dsh/tests` и `models.overlay.json` появляется после `copy-dsh-kit.ps1`. Сгенерированные `project.patch.yml` и `DSH-RULES.md` появляются только после синка на Target.
-- После M10 kit `.dsh/skills/dsh-router` содержит `README.md` и `skill.json`; `copy-dsh-kit.ps1 -Check` и `rebase_project.ps1` обязаны их требовать.
+- DSH не входит в kit: среда отключена 2026-11-18, файлы `.dsh` и `DSH-RULES.md` удалены, экспорт их не требует.
 - Kilo копируется только с `-IncludeKilo`; без него `.kilo/` создаст синк.
 - Windows и WSL требуют разных лаунчеров MCP: `.cmd` против `.sh` для phpstan и php-deps.
 - Секреты и токены не переносятся, их заполняют заново.
@@ -436,8 +434,7 @@ Full: общий канон скилов и средств разработки 
 
 - `.codegraph/` не переносится: до `codegraph init --yes` инструмент подсказывает команду.
 - `.codex/config.toml` собирается из канона: экспорт запускает `generate-codex-mcp.py`, синк заменяет MCP-секции. Target-only серверы сохраняются merge, ручная правка MCP-секций перезаписывается.
-- Kit `.dsh/skills`, `.dsh/adapters`, `.dsh/scripts`, `.dsh/tests` и `models.overlay.json` появляется после `copy-dsh-kit.ps1`. Сгенерированные `project.patch.yml` и `DSH-RULES.md` появляются только после синка на Target.
-- После M10 kit `.dsh/skills/dsh-router` содержит `README.md` и `skill.json`; `copy-dsh-kit.ps1 -Check` и `rebase_project.ps1` обязаны их требовать.
+- DSH не входит в kit: среда отключена 2026-11-18, файлы `.dsh` и `DSH-RULES.md` удалены, экспорт их не требует.
 - Kilo копируется только с `-IncludeKilo`; без него `.kilo/` создаст синк.
 - Windows и WSL требуют разных лаунчеров MCP: `.cmd` против `.sh` для phpstan и php-deps.
 - Секреты и токены не переносятся, их заполняют заново.

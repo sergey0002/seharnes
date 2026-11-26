@@ -1,6 +1,6 @@
 ---
 name: graphiti
-description: "Retrieve project decisions and their temporal history with Graphiti MCP, or record an authorized durable episode. Use for graphiti, memory facts, episodes and decision history."
+description: "Найди историю решений, факты и эпизоды в памяти проекта; сохрани разрешённый факт."
 ---
 
 # Graphiti MCP

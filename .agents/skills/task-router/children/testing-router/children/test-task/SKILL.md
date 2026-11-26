@@ -21,7 +21,7 @@ description: >-
 Канон полноты: [`.doc/harnes/testaudit.md`](../../../.doc/harnes/testaudit.md) §9.
 Готовность определяется таблицей веток, а не только зелёным Cest.
 Порядок прогона (сначала свежие правки, потом полное покрытие) -
-правило [test-priority](../../../.cursor/rules/test-priority.mdc).
+правило test-priority (`../../../.cursor/rules/test-priority.mdc`; missing in kit).
 
 Два режима. Определение ветки и слоёв не копировать, оно в §9.
 
@@ -152,10 +152,12 @@ Codeception не доказывает версию сайта. Скрипты с
    "есть chromedriver" / "подними" / "гоняй").
    **Не путать sandbox с мёртвым стендом:** HTTP `000` на `:8030`/`:9515`
    из sandbox не доказательство. Перед "стенд недоступен" - curl/ss с
-   `required_permissions: ["all"]` (см. [browser-setup.md AI/sandbox](../../../.doc/qa/browser-setup.md#ai--sandbox-ложный-стенд-недоступен-обязательно)).
+   `required_permissions: ["all"]` (см. browser-setup.md AI/sandbox (`../../../.doc/qa/browser-setup.md#ai--sandbox-ложный-стенд-недоступен-обязательно`; missing in kit)).
 3. Слой 1: `bash .agents/skills/task-router/children/testing-router/children/test-task/scripts/task-test.sh {N}` плюс отдельные запуски
-   с `--group {flow}` для соседних флоу. Раннер сам выбирает хостовый PHP
-   или docker и нужный порт WebDriver. Команду прогона тоже гонять с
+   с `--group {flow}` для соседних флоу. Codeception всегда запускается в
+   закреплённом Docker-образе `copytrust-codecept:8.3`; версия PHP на хосте
+   и в приложении не выбирает версию раннера. Раннер выбирает порт WebDriver.
+   Команду прогона тоже гонять с
    правами, достаточными для Docker/localhost (обычно `all`), иначе
    precheck/раннер снова увидит "порт мёртв".
 4. Вердикт брать из `verdict.json`, не из чтения лога. Падение Cest =
@@ -218,12 +220,12 @@ bash .agents/skills/task-router/children/testing-router/children/browser-verify/
 | Пользователь: "тестируй задачу", бинарник есть, `:9515` закрыт | AskQuestion: поднять `start-chromedriver-wsl.sh`? |
 | Пользователь: "есть chromedriver" / "подними" / "гоняй" / подтвердил AskQuestion | Сразу `start-chromedriver-wsl.sh`, потом `task-test.sh` |
 | `:9515` уже `ready: true` | Не перезапускать без нужды, сразу прогон |
-| Бинарника реально нет (`test -x` fail) | Ссылка на [browser-setup.md](../../../.doc/qa/browser-setup.md), не выдумывать путь |
+| Бинарника реально нет (`test -x` fail) | Ссылка на browser-setup.md (`../../../.doc/qa/browser-setup.md`; missing in kit), не выдумывать путь |
 
 Selenium Docker (`:4444` / noVNC `:7900`) - запасной путь, не путать с headed
 окном на хосте. Раннер предпочитает `:9515`.
 
-Детали и `.env`: [browser-setup.md § Запуск chromedriver](../../../.doc/qa/browser-setup.md#запуск-chromedriver-слой-1-порт-9515--видимое-окно).
+Детали и `.env`: browser-setup.md § Запуск chromedriver (`../../../.doc/qa/browser-setup.md#запуск-chromedriver-слой-1-порт-9515--видимое-окно`; missing in kit).
 
 ---
 
@@ -275,7 +277,7 @@ PHPUnit: [файлы tests/lib | нет]
 ## Этого скила нет и не делать
 
 - **«тестируй все задачи» / прогон всего Acceptance suite «заодно»** - нет оркестратора
-  и нет CI на Codeception ([cicd.md](../../../.doc/architecture/cicd.md): Acceptance только локально).
+  и нет CI на Codeception (cicd.md (`../../../.doc/architecture/cicd.md`; missing in kit): Acceptance только локально).
   Весь suite пишет в живую dev-БД (`populate/cleanup: false`) - полный прогон без
   явной просьбы запрещён (риск порчи стенда, см. cicd §3.6).
 - Если пользователь **явно** просит полный Acceptance: одна команда Codeception
@@ -292,7 +294,7 @@ PHPUnit: [файлы tests/lib | нет]
 | Тест флоу | `.tools/codeception/tests/Acceptance/*Cest.php` | да, `task-test.sh {N} --group {flow}` |
 | Селекторы экранов | `.tools/codeception/tests/Support/Page/` | переиспользуется всеми тестами |
 | Бизнес-шаги | `.tools/codeception/tests/Support/Step/` | то же |
-| Вход, фикстуры, `checkpoint()` | `AcceptanceTester` + [fragments.md](../../../.doc/qa/fragments.md) | `$I->devLoginAsClient(1)` и т.д. |
+| Вход, фикстуры, `checkpoint()` | `AcceptanceTester` + fragments.md (`../../../.doc/qa/fragments.md`; missing in kit) | `$I->devLoginAsClient(1)` и т.д. |
 | Прогон и вердикт | `.doc/tasks/{N}/test-runs/{дата}_{группа}/` | артефакт, не тест |
 | Playwright MCP | нет файла-теста | не повторно без агента |
 
@@ -382,7 +384,7 @@ python3 .agents/skills/task-router/children/testing-router/children/test-task/sc
 - [`browser-verify`](../browser-verify/SKILL.md)
 - [`login-as-user`](../login-as-user/SKILL.md)
 - [`prepare-plan`](../prepare-plan/SKILL.md) - Verification checklist → после implement этот скил
-- [cicd.md §3.5](../../../.doc/architecture/cicd.md#35-как-проводить-проверку-порядок-работ)
+- cicd.md §3.5 (`../../../.doc/architecture/cicd.md#35-как-проводить-проверку-порядок-работ`; missing in kit)
 
 ## Обязательные машинные проверки
 

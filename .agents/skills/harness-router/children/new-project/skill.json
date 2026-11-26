@@ -6,11 +6,12 @@
   "readme": "README.md",
   "resources": {
     "scripts": [
-      "scripts/copy-dsh-kit.ps1",
-      "scripts/export-rebase-project.ps1",
+      "scripts/export_kit.py",
       "scripts/git-preview.py",
       "scripts/harness_transfer.py",
       "scripts/harness_wizard.py",
+      "scripts/lib/kit_adapt.py",
+      "scripts/lib/kit_selection.py",
       "scripts/lib/transfer_apply.py",
       "scripts/lib/transfer_backup.py",
       "scripts/lib/transfer_diff.py",
@@ -19,6 +20,7 @@
       "scripts/lib/transfer_journal.py",
       "scripts/lib/transfer_local.py",
       "scripts/lib/transfer_merge.py",
+      "scripts/lib/transfer_modes.py",
       "scripts/lib/transfer_plan.py",
       "scripts/lib/transfer_prepare.py",
       "scripts/lib/transfer_process_lock.py",
@@ -30,8 +32,6 @@
       "scripts/lib/transfer_tree.py",
       "scripts/platform_ops.py",
       "scripts/profile_manifest.py",
-      "scripts/rebase_project.ps1",
-      "scripts/rebase_project_gi.ps1",
       "scripts/release-repo-check.py",
       "scripts/release_manifest.py"
     ],
@@ -67,13 +67,7 @@
   ],
   "children": [],
   "dependencies": {
-    "skills": [
-      {
-        "name": "mirror",
-        "required": true,
-        "reason": "локальная политика известных сигнатур секретов при предпросмотре"
-      }
-    ],
+    "skills": [],
     "project": []
   },
   "generated": []

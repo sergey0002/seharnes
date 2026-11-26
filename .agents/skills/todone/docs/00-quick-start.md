@@ -136,7 +136,7 @@ python3 todone/scripts/tcheck.py doctor \
 «сформулируй задачу» или «собери задачу». Фраза «зафиксируй в задаче» пишет
 только подтверждённый факт через CLI.
 
-Подробный маршрут: [child-skills/14-task-intake.md](../child-skills/14-task-intake.md).
+Подробный маршрут: child-skills/14-task-intake.md (`../child-skills/14-task-intake.md`; missing in kit).
 
 ## 9. Агрегировать объявленные project roots
 

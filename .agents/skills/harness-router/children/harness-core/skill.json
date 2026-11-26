@@ -9,37 +9,38 @@
       "scripts/adapters/agents.py",
       "scripts/adapters/base.py",
       "scripts/adapters/codex.py",
-      "scripts/adapters/dsh.py",
       "scripts/adapters/cursor.py",
+      "scripts/adapters/dsh.py",
       "scripts/adapters/kilo.py",
+      "scripts/adapters/omp.py",
       "scripts/adapters/opencode.py",
       "scripts/adapters/qoder.py",
-    "scripts/adapters/qwen.py",
-    "scripts/canon_paths.py",
-    "scripts/harness_cli.py",
-    "scripts/lib/__init__.py",
-    "scripts/lib/artifact_status.py",
-    "scripts/lib/config.py",
-    "scripts/lib/manifest.py",
-    "scripts/lib/mcp.py",
-    "scripts/lib/paths.py",
-    "scripts/lib/ports.py",
-    "scripts/lib/prompt_budget.py",
-    "scripts/lib/report.py",
-    "scripts/rebuild-routers.py",
-    "scripts/render_policy_docs.py"
-  ],
+      "scripts/adapters/qwen.py",
+      "scripts/canon_paths.py",
+      "scripts/harness_cli.py",
+      "scripts/lib/__init__.py",
+      "scripts/lib/artifact_status.py",
+      "scripts/lib/config.py",
+      "scripts/lib/manifest.py",
+      "scripts/lib/mcp.py",
+      "scripts/lib/paths.py",
+      "scripts/lib/ports.py",
+      "scripts/lib/prompt_budget.py",
+      "scripts/lib/report.py",
+      "scripts/rebuild-routers.py",
+      "scripts/render_policy_docs.py"
+    ],
     "references": [
       "references/cli.md",
       "references/environments.md",
       "references/kit.md"
     ],
-  "assets": [
-    "assets/environments.json",
-    "assets/kit.json",
-    "assets/policies/component-docs.yaml",
-    "assets/policies/skill-format.yaml"
-  ]
+    "assets": [
+      "assets/environments.json",
+      "assets/kit.json",
+      "assets/policies/component-docs.yaml",
+      "assets/policies/skill-format.yaml"
+    ]
   },
   "tests": [
     "tests/test_config.py",

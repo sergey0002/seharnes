@@ -94,18 +94,7 @@
     ]
   },
   "tests": [],
-  "children": [
-    "children/briefing-intake",
-    "children/criteria-synthesis",
-    "children/cursor-state-handoff",
-    "children/domain-safety-verification",
-    "children/evidence-provenance",
-    "children/existing-solution-scouting",
-    "children/output-contract-and-format-compliance",
-    "children/research-assignment",
-    "children/triz-contradiction-resolution",
-    "children/variant-feature-evaluation"
-  ],
+  "children": [],
   "dependencies": {
     "skills": [],
     "project": []

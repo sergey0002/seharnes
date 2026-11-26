@@ -50,9 +50,9 @@
    - Дополнительно CBM: `detect_changes` для blast radius по символам.
    - Если правка попадает в план (`prepare-plan`) — blast radius по своему **фиксированному
      порядку** (не общему из этого раздела): скил `prepare-plan` §P1.1 и таблица
-     `BLAST_RADIUS_LADDER` в `.cursor/skills/prepare-plan/ADAPTERS.local.md`.
+     `BLAST_RADIUS_LADDER` в `.agents/skills/prepare-plan/ADAPTERS.local.md`.
    - Кто раньше правил именно эти строки (номера задач, открытые ветки) — скил
-     [`git-task-blame`](skills/git-task-blame/SKILL.md), обязателен в `prepare-plan` (P0.5b, P7.4a).
+     [`git-task-blame`](../.agents/skills/task-router/children/git-task-blame/SKILL.md), обязателен в `prepare-plan` (P0.5b, P7.4a).
 
 ### Фаза B — точечное исследование
 

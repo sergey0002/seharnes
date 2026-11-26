@@ -10,21 +10,7 @@
     "assets": []
   },
   "tests": [],
-  "children": [
-    "children/analytics",
-    "children/audit-plan",
-    "children/git-task-blame",
-    "children/gototask",
-    "children/jira",
-    "children/kaiten",
-    "children/reporting-router",
-    "children/task-code-review",
-    "children/task-core",
-    "children/task-diff",
-    "children/task-intake",
-    "children/task-spec",
-    "children/testing-router"
-  ],
+  "children": [],
   "dependencies": {
     "skills": [],
     "project": []

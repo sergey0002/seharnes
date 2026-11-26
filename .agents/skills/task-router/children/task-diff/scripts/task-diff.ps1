@@ -637,11 +637,13 @@ function Build-DiffMarkdown {
 # --- main ---
 
 $repo = Get-RepoRoot -StartPath $(if ($RepoPath) { $RepoPath } else { (Get-Location).Path })
+$configCandidates = @(
+    (Join-Path $repo ".agents/skills/task-router/children/gototask/config.json"),
+    (Join-Path $repo ".cursor/skills/task-router/children/gototask/config.json"),
+    (Join-Path $repo ".codex/skills/task-router/children/gototask/config.json")
+)
 if (-not $ConfigPath) {
-    foreach ($candidate in @(
-        (Join-Path $repo ".cursor/skills/task-router/children/gototask/config.json"),
-        (Join-Path $repo ".codex/skills/task-router/children/gototask/config.json")
-    )) {
+    foreach ($candidate in $configCandidates) {
         if (Test-Path $candidate) {
             $ConfigPath = $candidate
             break
@@ -649,7 +651,7 @@ if (-not $ConfigPath) {
     }
 }
 if (-not $ConfigPath -or -not (Test-Path $ConfigPath)) {
-    throw "gototask config.json not found"
+    throw "gototask config.json not found. Checked: $($configCandidates -join ', ')"
 }
 $config = Get-Content $ConfigPath -Raw -Encoding UTF8 | ConvertFrom-Json
 

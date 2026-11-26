@@ -261,7 +261,7 @@ CLI работает без клиента и удобен для проверк
 
 ```bash
 codebase-memory-mcp cli list_projects
-codebase-memory-mcp cli --json index_status --project home-newuser-projects-copytrust-testdeploydocker
+codebase-memory-mcp cli --json index_status --project home-newuser-projects-seharnes
 codebase-memory-mcp cli index_repository --repo-path /path/to/project --mode fast
 codebase-memory-mcp cli search_graph --project <project> --query "order service" --limit 5
 codebase-memory-mcp cli check_index_coverage --project <project> --scopes .doc

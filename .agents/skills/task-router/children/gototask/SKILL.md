@@ -16,7 +16,7 @@ description: >-
 ## Скрипт
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber {N} -Action {action} [параметры]
+powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber {N} -Action {action} [параметры]
 ```
 
 | Action | Когда |
@@ -40,7 +40,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/c
 | `-ConfirmMerge` | выключен | обязателен для `merge-release`, если есть другие открытые вопросы |
 | `-ConfirmDiscard` | выключен | обязателен для `-LocalChanges discard` |
 | `-RepoPath` | корень репозитория | переопределение пути |
-| `-ConfigPath` | `.cursor/skills/task-router/children/gototask/config.json` | переопределение конфига |
+| `-ConfigPath` | `.agents/skills/task-router/children/gototask/config.json` | переопределение конфига |
 
 Коды выхода: `0` успех; `2` merge с конфликтами (`needsConflictResolution: true`); `3` apply заблокирован открытым вопросом (`apply_blocked_pending_user_input`, `discard_requires_confirm`); `1` необработанная ошибка скрипта.
 
@@ -55,13 +55,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/c
 legacy-ветки наравне с ветками Jira. В JSON появляются `task.bitbucket`,
 `taskBranches.legacyExact`, `legacyNumbers`. Обычные ссылки на Bitbucket без
 `Imported from` не считаются: это может быть упоминание чужой задачи.
-
-## Автоправила (без AskQuestion)
-
-1. **Релиз всегда из Jira** - брать `defaultReleaseBranch` из Fix Version (`defaultReleaseSource: jira`). Не спрашивать `select_release_branch`.
-2. **Ветка есть → всегда `merge-release`** - не спрашивать `confirm_merge_release`, не делать голый `checkout` вместо merge.
-
-Исключение: Jira Version пуст или ветка релиза не найдена на origin → тогда спросить релиз (`select_release_branch` в `needsUserInput`) или остановиться с ошибкой.
 
 ## Workflow
 
@@ -80,7 +73,7 @@ GoToTask:
 ### Шаг 1. inspect (всегда первым)
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber 2538 -Action inspect
+powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber 2538 -Action inspect
 ```
 
 Скрипт автоматически:
@@ -128,13 +121,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/c
 
 Релиз: `-ReleaseBranch` = `defaultReleaseBranch` из inspect (Jira), если не сработал exception выше.
 
-**Новая ветка** (после «Да» на create):
+**Новая ветка** (после «Да» на create, и только если `needsUserInput` пуст):
 
 ```powershell
 ... -Action create-branch -ReleaseBranch "releases/5.7.4" -TaskBranch "features/#2538" -LocalChanges discard -ConfirmCreateBranch -ConfirmDiscard
 ```
 
-**Существующая ветка** (всегда merge, без вопроса):
+**Существующая ветка** (всегда merge, без вопроса, и только если `needsUserInput` пуст):
 
 ```powershell
 ... -Action merge-release -ReleaseBranch "releases/5.7.4" -TaskBranch "bugfixes/#2538" -LocalChanges discard -ConfirmDiscard
@@ -142,7 +135,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/c
 
 Если в `needsUserInput` остались другие пункты, к `merge-release` добавляется `-ConfirmMerge`. Без соответствующего `-Confirm*` скрипт возвращает exit 3 и ничего не меняет.
 
-Поле `recommendedAction` в inspect: `create-branch` | `merge-release` | `null` (нужен выбор ветки/префикса).
+Поле `recommendedAction` в inspect: `create-branch` | `merge-release` | `null` (нужен выбор ветки/префикса). **Важно: `recommendedAction` — только рекомендация; если `needsUserInput` не пуст, apply запрещён до AskQuestion.**
+
+## Автоправила (без AskQuestion)
+
+1. **Релиз всегда из Jira** - брать `defaultReleaseBranch` из Fix Version (`defaultReleaseSource: jira`). Не спрашивать `select_release_branch`.
+2. **Ветка есть → всегда `merge-release`** - не спрашивать `confirm_merge_release`, не делать голый `checkout` вместо merge.
+3. **Если `needsUserInput` не пуст — AskQuestion обязателен, `recommendedAction` игнорируется**.
+
+Исключение: Jira Version пуст или ветка релиза не найдена на origin → тогда спросить релиз (`select_release_branch` в `needsUserInput`) или остановиться с ошибкой.
+
 
 ### Шаг 4. Конфликты merge
 

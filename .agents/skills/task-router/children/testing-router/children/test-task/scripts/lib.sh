@@ -2,7 +2,7 @@
 # Общие функции раннера тестов задач.
 #
 # Инкапсулирует то, что раньше приходилось помнить из .doc/qa/browser-setup.md:
-# хост без PHP 8.2+, два порта WebDriver (9515 / 4444), сеть Selenium,
+# изолированный PHP 8.3 runner, два порта WebDriver (9515 / 4444), сеть Selenium,
 # host-resolver-rules. Подключается через `source`.
 #
 # Ничего не запускает сам: стенд и chromedriver поднимает человек
@@ -82,12 +82,6 @@ apply_webdriver_env() {
 
 # --- Раннер PHP -------------------------------------------------------
 
-# Есть ли на хосте php >= 8.2?
-host_php_ok() {
-    command -v php >/dev/null 2>&1 || return 1
-    php -r 'exit(PHP_VERSION_ID >= 80200 ? 0 : 1);' >/dev/null 2>&1
-}
-
 ensure_runner_image() {
     if ! docker image inspect "$RUNNER_IMAGE" >/dev/null 2>&1; then
         info "Собираю образ раннера $RUNNER_IMAGE (один раз)"
@@ -96,7 +90,7 @@ ensure_runner_image() {
     fi
 }
 
-# Выполняет codecept с аргументами. Сам выбирает хостовый PHP или docker.
+# Выполняет Codeception в закреплённом контейнере PHP 8.3.
 # $1 — режим webdriver (selenium|local), далее аргументы codecept.
 # Обёртка с таймаутом: вешает зависший прогон, чтобы не блокировать сессию.
 # Код 124/137 означает "прервано по времени" и трактуется как красный вердикт.
@@ -115,14 +109,8 @@ run_codecept() {
     # при живом chromedriver на 9515 (и наоборот).
     local port_override=(-o "modules: config: WebDriver: host: ${CHROMEDRIVER_HOST}" -o "modules: config: WebDriver: port: ${CHROMEDRIVER_PORT}")
 
-    if host_php_ok; then
-        log "раннер: хостовый PHP $(php -r 'echo PHP_VERSION;')"
-        ( cd "$CODECEPT_DIR" && QA_AC_RESULTS_FILE="${QA_AC_RESULTS_FILE:-}" with_timeout php -d register_argc_argv=1 vendor/bin/codecept "$@" "${port_override[@]}" )
-        return $?
-    fi
-
     ensure_runner_image
-    log "раннер: docker $RUNNER_IMAGE (на хосте нет PHP 8.2+)"
+    log "раннер: docker $RUNNER_IMAGE (фиксированный PHP 8.3)"
 
     # Монтируем корень проекта: Codeception лежит в .tools/codeception,
     # а тесты задач в .doc/tasks/{N}/tests подключены симлинками
@@ -223,4 +211,3 @@ clear_smarty_cache() {
     fi
     log "Итого снято кэш-файлов: $removed"
 }
-

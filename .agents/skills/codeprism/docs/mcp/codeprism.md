@@ -273,7 +273,7 @@ node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.m
 
 | Путь | Файл индекса |
 |---|---|
-| `/home/newuser/projects/copytrust/testdeploydocker` | `0c7b84d86d42e7dd.db` |
+| `/home/newuser/projects/seharnes` | `0c7b84d86d42e7dd.db` |
 | `/tmp` | `e9671acd244849c5.db` |
 | `/home/newuser/projects/other` | `0472a9d7d3aac4bf.db` |
 

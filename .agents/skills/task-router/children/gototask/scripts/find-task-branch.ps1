@@ -11,7 +11,18 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 if (-not $ConfigPath) {
-    $ConfigPath = Join-Path $RepoPath ".cursor/skills/task-router/children/gototask/config.json"
+    foreach ($candidate in @(
+        (Join-Path $RepoPath ".agents/skills/task-router/children/gototask/config.json"),
+        (Join-Path $RepoPath ".cursor/skills/task-router/children/gototask/config.json")
+    )) {
+        if (Test-Path $candidate) {
+            $ConfigPath = $candidate
+            break
+        }
+    }
+}
+if (-not $ConfigPath) {
+    $ConfigPath = Join-Path $RepoPath ".agents/skills/task-router/children/gototask/config.json"
 }
 
 $config = Get-Content $ConfigPath -Raw | ConvertFrom-Json

@@ -48,11 +48,11 @@ python3 .agents/skills/harness-router/children/new-project/scripts/profile_manif
 
 ## Ограничения
 
-Core-фильтр повторяет список runtime-скилов и правил из `rebase_project.ps1`; при изменении этого списка нужно обновить оба места до перевода фактического экспорта на Python. Project пока совпадает с Developer по составу kit. Скрипт не копирует файлы и не меняет Git.
+Core-фильтр задан в самом скрипте и применяется к составу `kit.json`. Project пока совпадает с Developer по составу kit. Скрипт не копирует файлы и не меняет Git.
 
 ## Связи
 
-Используется `harness_cli.py export --dry-run`. Связан с `kit.json`, `canon-paths.yaml` и `rebase_project.ps1`.
+Используется `export_kit.py` и `harness_cli.py export`. Связан с `kit.json` и `canon-paths.yaml`.
 
 ## История изменений
 

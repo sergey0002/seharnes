@@ -30,13 +30,7 @@
   ],
   "children": [],
   "dependencies": {
-    "skills": [
-      {
-        "name": "improvement",
-        "required": true,
-        "reason": "вызывается по тексту скила"
-      }
-    ],
+    "skills": [],
     "project": []
   },
   "generated": [

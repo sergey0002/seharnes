@@ -71,7 +71,7 @@ Jira updated берется из `task.json` -> `tracker.snapshot.updated_at`; �
 умолчанию), языки `ru` и `en`, на узком экране левая панель становится выдвижной.
 
 Устройство слоёв, контракт API и правила добавления раздела — в
-[27-panel-architecture.md](../harnes/state/27-panel-architecture.md).
+[22-panel-service.md](../harnes/state/22-panel-service.md).
 
 ### Тесты
 

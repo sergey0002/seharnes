@@ -63,6 +63,7 @@ roadmap и предложения с проверенными по коду ст
 | [state/12-batch-calls.md](./state/12-batch-calls.md) | Пакетные вызовы: правило `batch-calls`, скрипты `multi-search` / `multi-exec`, экономика 8-18%, резервы S1-S5 (внедрено 2026-10-02) |
 | [state/13-agent-migration.md](./state/13-agent-migration.md) | Синхронизация харнеса между средами: источники, генераторы, перезапись, исключения и проверки |
 | [state/14-project-migration.md](./state/14-project-migration.md) | Миграция между проектами: профили Core/Developer/Project, что копируется, merge MCP, проверки после переноса |
+| [seharnes-transfer.md](./seharnes-transfer.md) | Перенос правок харнеса в эталон seharnes: приоритет источника, исключения, флаги `--exclude` и `--keep`, проверки, откат |
 | [state/15-mcp-stack.md](./state/15-mcp-stack.md) | Общий HTTP-стек MCP: systemd-юниты, порты, лимиты, add-project/verify, export/restore; детали серверов в `mcp/` |
 | [state/16-task-analytics.md](./state/16-task-analytics.md) | Автономный анализ диалогов Kilo: `kilo.db` read-only, привязка к задачам, токены, время, артефакты в `.doc/tasks/{N}/dialogs` |
 | [state/17-business-analyst.md](./state/17-business-analyst.md) | Историческое описание снятого с харнеса бизнес-анализа: сущности, реестр, карантин, версии правил |
@@ -209,6 +210,7 @@ roadmap и предложения с проверенными по коду ст
 | [plan/03-web-testing-system.md](./plan/03-web-testing-system.md) | Постоянные сценарии бизнес-процессов, Codeception и Playwright, fixtures, выбор регрессии и receipts |
 | [plan/04-knowledge-store-and-queue.md](./plan/04-knowledge-store-and-queue.md) | JSONdoc-канон, SQLite-очередь, DDL, lease, retry, recovery, coverage и миграция текстовых очередей |
 | [plan/05-bug-hunt-and-modernization.md](./plan/05-bug-hunt-and-modernization.md) | Pass library, контракт finding, severity, triage, воспроизведение, SOLID, performance и backlog модернизации |
+| [plan/06-harness-transfer-docs.md](./plan/06-harness-transfer-docs.md) | Перенос всего харнеса и его документации в другую папку: классы документов, приоритет Source или Target, различия эталонов, подводные камни и доработки движка |
 | [plan/субагенты.md](./plan/субагенты.md) | Переносимые малые субагенты: манифест ролей, скил delegation-router, контракт пакета и отчета, адаптеры Kilo, Qoder, OpenCode, Qwen, вложенность и пилот |
 
 ---
@@ -245,7 +247,7 @@ python3 .agents/skills/documentation-router/children/task-doc/scripts/jsondoc.py
 | `harnes_audit/plan_audit.md` (377) | plan/03 (оркестратор x3 полный) |
 | `harnes_audit/planx.md` (232) | plan/04 (полный) |
 | `harnesaudit.md` (540) | plan/01 (полный roadmap с якорями) |
-| `rebase_project.md` v1.23, `rebase_project.ps1`, `rebase_project_gi.ps1` | state/09 (полная карта; сами файлы-каноны оставлены как исполняемые) |
+| `rebase_project.md`, `export_kit.py` | state/14 (актуальная карта переноса) |
 | `harnes.html` (999 строк) | state/01 (+сводная матрица раздел 12 html), state/04, state/05, state/06 (+живое состояние J00-J17 из раздела 13 html), state/07 (схемы раздела 10 html), state/08 (контур раздела 09 html), state/09 (+аудит скриптов R1-R7 из раздела 11.4 html); сам файл удален 2026-10-02 |
 | `readmy.md` | Указатель: разделы ведут в `state/01` - `state/08` и `dirtree.md`; инвентарь в файле не хранится |
 
@@ -264,7 +266,7 @@ readmy_doc.md, synh_harnes/README.md переведены).
 
 Оставлены (исполняемые каноны и legacy, не дубликат плана/состояния):
 
-- `.doc/rebase_project.md`, `.agents/skills/harness-router/children/new-project/scripts/rebase_project.ps1`, `.agents/skills/harness-router/children/new-project/scripts/rebase_project_gi.ps1` - каноны переноса, их читают скрипты и процесс экспорта
+- `.doc/rebase_project.md` и `.agents/skills/harness-router/children/new-project/scripts/export_kit.py` - канон и скрипт переноса
 - `.doc/skil_data/harness-core/README.md`, `report-workflow-plan.md` - операционные документы у скриптов
 - readmy.md и readmy_doc.md перенесены в корень каталога 2026-10-02 из `.doc/`
 - `jsondoc.md` - нормативная спецификация движка (корень каталога). Перемещен из `.doc/` 2026-10-02. Выжимка в state/06

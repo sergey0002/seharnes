@@ -129,15 +129,15 @@ diff и результатами тестов. Если факт не подтв
     └── test_report.py
 ```
 
-Для Cursor создаётся адаптер в `.cursor/skills/task-router/children/task-change-report/`. Для
+Для Cursor создаётся адаптер в `.agents/skills/task-router/children/task-change-report/`. Для
 Antigravity используется существующий симлинк `.antigravity/skills ->
-../.cursor/skills`.
+../.agents/skills`.
 
 Для Codex остаётся отдельный каталог `.codex/skills/task-router/children/reporting-router/children/task-change-report/` по
 текущим правилам Codex. Общая логика должна быть одинаковой, но пути запуска и
 адаптеры сред не должны смешиваться. Вопрос о физическом хранении общей копии
 скриптов нужно решить до реализации, с учётом запрета Codex читать
-`.cursor/skills` в рантайме.
+`.agents/skills` в рантайме.
 
 ## 5. Пайплайн генерации
 

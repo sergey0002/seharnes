@@ -55,6 +55,7 @@ if enabled qoder; then PARITY+=(--view .qoder/skills --rules-view .qoder/rules -
 if enabled agents; then PARITY+=(--rules-view .agents/rules --mcp-view .agents/mcp.json --mcp-view "$WINDOWS_WSL_ARTIFACT"); MCP+=(--expanded .agents/mcp.json --expanded "$WINDOWS_WSL_ARTIFACT"); fi
 if enabled qwen; then MCP+=(--qwen .qwen/settings.json); fi
 if enabled opencode; then MCP+=(--opencode opencode.json); fi
+if enabled omp; then MCP+=(--expanded .omp/mcp.json); fi
 verify_step parity python3 "$SCRIPT_DIR/verify_parity.py" "${CANON[@]}" "${PARITY[@]}" --manifest "$MANIFEST"
 verify_step render-check python3 "$SCRIPT_DIR/render_agent_views.py" --root "$ROOT_DIR" --check
 verify_step rule-triggers python3 "$SCRIPT_DIR/verify_rule_triggers.py" --root "$ROOT_DIR"

@@ -1,6 +1,6 @@
 ---
 name: serena
-description: "Inspect PHP symbols, references and diagnostics with Serena MCP before scoped source edits. Use for find_symbol, symbol bodies, references and PHP LSP checks."
+description: "Символы PHP, find_symbol, references, LSP-диагностика перед правкой; не JS/Vue-символы."
 ---
 
 # Serena MCP

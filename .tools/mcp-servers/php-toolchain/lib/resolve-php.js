@@ -1,5 +1,6 @@
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, realpathSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 function phpFromLaragonRoot(root) {
   const phpDir = path.join(root, "bin", "php");
@@ -28,5 +29,16 @@ export function resolvePhpBin() {
 }
 
 export function workspaceRoot() {
-  return process.env.MCP_WORKSPACE || process.cwd();
+  const root = realpathSync(fileURLToPath(new URL("../../../../", import.meta.url)));
+  const cwd = realpathSync(process.cwd());
+  if (cwd !== root) {
+    throw new Error("PHP MCP requires cwd at its local installation root");
+  }
+  const configured = process.env.MCP_WORKSPACE;
+  if (configured && realpathSync(configured) !== root) {
+    throw new Error("PHP MCP rejects MCP_WORKSPACE outside its local installation");
+  }
+  return root;
 }
+
+workspaceRoot();

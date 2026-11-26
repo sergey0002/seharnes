@@ -24,6 +24,7 @@ final class OrderRemovePage extends BasePage
     private const TILE_REMOVE = '//p[contains(@class,"creation__item_text") and normalize-space()="Удаление ОИС"]/ancestor::a[1]';
     private const SUBJECT_LIST_TAG = 'order-subject-list2';
     private const REMOVE_FORM_TAG = 'remove-form';
+    private const SUBJECT_TOGGLE = '//*[contains(@class,"order-cert")]//*[contains(@class,"vs__dropdown-toggle")]';
 
     public function open(?string $rid = null): void
     {
@@ -141,6 +142,122 @@ final class OrderRemovePage extends BasePage
         $this->I->waitForJS('return true;', 2);
     }
 
+    /**
+     * Подставляет в форму произвольный список доступных ОИС без SOAP-реестра.
+     * Нужен, когда проверяется поведение компонента, а не состав реестра.
+     *
+     * @param string[] $uins
+     */
+    public function seedAllowedSubjects(array $uins): void
+    {
+        $items = [];
+        foreach ($uins as $uin) {
+            $items[] = ['UIN' => $uin, 'Name' => $uin];
+        }
+
+        $result = $this->I->executeJS(
+            'var items = arguments[0];'
+            . 'if (!window.params) { return "no-params"; }'
+            . 'window.params.allowedRids = items;'
+            . 'var root = document.getElementById("vue-remove-order-container");'
+            . 'if (root && root.__vue__) { root.__vue__.$forceUpdate(); }'
+            . 'var find = ' . self::jsFindVueComponent() . ';'
+            . 'var list = find("' . self::SUBJECT_LIST_TAG . '");'
+            . 'if (!list) { return "no-list"; }'
+            . 'list.values = [];'
+            . 'list.$emit("input", []);'
+            . 'var form = find("' . self::REMOVE_FORM_TAG . '");'
+            . 'if (form) {'
+            . '  form.form.rids = [];'
+            . '  var pins = {};'
+            . '  items.forEach(function (item) { pins[item.UIN] = ""; });'
+            . '  form.form.pins = pins;'
+            . '}'
+            . 'return "ok";',
+            [$items]
+        );
+        $this->I->assertSame('ok', $result, 'Список ОИС не подготовлен на ' . self::URL);
+        $this->I->waitForJS(
+            'var find = ' . self::jsFindVueComponent() . ';'
+            . 'var list = find("' . self::SUBJECT_LIST_TAG . '");'
+            . 'return !!list && Array.isArray(list.rids) && list.rids.length === ' . count($uins) . ';',
+            10
+        );
+    }
+
+    /** Снимает выбор объекта кликом по крестику на теге v-select. */
+    public function deselectSubjectByClick(string $uin): void
+    {
+        $tag = '//span[contains(@class,"vs__selected") and contains(normalize-space(),"' . $uin . '")]';
+        $this->I->click($tag . '//button[contains(@class,"vs__deselect")]');
+    }
+
+    /** Выбирает объект кликом по варианту в v-select, как это делает клиент. */
+    public function selectSubjectByClick(string $uin): void
+    {
+        $this->I->click(self::TITLE);
+        $this->I->click(self::SUBJECT_TOGGLE);
+        $option = self::subjectOption($uin);
+        $this->I->waitForElementVisible($option, 10);
+        $this->I->click($option);
+    }
+
+    private static function subjectOption(string $uin): string
+    {
+        return '//li[contains(@class,"vs__dropdown-option") and contains(normalize-space(),"' . $uin . '")]';
+    }
+
+    /** @return string[] */
+    public function grabSelectedRids(): array
+    {
+        $json = (string) $this->I->executeJS(
+            'var find = ' . self::jsFindVueComponent() . ';'
+            . 'var form = find("' . self::REMOVE_FORM_TAG . '");'
+            . 'if (form && form.form && Array.isArray(form.form.rids)) {'
+            . '  return JSON.stringify(form.form.rids);'
+            . '}'
+            . 'var list = find("' . self::SUBJECT_LIST_TAG . '");'
+            . 'if (!list) { return "[]"; }'
+            . 'return JSON.stringify(list.values.map(function (item) { return item.UIN; }));'
+        );
+        $decoded = json_decode($json, true);
+
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    /** @return array<string,int|bool|null> */
+    public function grabLimitState(): array
+    {
+        $json = (string) $this->I->executeJS(
+            'var find = ' . self::jsFindVueComponent() . ';'
+            . 'var list = find("' . self::SUBJECT_LIST_TAG . '");'
+            . 'var form = find("' . self::REMOVE_FORM_TAG . '");'
+            . 'return JSON.stringify({'
+            . '  values: list ? list.values.length : -1,'
+            . '  error: list ? !!list.maxCountError : null,'
+            . '  propRids: list ? list.rids.length : -1,'
+            . '  formRids: form && form.form ? form.form.rids.length : -1'
+            . '});'
+        );
+        $decoded = json_decode($json, true);
+
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    public function seeLimitValidation(): void
+    {
+        $this->I->waitForText('Количество объектов в заказе не должно превышать 5 шт.', 5);
+        $this->I->see('Количество объектов в заказе не должно превышать 5 шт.');
+    }
+
+    public function dontSeeLimitValidation(): void
+    {
+        $this->I->waitForElementNotVisible(
+            '//*[contains(@class,"red") and contains(normalize-space(),"Количество объектов в заказе не должно превышать")]',
+            5
+        );
+    }
+
     public function clickSubmit(): void
     {
         $this->I->click(self::SUBMIT);
@@ -183,6 +300,22 @@ final class OrderRemovePage extends BasePage
             'var payload = arguments[0];'
             . 'var xhr = new XMLHttpRequest();'
             . 'xhr.open("POST", "/order/make_remove", false);'
+            . 'xhr.setRequestHeader("Content-Type", "application/json");'
+            . 'xhr.send(payload);'
+            . 'return String(xhr.status) + " " + xhr.responseText;',
+            [$body]
+        );
+
+        return (string) $response;
+    }
+
+    public function postCheckRemovePin(string $uin, string $pin): string
+    {
+        $body = json_encode(['uin' => $uin, 'keyword' => $pin], JSON_UNESCAPED_UNICODE);
+        $response = $this->I->executeJS(
+            'var payload = arguments[0];'
+            . 'var xhr = new XMLHttpRequest();'
+            . 'xhr.open("POST", window.base_path + "order/check_remove_pin", false);'
             . 'xhr.setRequestHeader("Content-Type", "application/json");'
             . 'xhr.send(payload);'
             . 'return String(xhr.status) + " " + xhr.responseText;',

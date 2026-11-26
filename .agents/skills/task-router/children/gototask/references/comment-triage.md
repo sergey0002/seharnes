@@ -49,5 +49,5 @@
 ## Связи
 
 - [gototask SKILL.md](../SKILL.md) - шаг 6
-- [prepare-plan SKILL.md](../../prepare-plan/SKILL.md) - если требуется обновить план
-- [task-doc SKILL.md](../../task-doc/SKILL.md) - если требуется зафиксировать решение
+- prepare-plan SKILL.md (`../../prepare-plan/SKILL.md`; missing in kit) - если требуется обновить план
+- task-doc SKILL.md (`../../task-doc/SKILL.md`; missing in kit) - если требуется зафиксировать решение

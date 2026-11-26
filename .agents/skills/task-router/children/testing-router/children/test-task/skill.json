@@ -45,23 +45,7 @@
   ],
   "children": [],
   "dependencies": {
-    "skills": [
-      {
-        "name": "prepare-task-test",
-        "required": true,
-        "reason": "вызывается по тексту скила"
-      },
-      {
-        "name": "browser-verify",
-        "required": true,
-        "reason": "вызывается по тексту скила"
-      },
-      {
-        "name": "login-as-user",
-        "required": true,
-        "reason": "вызывается по тексту скила"
-      }
-    ],
+    "skills": [],
     "project": [
       {
         "path": ".agents/skills/task-router/children/testing-router/children/browser-verify/scripts/start-chromedriver-wsl.sh",

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Build a profile file map from kit.json without writing Target files.
 
-Developer and Project use the full kit. Core keeps runtime skills, runtime
-rules, harness tools and the panel, and drops task/tracker content. This is a
-read-only manifest used by export dry-run; the legacy PowerShell export keeps
-its own copy step until it is switched to the same map.
+`developer` and `project` use the full kit. `core` keeps runtime skills, runtime
+rules, harness tools and the panel, and drops task/tracker content. This map is
+the single composition source: the export engine copies exactly these paths, so
+the dry-run preview and the real transfer cannot diverge.
 """
 from __future__ import annotations
 
@@ -28,8 +28,18 @@ CORE_SKILLS = {
 CORE_RULES = {"batch-calls", "code-editing", "doc-rules", "mcp", "cbm-index-before-push",
               "temp-dir", "text-style", "gates"}
 CORE_DISABLED_MCP_RULES = {"jira-task", "bitbucket-task", "sourcegraph", "deepwiki", "xdebug"}
-CORE_REMOVE_DIRS = (".tools/codeception", ".doc/qa", ".dsh/adapters", ".dsh/scripts", ".dsh/tests")
-CORE_REMOVE_FILES = (".codex/go-task.ps1", ".codex/task-diff.ps1", ".doc/rebase_project.md")
+CORE_DOCS = {
+    ".doc/harnes/doc_rules.md",
+    ".doc/harnes/state/canon-paths.yaml",
+    ".doc/harnes/state/26-tools.md",
+    ".doc/harnes/state/04-mcp.md",
+    ".doc/harnes/state/05-scripts.md",
+    ".doc/harnes/state/08-plan-contour.md",
+    ".doc/harnes/state/15-mcp-stack.md",
+    ".doc/harnes/state/13-agent-migration.md",
+    ".doc/harnes/state/14-project-migration.md",
+}
+CORE_PANEL_PREFIX = ".doc/web/"
 
 
 def _load_kit() -> dict:
@@ -37,36 +47,46 @@ def _load_kit() -> dict:
         return json.load(stream)
 
 
+def _core_skill_allowed(relative: str, skill: str) -> bool:
+    if not skill or skill.startswith("."):
+        return True
+    if skill == "harness-router":
+        return True
+    if skill not in CORE_SKILLS:
+        return False
+    if "/children/" in relative:
+        return False
+    return True
+
+
+def _core_rule_allowed(relative: str) -> bool:
+    name = relative.split("/", 1)[1] if "/" in relative else ""
+    return name not in CORE_DISABLED_MCP_RULES
+
+
 def _core_allowed(path: str) -> bool:
-    for prefix in (".qoder/skills/", ".qwen/skills/", ".dsh/skills/", ".codex/skills/"):
-        if path.startswith(prefix):
-            parts = path.split("/")
-            return len(parts) > 2 and parts[2] in CORE_SKILLS
-    for prefix in (".qoder/rules/", ".qwen/rules/", ".codex/rules/", ".kilo/rules/", ".agents/rules/",
-                   ".opencode/rules/"):
-        if path.startswith(prefix):
-            relative = path[len(prefix):]
-            if "/" in relative:
-                return relative.split("/", 1)[1].removesuffix(".md") not in CORE_DISABLED_MCP_RULES
-            return relative.removesuffix(".md") in CORE_RULES
     if path.startswith(".agents/skills/"):
         parts = path.split("/")
         if len(parts) < 4:
             return True
-        return parts[2] in CORE_SKILLS
+        return _core_skill_allowed(path, parts[2])
+    for prefix in (".codex/rules/", ".kilo/rules/", ".agents/rules/", ".opencode/rules/"):
+        if path.startswith(prefix):
+            return _core_rule_allowed(path)
     if path.startswith(".cursor/rules/"):
-        relative = path[len(".cursor/rules/"):]
-        if "/" in relative:
-            return relative.split("/", 1)[1] not in CORE_DISABLED_MCP_RULES
-        return relative.removesuffix(".mdc") in CORE_RULES
+        if "/" in path[len(".cursor/rules/"):]:
+            return _core_rule_allowed(path)
+        name = path.rsplit("/", 1)[-1].removesuffix(".mdc")
+        return name in CORE_RULES
     if path.startswith(".doc/harnes/"):
-        return path in (".doc/harnes/doc_rules.md", ".doc/harnes/state/canon-paths.yaml",
-                        ".doc/harnes/state/26-tools.md") or path.startswith(".doc/harnes/archive/mcp/")
-    if path.startswith(".doc/"):
-        return path.startswith(".doc/web/")
-    if path.startswith(CORE_REMOVE_DIRS):
+        if path.startswith(".doc/harnes/archive/mcp/"):
+            return True
+        return path in CORE_DOCS
+    if path == ".doc/rebase_project.md":
         return False
-    if path in CORE_REMOVE_FILES:
+    if path.startswith(".doc/"):
+        return path.startswith(CORE_PANEL_PREFIX)
+    if path in (".codex/go-task.ps1", ".codex/task-diff.ps1"):
         return False
     return True
 

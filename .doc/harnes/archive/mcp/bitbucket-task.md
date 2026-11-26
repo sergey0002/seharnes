@@ -71,8 +71,8 @@ Legacy-экспорт задачи из Bitbucket. Выключен, замен�
 ## Связи
 
 - [Карта MCP](./README.md) - общий список
-- [MCP-серверы](../state/04-mcp.md) - причина отключения
-- [Правило задач](../../../.cursor/rules/bitbucket-tasks.mdc) - актуальный трекер
+- MCP-серверы (`../state/04-mcp.md`; missing in kit) - причина отключения
+- Правило задач (`../../../.cursor/rules/bitbucket-tasks.mdc`; missing in kit) - актуальный трекер
 
 ---
 

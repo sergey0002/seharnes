@@ -24,7 +24,7 @@ description: >-
 выводит результат в чат; вложенный вызов возвращает его вызывающему skill.
 
 Канон: `.agents/skills/task-router/children/reporting-router/children/task-report/`. Остальные представления синхронизируются из
-канона, не редактируются независимо. `.cursor/skills` - симлинк на канон.
+канона, не редактируются независимо. `.agents/skills` - симлинк на канон.
 
 ## Вложенный вызов из task-change-report
 
@@ -260,7 +260,7 @@ URL бери из проверенных источников нужного с�
 Из корня репозитория. Cursor:
 
 ```bash
-python3 .cursor/skills/task-router/children/task-report/scripts/collect-shots.py 2070
+python3 .agents/skills/task-router/children/task-report/scripts/collect-shots.py 2070
 ```
 
 Codex:

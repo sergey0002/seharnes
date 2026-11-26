@@ -1,6 +1,6 @@
 ---
 name: harness-router
-description: Главный маршрутизатор харнеса: синхронизация сред, перенос kit, настройка проекта, аудит MCP, карта харнеса, улучшение харнеса. Дочерние: add-skill, copy-project, environment-sync, harness-core, improvement, index, mcp-audit, migration-review, mirror, new-project, project-setup, remove-skill, skill-authoring, doc-script, doc-skill, doc-mcp.
+description: "Харнес: скилы/правила, MCP, синк сред, перенос kit, настройка проекта, mirror, аудит, улучшение."
 ---
 
 # harness-router

@@ -691,7 +691,7 @@ python3 .agents/skills/harness-router/children/mcp-audit/scripts/verify_mcp_view
 const parse = (x) => (typeof x === "string" ? JSON.parse(x) : x);
 
 // Ресолв репозитория
-const resolved = parse(await tools.jdocmunch.doc_resolve_repo({ path: "/home/newuser/projects/copytrust/testdeploydocker/.doc" }));
+const resolved = parse(await tools.jdocmunch.doc_resolve_repo({ path: "/home/newuser/projects/seharnes/.doc" }));
 const repo = resolved.repo;  // "local/testdeploy-arch"
 
 // Поиск

@@ -1,6 +1,6 @@
 ---
 name: semgrep
-description: "Scan scoped workspace files for security risks with Semgrep MCP. Use for SQL, XSS, access-control and user-data changes, custom rules and AST inspection."
+description: "Проверь безопасность SQL/XSS/доступа/данных, AST и правила сканера; не проверка типов PHP."
 ---
 
 # Semgrep MCP

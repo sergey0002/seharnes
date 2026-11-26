@@ -15,11 +15,23 @@
 
 Перед sync, rebuild или doctor запрещено создавать самодельные tar-архивы и полные снимки Mirror.
 
+## Самостоятельная копия workspace
+
+Workspace получает независимую локальную копию: `setup-workspace.py` копирует SOURCE в пустой TARGET, пересобирает конфиги включённых сред внутри TARGET и пишет `.workspace-ready.json`. `workspace-gate.py` проверяет маркер, входные точки, свежесть представлений и отсутствие пути SOURCE в MCP, затем запускает клиента. `workspace-mcp.py` отдаёт ACP один из трёх локальных stdio серверов из cwd сессии и закрепляет `MCP_WORKSPACE` за TARGET.
+
+```sh
+python3 .agents/skills/harness-router/children/environment-sync/scripts/setup-workspace.py --source /ABS_SOURCE --target "$PWD"
+python3 .agents/skills/harness-router/children/environment-sync/scripts/workspace-gate.py -- omp acp
+python3 .agents/skills/harness-router/children/environment-sync/scripts/workspace-mcp.py --server phpstan-mcp
+```
+
+Границы: gate и wrapper работают только из физического TARGET, повторный setup в готовую папку запрещён, секреты копируются, но не печатаются. Публикация prefix и каталога Kandev остаётся отдельным действием оператора.
+
 ## Native discovery
 
 Codex и Cursor читают `.agents/skills` без зеркал. Генератор добавляет управляемый bootstrap в корневой `AGENTS.md`: полные gate-правила и требование прочитать обязательные правила из индекса. Остальные always-правила не объявляются inline. `model_instructions_file = "AGENTS.md"` удаляется как старое подключение; пользовательские другие значения не меняются.
 
-Antigravity получает манифест 50 вложенных скилов (состав определяется при генерации), DSH получает плоские discovery-указатели на канон. Qoder сохраняет своё представление, Qwen читает канон. OpenCode читает `.agents/skills` и `AGENTS.md` нативно, получает `opencode.json` (`mcp.servers`) и `.opencode/rules` с компактным индексом. Ссылки в перемещённых правилах перенаправляются на канонические ресурсы. Полный набор файлов скилов копирует только Qoder; Qwen получает 28 `rule-*` и однострочные discovery-указатели, DSH только discovery-указатели, Codex и Kilo копий скилов не делают.
+Antigravity получает манифест 50 вложенных скилов (состав определяется при генерации), DSH получает плоские discovery-указатели на канон. Qoder сохраняет своё представление, Qwen читает канон. OpenCode читает `.agents/skills` и `AGENTS.md` нативно, получает `opencode.json` (`mcp.servers`) и `.opencode/rules` с компактным индексом. omp читает `.cursor/rules`, `.agents/skills` и `AGENTS.md` нативно и получает только `.omp/mcp.json`; корневые файлы это роутеры, вложенные правила и скилы читаются по ссылкам из них и в зеркало не попадают не находит. Ссылки в перемещённых правилах перенаправляются на канонические ресурсы. Полный набор файлов скилов копирует только Qoder; Qwen получает 28 `rule-*` и однострочные discovery-указатели, DSH только discovery-указатели, Codex и Kilo копий скилов не делают.
 
 ### Включение сред
 

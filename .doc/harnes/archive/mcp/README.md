@@ -16,7 +16,7 @@ tags: [harness, mcp, index]
 Документ включенного сервера лежит в `{skill}/docs/mcp/{server}.md`,
 отключенного в `.doc/harnes/mcp/{server}.md`. Каждый активный MCP имеет скил
 с `SKILL.md`, `README.md` и `skill.json`. Общая картина остается в
-[state/04-mcp.md](../state/04-mcp.md): состав, порядок в задачах, Kilo-адаптация и
+state/04-mcp.md (`../state/04-mcp.md`; missing in kit): состав, порядок в задачах, Kilo-адаптация и
 общий HTTP-стек. Канон конфигурации один, `.cursor/mcp.json`; клиентские файлы
 генерируются синком.
 
@@ -32,7 +32,7 @@ DeepSeek Harness получает серверы не файлом правил,
 патче, а их правила исчезнут из индекса.
 
 Установка нового сервера с проверкой всех сред и переноса:
-[component-install.md](../component-install.md), раздел 4.
+component-install.md (`../component-install.md`; missing in kit), раздел 4.
 
 ---
 
@@ -52,7 +52,7 @@ DeepSeek Harness получает серверы не файлом правил,
    для агента: методы, аргументы, что возвращают, когда брать. Правило лежит в
    `.cursor/rules/mcp/{server}.mdc`, имя совпадает с ключом. Один и тот же текст
    в двух местах не дублируется, только ссылки, как требует
-   [doc_rules.md](../doc_rules.md).
+   doc_rules.md (`../doc_rules.md`; missing in kit).
 7. При изменении `.cursor/mcp.json` обновляется файл сервера и `state/04-mcp.md`,
    затем зеркала пересобираются `sync-agent-views.sh`. Для DSH дополнительно
    проверяется `generate-dsh-config.py --check` и `DSH-RULES.md`.
@@ -75,23 +75,23 @@ context7 2, git 13, playwright 20+. В каждом документе есть 
 
 | Сервер | Статус | Транспорт | Документ |
 |---|---|---|---|
-| `codebase-memory-mcp` | активен | HTTP 9131 | [codebase-memory-mcp.md](../../../.agents/skills/codebase-memory-mcp/docs/mcp/codebase-memory-mcp.md) |
-| `codegraph` | активен | stdio | [codegraph.md](../../../.agents/skills/codegraph/docs/mcp/codegraph.md) |
-| `codeprism` | активен | stdio | [codeprism.md](../../../.agents/skills/codeprism/docs/mcp/codeprism.md) |
-| `serena` | активен | HTTP 9121, cms 9122 | [serena.md](../../../.agents/skills/serena/docs/mcp/serena.md) |
-| `mysql` | активен | stdio | [mysql.md](../../../.agents/skills/mysql/docs/mcp/mysql.md) |
-| `git` | активен | stdio | [git.md](../../../.agents/skills/git/docs/mcp/git.md) |
-| `jira-task` | активен | stdio, docker exec | [jira-task.md](../../../.agents/skills/task-router/children/jira/docs/mcp/jira-task.md) |
-| `leantime` | активен | stdio | [leantime.md](../../../.agents/skills/task-router/children/leantime/docs/mcp/leantime.md) |
-| `context7` | активен | stdio | [context7.md](../../../.agents/skills/context7/docs/mcp/context7.md) |
-| `playwright` | активен | stdio | [playwright.md](../../../.agents/skills/playwright/docs/mcp/playwright.md) |
-| `phpstan-mcp` | активен | stdio | [phpstan-mcp.md](../../../.agents/skills/phpstan-mcp/docs/mcp/phpstan-mcp.md) |
-| `php-deps-mcp` | активен | stdio | [php-deps-mcp.md](../../../.agents/skills/php-deps-mcp/docs/mcp/php-deps-mcp.md) |
-| `semgrep` | активен | stdio | [semgrep.md](../../../.agents/skills/semgrep/docs/mcp/semgrep.md) |
-| `xmlriver` | активен | stdio | [xmlriver.md](../../../.agents/skills/xmlriver/docs/mcp/xmlriver.md) |
-| `xmlriver-ws` | активен | stdio | [xmlriver-ws.md](../../../.agents/skills/xmlriver/docs/mcp/xmlriver-ws.md) |
-| `jdocmunch` | активен | stdio | [jdocmunch.md](../../../.agents/skills/jdocmunch/docs/mcp/jdocmunch.md) |
-| `graphiti` | активен | HTTP 8000 | [graphiti.md](../../../.agents/skills/graphiti/docs/mcp/graphiti.md) |
+| `codebase-memory-mcp` | активен | HTTP 9131 | codebase-memory-mcp.md (`../../../.agents/skills/codebase-memory-mcp/docs/mcp/codebase-memory-mcp.md`; missing in kit) |
+| `codegraph` | активен | stdio | codegraph.md (`../../../.agents/skills/codegraph/docs/mcp/codegraph.md`; missing in kit) |
+| `codeprism` | активен | stdio | codeprism.md (`../../../.agents/skills/codeprism/docs/mcp/codeprism.md`; missing in kit) |
+| `serena` | активен | HTTP 9121, cms 9122 | serena.md (`../../../.agents/skills/serena/docs/mcp/serena.md`; missing in kit) |
+| `mysql` | активен | stdio | mysql.md (`../../../.agents/skills/mysql/docs/mcp/mysql.md`; missing in kit) |
+| `git` | активен | stdio | git.md (`../../../.agents/skills/git/docs/mcp/git.md`; missing in kit) |
+| `jira-task` | активен | stdio, docker exec | jira-task.md (`../../../.agents/skills/task-router/children/jira/docs/mcp/jira-task.md`; missing in kit) |
+| `leantime` | активен | stdio | leantime.md (`../../../.agents/skills/task-router/children/leantime/docs/mcp/leantime.md`; missing in kit) |
+| `context7` | активен | stdio | context7.md (`../../../.agents/skills/context7/docs/mcp/context7.md`; missing in kit) |
+| `playwright` | активен | stdio | playwright.md (`../../../.agents/skills/playwright/docs/mcp/playwright.md`; missing in kit) |
+| `phpstan-mcp` | активен | stdio | phpstan-mcp.md (`../../../.agents/skills/phpstan-mcp/docs/mcp/phpstan-mcp.md`; missing in kit) |
+| `php-deps-mcp` | активен | stdio | php-deps-mcp.md (`../../../.agents/skills/php-deps-mcp/docs/mcp/php-deps-mcp.md`; missing in kit) |
+| `semgrep` | активен | stdio | semgrep.md (`../../../.agents/skills/semgrep/docs/mcp/semgrep.md`; missing in kit) |
+| `xmlriver` | активен | stdio | xmlriver.md (`../../../.agents/skills/xmlriver/docs/mcp/xmlriver.md`; missing in kit) |
+| `xmlriver-ws` | активен | stdio | xmlriver-ws.md (`../../../.agents/skills/xmlriver/docs/mcp/xmlriver-ws.md`; missing in kit) |
+| `jdocmunch` | активен | stdio | jdocmunch.md (`../../../.agents/skills/jdocmunch/docs/mcp/jdocmunch.md`; missing in kit) |
+| `graphiti` | активен | HTTP 8000 | graphiti.md (`../../../.agents/skills/graphiti/docs/mcp/graphiti.md`; missing in kit) |
 | `sourcegraph` | отключен | HTTP 7080 | [sourcegraph.md](./sourcegraph.md) |
 | `xdebug` | отключен | stdio | [xdebug.md](./xdebug.md) |
 | `deepwiki` | отключен | stdio | [deepwiki.md](./deepwiki.md) |
@@ -161,10 +161,10 @@ tags: [harness, mcp, {тема}]
 - YYYY-MM-DD: что изменилось и почему
 ```
 
-Обязательные секции те же, что в [doc_rules.md](../doc_rules.md): `Суть`,
+Обязательные секции те же, что в doc_rules.md (`../doc_rules.md`; missing in kit): `Суть`,
 `Связи`, `Известные проблемы и ограничения`, `История изменений`. Полный список
 обязательных разделов и требований к детализации задан в
-[component-docs.md](../component-docs.md), раздел 5.
+component-docs.md (`../component-docs.md`; missing in kit), раздел 5.
 
 ---
 
@@ -173,7 +173,7 @@ tags: [harness, mcp, {тема}]
 1. Добавить запись в `.cursor/mcp.json` по правилам канона.
 2. Создать `.doc/harnes/mcp/{server}.md` по шаблону.
 3. Создать правило `.cursor/rules/mcp/{server}.mdc` по тому же шаблону: когда, порядок вызова, инструменты и параметры, ошибки, проверка.
-4. Добавить строку в главную карту `.cursor/rules/mcp.mdc`, в таблицу состава выше и в [state/04-mcp.md](../state/04-mcp.md).
+4. Добавить строку в главную карту `.cursor/rules/mcp.mdc`, в таблицу состава выше и в state/04-mcp.md (`../state/04-mcp.md`; missing in kit).
 5. Запустить `bash .agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh`.
 6. Обновить `.codex/config.toml` вручную, он не генерируется.
 7. Проверить: `node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only={server}` и
@@ -196,13 +196,13 @@ python3 .agents/skills/harness-router/children/mcp-audit/scripts/verify_mcp_view
 
 ## Связи
 
-- [Точка входа](../index.md) - карта харнеса
-- [MCP-серверы](../state/04-mcp.md) - состав, порядок в задачах, Kilo-адаптация
-- [Миграция между агентами](../state/13-agent-migration.md) - канон, зеркала, parity
-- [MCP-правила](../state/20-mcp-rules.md) - карта, 19 правил серверов и связи с доменными правилами
-- [MCP-стек](../state/15-mcp-stack.md) - общие HTTP-серверы, порты, лимиты
-- [Правила документации](../doc_rules.md) - стандарт `.doc/` и MCP-маршрут
-- [Скрипты](../state/05-scripts.md) - лаунчеры в `.cursor/scripts`
+- Точка входа (`../index.md`; missing in kit) - карта харнеса
+- MCP-серверы (`../state/04-mcp.md`; missing in kit) - состав, порядок в задачах, Kilo-адаптация
+- Миграция между агентами (`../state/13-agent-migration.md`; missing in kit) - канон, зеркала, parity
+- MCP-правила (`../state/20-mcp-rules.md`; missing in kit) - карта, 19 правил серверов и связи с доменными правилами
+- MCP-стек (`../state/15-mcp-stack.md`; missing in kit) - общие HTTP-серверы, порты, лимиты
+- Правила документации (`../doc_rules.md`; missing in kit) - стандарт `.doc/` и MCP-маршрут
+- Скрипты (`../state/05-scripts.md`; missing in kit) - лаунчеры в `.cursor/scripts`
 
 ---
 

@@ -767,7 +767,7 @@ semantic-поиск: сначала `search_sections`, затем точный �
 - [Скил документирования задач (Cursor)](../../.cursor/rules/task-doc.mdc) - фиксация прогресса в `doc.md`
 - [Скил документирования задач](../../.agents/skills/documentation-router/children/task-doc/SKILL.md) - канон; зеркала генерируются
 - [Правила задач Jira + git (Cursor)](../../.cursor/rules/bitbucket-tasks.mdc) - ветки, diff, порядок чтения
-- [Правила задач Jira + git (Codex)](../../.codex/rules/bitbucket-tasks.md) - то же для Codex
+- Правила задач Jira + git (Codex) (`../../.codex/rules/bitbucket-tasks.md`; missing in kit) - то же для Codex
 
 ---
 

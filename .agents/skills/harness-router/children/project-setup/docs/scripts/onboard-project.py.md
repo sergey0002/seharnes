@@ -9,10 +9,10 @@ tags: [harness, script, onboard-project]
 -->
 
 ## Суть
-Единая точка входа для онбординга проекта после экспорта харнеса (`rebase_project.ps1`). Идемпотентен, не удаляет файлы проекта, не коммитит. Выполняет: детект PHP контейнера (docker) и docroot; rewrite Jira/bitbucket контейнера в `.cursor/mcp.json` и `.codex/mcp.json`; настройка/отключение MySQL MCP (`MYSQL_*` в env файлах); выбор свободного Serena порта (учитывает sibling проекты через `.doc/web/.env` и `.cursor/mcp.json`) и порта веб-панели (8077-8099); установка `CODEPRISM_TARGET` и создание venv для CodePrism; построение индексов: codegraph (init), CBM (async fast), jdocmunch, CodePrism venv; опционально запуск медленного doc-index (`.dsh/scripts/doc-index.sh`); управление `.git/info/exclude` (harness/docs исключения); опционально staging безопасных harness путей (`--add-harness-to-git`). Выводит JSON-отчёт и Markdown-отчёт в `.doc/onboard-report.{json,md}` с вопросами для ручного донастройки.
+Единая точка входа для онбординга проекта после экспорта харнеса (`export_kit.py`). Идемпотентен, не удаляет файлы проекта, не коммитит. Выполняет: детект PHP контейнера (docker) и docroot; rewrite Jira/bitbucket контейнера в `.cursor/mcp.json` и `.codex/mcp.json`; настройка/отключение MySQL MCP (`MYSQL_*` в env файлах); выбор свободного Serena порта (учитывает sibling проекты через `.doc/web/.env` и `.cursor/mcp.json`) и порта веб-панели (8077-8099); установка `CODEPRISM_TARGET` и создание venv для CodePrism; построение индексов: codegraph (init), CBM (async fast), jdocmunch, CodePrism venv; опционально запуск медленного doc-index (`.dsh/scripts/doc-index.sh`); управление `.git/info/exclude` (harness/docs исключения); опционально staging безопасных harness путей (`--add-harness-to-git`). Выводит JSON-отчёт и Markdown-отчёт в `.doc/onboard-report.{json,md}` с вопросами для ручного донастройки.
 
 ## Когда запускать
-- Сразу после `rebase_project.ps1` в новом проекте.
+- Сразу после `export_kit.py` в новом проекте.
 - При команде «настрой проект», «onboard проект», «догони конфигурацию».
 - В CI/CD для верификации конфигурации нового проекта.
 - Агент запускает с `--check` для отчёта о состоянии, без `--check` для применения.
@@ -136,8 +136,8 @@ python3 .agents/skills/harness-router/children/project-setup/scripts/onboard-pro
 - Serena порт проверяется на свободность, но регистрация в Serena требует отдельного `add-serena.sh`.
 
 ## Связи
-- Вызывается: `rebase_project.ps1` (опционально через -RunSetup), агент по команде «настрой проект», `project-setup` скил
-- Зависит от: `rebase_project.ps1` артефактов, CLI инструментов (codegraph, CBM, jdocmunch, uv)
+- Вызывается: агент по команде «настрой проект», `project-setup` скил
+- Зависит от: артефактов `export_kit.py`, CLI инструментов (codegraph, CBM, jdocmunch, uv)
 - Результат использует: настроенный проект, готовый к работе агентами
 
 ## История изменений

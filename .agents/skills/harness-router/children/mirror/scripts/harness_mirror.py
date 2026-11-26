@@ -2394,7 +2394,7 @@ def cmd_check(args, root: Path, data: Path) -> int:
     return 0 if not errors else 1
 
 
-VISIBILITY_ENVS = ("cursor", "codex", "kilo", "dsh", "qoder", "qwen", "antigravity", "opencode")
+VISIBILITY_ENVS = ("cursor", "codex", "kilo", "dsh", "qoder", "qwen", "antigravity", "opencode", "omp")
 TRIGGER_MODE = {
     "always_on": "inline",
     "glob": "glob",
@@ -2494,6 +2494,18 @@ def qwen_mode(root: Path, flat: str) -> str:
     return "none"
 
 
+def omp_mode(kind: str) -> str:
+    """omp reads `.cursor/rules` natively, so its mode equals the canon kind.
+
+    Root rules are routers: `alwaysApply` is inlined, `globs` becomes a path
+    trigger, the rest is listed by name and read on demand. Nested rules stay out
+    of the index by design and are reached through router links.
+    """
+    if kind == "always":
+        return "inline"
+    return "glob" if kind == "conditional" else "choice"
+
+
 def compute_visibility(root: Path) -> dict:
     """Rule visibility matrix per environment, plus contract violations.
 
@@ -2553,6 +2565,7 @@ def compute_visibility(root: Path) -> dict:
             "qwen": qwen_mode(root, flat),
             "antigravity": TRIGGER_MODE.get(antigravity_trigger, "none"),
             "opencode": "inline" if f".opencode/rules/{rel_md}" in oc_instructions else "index",
+            "omp": omp_mode(kind),
         }
         matrix[key] = {env: mode for env, mode in modes.items() if env in active_envs}
 
@@ -2569,7 +2582,7 @@ def compute_visibility(root: Path) -> dict:
             globs = rule_globs(fields)
             if kind != "conditional" or not globs:
                 errors.append(f"{key}: attach glob requires globs or paths")
-            for env in ("cursor", "qoder", "qwen", "antigravity"):
+            for env in ("cursor", "qoder", "qwen", "antigravity", "omp"):
                 if env not in active_envs:
                     continue
                 if modes[env] != "glob":

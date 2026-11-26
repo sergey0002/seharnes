@@ -54,7 +54,7 @@ cd ..\..
 
 | `.cursor/rules/*.mdc` | `AGENTS.md` + `.codex/rules/*.md` |
 
-| Skills в `.cursor/skills` | `.codex/skills` (канон для Codex); `.agents/` — **deprecated**, не создавать дубли SKILL.md |
+| Skills в `.agents/skills` | канон для всех сред; `.cursor/skills` и `.codex/skills` не создавать, синк удаляет такие копии |
 
 
 

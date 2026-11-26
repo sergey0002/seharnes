@@ -22,23 +22,7 @@
   ],
   "children": [],
   "dependencies": {
-    "skills": [
-      {
-        "name": "gototask",
-        "required": true,
-        "reason": "вызывается по тексту скила"
-      },
-      {
-        "name": "task-diff",
-        "required": true,
-        "reason": "вызывается по тексту скила"
-      },
-      {
-        "name": "task-doc",
-        "required": true,
-        "reason": "вызывается по тексту скила"
-      }
-    ],
+    "skills": [],
     "project": [
       {
         "path": ".agents/skills/documentation-router/children/project-doc/scripts/check-doc-text.py",

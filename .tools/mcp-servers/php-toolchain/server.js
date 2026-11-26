@@ -61,7 +61,7 @@ if (modesInclude("phpstan")) {
       if (!existsSync(phpstan)) return phpstanMissing(root);
 
       if (task !== undefined) {
-        const script = path.join(root, ".cursor", "scripts", "phpstan-task.sh");
+        const script = path.join(root, ".agents", "skills", "phpstan-mcp", "scripts", "phpstan-task.sh");
         const result = await runProcess(
           "bash",
           [script, String(task), String(level ?? 0)],
@@ -98,7 +98,7 @@ if (modesInclude("phpstan")) {
       const result = process.env.PHPSTAN_DOCKER_IMAGE
         ? await runProcess(
             "bash",
-            [path.join(root, ".cursor", "scripts", "phpstan-docker.sh"), ...args],
+            [path.join(root, ".agents", "skills", "phpstan-mcp", "scripts", "phpstan-docker.sh"), ...args],
             { cwd: root }
           )
         : await runPhp([phpstan, ...args], [], { cwd: root });

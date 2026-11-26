@@ -54,49 +54,41 @@ QA_HINT_RE = re.compile(
 SKILLS = [
     {
         "id": "prepare-plan",
-        "path": ".cursor/skills/prepare-plan/SKILL.md",
         "role": "План / stageN после бага ручного тестирования",
         "evidence": ["plan.md", "stage*/plan.md"],
     },
     {
         "id": "gototask",
-        "path": ".cursor/skills/task-router/children/gototask/SKILL.md",
         "role": "Ветка 1:1 с задачей, экспорт task.md из Jira",
         "evidence": ["task.md", "gototask-state.json"],
     },
     {
         "id": "task-diff",
-        "path": ".cursor/skills/task-router/children/task-diff/SKILL.md",
         "role": "diff.md / diff.files.md по коммитам с номером задачи",
         "evidence": ["diff.md", "diff.files.md"],
     },
     {
         "id": "test-task",
-        "path": ".cursor/skills/task-router/children/testing-router/children/test-task/SKILL.md",
         "role": "Оркестратор «тестируй задачу»",
         "evidence": ["test.md", "test-runs/"],
     },
     {
         "id": "prepare-task-test",
-        "path": ".cursor/skills/task-router/children/testing-router/children/prepare-task-test/SKILL.md",
         "role": "Конструктор Task Cest + test.md",
         "evidence": ["test.md", "Task/{N}_*Cest.php"],
     },
     {
         "id": "browser-verify",
-        "path": ".cursor/skills/task-router/children/testing-router/children/browser-verify/SKILL.md",
         "role": "Прогон Codeception / Playwright + отчёт test-runs",
         "evidence": ["test-runs/*.md"],
     },
     {
         "id": "login-as-user",
-        "path": ".cursor/skills/login-as-user/SKILL.md",
         "role": "Имперсонейт клиента из task.md",
         "evidence": ["clientId / под пользователем N в task.md|test.md"],
     },
     {
         "id": "task-doc",
-        "path": ".cursor/skills/documentation-router/children/task-doc/SKILL.md",
         "role": "Живая doc.md задачи",
         "evidence": ["doc.md"],
     },
@@ -1448,7 +1440,7 @@ plan (initial) → код → ручной тест → баг в Jira-комм�
 - [skills-map.md](./skills-map.md)
 - [../tests.md](../tests.md)
 - [../harnes/doc_rules.md](../harnes/doc_rules.md)
-- Скилы: `.cursor/skills/prepare-plan`, `test-task`, `task-diff`, `gototask`
+- Скилы: `.agents/skills/prepare-plan`, `test-task`, `task-diff`, `gototask`
 
 ---
 

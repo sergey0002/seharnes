@@ -1,6 +1,6 @@
 ---
 name: php-deps-mcp
-description: Граф вызовов и зависимостей PHP через MCP php-deps-mcp. Применять для phpcallgraph, phpda и оценки влияния изменений общих PHP-компонентов после графа кода.
+description: "Зависимости PHP, граф вызовов phpcallgraph/phpda, влияние правки общих компонентов; не JS."
 ---
 
 # php-deps-mcp

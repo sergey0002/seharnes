@@ -51,7 +51,7 @@ def _run(script: Path, *args: str, timeout: int = 180) -> dict:
 
 
 def _clean_views(root: Path) -> None:
-    for relative in (".codex", ".kilo", ".qoder", ".qwen", ".opencode", ".cursor", ".agents"):
+    for relative in (".codex", ".kilo", ".qoder", ".qwen", ".opencode", ".omp", ".cursor", ".agents"):
         base = root / relative
         if not base.is_dir():
             continue

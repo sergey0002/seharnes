@@ -3,9 +3,9 @@
 <!-- meta
 type: script
 status: actual
-updated: 2026-11-13
+updated: 2026-11-24
 related: [../../SKILL.md]
-tags: [harness, sync, qoder, qwen, dsh, validation]
+tags: [harness, sync, qoder, qwen, dsh, omp, validation]
 -->
 
 ## Суть

@@ -347,8 +347,8 @@ tags: [harness, skill, graph, portability, kilo]
 ## Связи
 
 - [Формат узла и схемы](./mirror-format.md) - нормативное описание полей, инвариантов и ревизий
-- [Харнес: точка входа](../../../../.doc/harnes/index.md) - состояние и планы харнеса проекта
-- [Harness Improvement](../../harness-improvement/SKILL.md) - порядок правки скилов и parity
+- Харнес: точка входа (`../../../../.doc/harnes/index.md`; missing in kit) - состояние и планы харнеса проекта
+- Harness Improvement (`../../harness-improvement/SKILL.md`; missing in kit) - порядок правки скилов и parity
 - [Скилл](../SKILL.md) - текущая реализация
 - [Синхронизация представлений](../../../../.agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh) - пересборка зеркал
 - [Проверка паритета](../../../scripts/harness/verify_parity.py) - гейт расхождений

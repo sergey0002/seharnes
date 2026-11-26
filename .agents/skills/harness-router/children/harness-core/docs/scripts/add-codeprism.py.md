@@ -68,7 +68,7 @@ systemctl --user daemon-reload
 ## Связи
 
 - [CodePrism MCP](../../../../../codeprism/docs/mcp/codeprism.md)
-- [MCP-стек](../../../../../../.doc/harnes/state/15-mcp-stack.md)
+- MCP-стек (`../../../../../../.doc/harnes/state/15-mcp-stack.md`; missing in kit)
 
 ## История изменений
 

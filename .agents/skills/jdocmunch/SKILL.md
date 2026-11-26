@@ -1,6 +1,6 @@
 ---
 name: jdocmunch
-description: "Find documentation sections: найди в документации, где описано, подтяни контекст; documentation, architecture, harness, reports and dashboards via jdocmunch MCP. Not for code structure or database schemas."
+description: "Найди в документации, где описано, подтяни контекст: .doc/architecture/tasks/harnes/web; не код."
 ---
 
 # Jdocmunch MCP

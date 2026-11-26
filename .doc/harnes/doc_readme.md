@@ -51,7 +51,7 @@ tags: [readme, documentation, indexing, workflow]
 | `mark-verify-done.ps1` | Отметка документа сверенным в `verify-registry.tsv` | |
 | `build-tasks-index.ps1` | Пересборка `.doc/tasks/index.md` + `_map/file-to-tasks.tsv` (`-AlsoTsv`) | |
 | `find-related-tasks.ps1` | Поиск задач по файлам/докам (score, `-Json`) | |
-| `export-rebase-project.ps1` | Обёртка экспорта переноса харнеса (канон `rebase_project.ps1`) | |
+| `export_kit.py` | Экспорт kit харнеса режимами install, update, mirror | |
 | `_batch-ai-links.py` | Массовая простановка AI-блоков в arch-доки | |
 | `audit-docs.ps1` | Ищет активные файлы без упоминаний, docs без meta, stale docs, isolated docs | Смотрит на симптомы, но не ведёт постоянный реестр покрытия |
 | `validate-docs.ps1` | Проверяет meta и базовые обязательные секции | Пока не полностью совпадает с `doc_rules.md` |
@@ -628,7 +628,7 @@ Persistent-маркеры прогресса и покрытия должны ж
 - [Раскладка каталогов харнеса](dirtree.md): назначение каталогов, размещение скриптов и архитектура скила
 - [Правила работы с документацией](doc_rules.md) — обязательный стандарт
 - [Оглавление архитектуры](../architecture/index.md) — текущая навигация по docs
-- [Codex AGENTS](../../.codex/AGENTS.md) — repo workflow для Codex/Cursor
+- Codex AGENTS (`../../.codex/AGENTS.md`; missing in kit) — repo workflow для Codex/Cursor
 - [Cursor MCP config](../../.cursor/mcp.json) — список подключённых MCP
 - [Codex MCP config](../../.codex/config.toml) — mirror MCP-конфиг для Codex
 

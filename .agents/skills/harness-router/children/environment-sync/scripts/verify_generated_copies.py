@@ -3,7 +3,8 @@
 
 Qoder is the only adapter that keeps a full skill tree. Qwen and DSH must keep
 one generated SKILL.md wrapper per nested skill; rule-* entries are separate
-generated rule skills. Unexpected content is reported as junk.
+generated rule skills. omp keeps no skill view at all: it reads the canon
+directly. Unexpected content is reported as junk.
 """
 from __future__ import annotations
 

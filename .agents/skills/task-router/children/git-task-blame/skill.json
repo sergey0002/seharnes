@@ -12,13 +12,7 @@
   "tests": [],
   "children": [],
   "dependencies": {
-    "skills": [
-      {
-        "name": "gototask",
-        "required": false,
-        "reason": "вызывается по тексту скила"
-      }
-    ],
+    "skills": [],
     "project": []
   },
   "generated": []

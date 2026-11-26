@@ -1,14 +1,6 @@
 ---
 name: yadisk-screenshot
-description: >-
-  Скачивает скриншот/файл с публичной ссылки Яндекс.Диска
-  (disk.yandex.ru/i/..., disk.yandex.ru/d/..., yadi.sk/i/...) в
-  .doc/skil_data/yadisk-screenshot/imd/ и возвращает абсолютный путь. Имя файла —
-  детерминированный SHA256-хеш URL: повторный запуск использует кеш и не
-  обращается к сети. Use when the user shares a Yandex.Disk link, says
-  загрузи скрин с яндекса, скачай картинку с яндекс диска,
-  fetch yandex screenshot, или сообщение содержит ссылку вида
-  https://disk.yandex.ru/i/.
+description: "Скачай скрин/файл с Яндекс.Диска: disk.yandex.ru/i/, /d/, yadi.sk/i/; публичная ссылка."
 ---
 
 # Yandex.Disk Screenshot Fetcher
@@ -33,7 +25,7 @@ description: >-
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .cursor/skills/yadisk-screenshot/scripts/yadisk-fetch.ps1 `
+  -File .agents/skills/yadisk-screenshot/scripts/yadisk-fetch.ps1 `
   -Url "<URL>"
 ```
 
@@ -73,7 +65,7 @@ YadiskScreenshot:
 ### Шаг 2 — Запуск скрипта
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/yadisk-screenshot/scripts/yadisk-fetch.ps1 -Url "https://disk.yandex.ru/i/HUpAFmr_sBwddQ"
+powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/yadisk-screenshot/scripts/yadisk-fetch.ps1 -Url "https://disk.yandex.ru/i/HUpAFmr_sBwddQ"
 ```
 
 **Exit codes:**
@@ -126,7 +118,7 @@ C:\projects\copytrust\testdeploydocker\.doc\.mcpyandexscreen\imd\yadisk_20260526
 
 - PowerShell 5+ в PATH (Windows — есть из коробки).
 - Доступ в интернет к `cloud-api.yandex.net` и `downloader.disk.yandex.ru`.
-- Файл `.cursor/skills/yadisk-screenshot/scripts/yadisk-fetch.ps1` (под контролем версий).
+- Файл `.agents/skills/yadisk-screenshot/scripts/yadisk-fetch.ps1` (под контролем версий).
 
 ## Пример полного цикла
 

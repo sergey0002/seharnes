@@ -144,7 +144,7 @@ lib/Objects/Account/AccountController.php
 
 ### Git: ветки задач и релизы
 
-**Remote:** `origin` → `git@gitverse.ru:realant/copytrust.ru.git` (GitVerse). Запасной: `bitbucket` → `git@bitbucket.org:copytrust/copytrust.ru.git`. См. [cicd.md §6a](../.doc/architecture/cicd.md#6a-локальный-git-push).
+**Remote:** `origin` → `git@gitverse.ru:realant/copytrust.ru.git` (GitVerse). Запасной: `bitbucket` → `git@bitbucket.org:copytrust/copytrust.ru.git`. См. cicd.md §6a (`../.doc/architecture/cicd.md#6a-локальный-git-push`; missing in kit).
 
 #### Именование веток задач
 
@@ -174,7 +174,7 @@ bugfixes/#1638_for_5.6.0.6
 | `release/{X.Y.Z.W}` | `release/5.6.0.6` |
 | `releases/{X.Y.Z.W}` | `releases/5.6.1` |
 
-Конфиг: [`.cursor/skills/task-router/children/gototask/config.json`](skills/task-router/children/gototask/config.json):
+Конфиг: [`.agents/skills/task-router/children/gototask/config.json`](../.agents/skills/task-router/children/gototask/config.json):
 
 ```json
 {
@@ -203,23 +203,23 @@ bugfixes/#1638_for_5.6.0.6
 
 | Скил | Триггер в чате | Скрипт |
 |------|----------------|--------|
-| **gototask** | «перейди к задаче 1612», `gototask` | `.cursor/skills/task-router/children/gototask/scripts/gototask.ps1` |
-| **task-intake** | «заведи задачу», «догнать документацию задачи» | `.cursor/skills/task-router/children/task-intake/scripts/intake_orchestrator.py` |
-| **task-diff** | «обнови диф задачи 1612» | `.cursor/skills/task-router/children/task-diff/scripts/task-diff.ps1` |
-| **project-doc** | «задокументируй проект» / «задокументируй раздел [name]» | `.cursor/skills/documentation-router/children/project-doc/SKILL.md` (инструкция) |
-| **task-doc** | «задокументируй задачу» / «document task» | `.cursor/skills/documentation-router/children/task-doc/SKILL.md` (инструкция) |
-| **prepare-plan** | «подготовь план», «составь план», «проведи аудит плана» | `.cursor/skills/prepare-plan/SKILL.md` — blast-radius ladder (P1), git-task-blame (P0.5b/P7.4a), per-шаг тест-сценарий, SOLID/DRY-гейт (P4.1), аудит P7 только код; **аудит = тот же скил (режим P7.4a), не отдельный** |
-| **git-task-blame** | «кто менял этот код», «какие задачи трогали этот файл» | `.cursor/skills/task-router/children/git-task-blame/SKILL.md` — git log -L/blame → номера задач → export-task, обязателен внутри prepare-plan |
-| **test-task** | «тестируй задачу», «тестируй задачу 2606» | `.cursor/skills/task-router/children/testing-router/children/test-task/SKILL.md` — оркестратор: prepare-task-test (если нет Cest) → browser-verify → test-runs по `.doc/tests.md` |
-| **prepare-task-test** | «подготовь тест задачи N» | `.cursor/skills/task-router/children/testing-router/children/prepare-task-test/SKILL.md` — конструктор Cest + test.md |
-| **browser-verify** | «проверь через браузер», e2e, регрессия UI | `.cursor/skills/task-router/children/testing-router/children/browser-verify/SKILL.md` — Codeception → Playwright, отчёт §8 |
-| **login-as-user** | «войди как клиент N» | `.cursor/skills/login-as-user/SKILL.md` — имперсонация на dev |
-| **task-code-review** | review task diff, аудит коммитов задачи | `.cursor/skills/task-router/children/task-code-review/SKILL.md` (инструкция) |
-| **send-to-git** | «отправь в гит», «закоммить и запушь» | `.cursor/skills/send-to-git/SKILL.md` — согласование commit/push, выполнение после «да» |
-| **yadisk-screenshot** | «загрузи скрин с яндекса», ссылка на Яндекс.Диск | `.cursor/skills/yadisk-screenshot/SKILL.md` (инструкция) |
-| **jira-report** | «напиши отчет для жиры», отчёт в Jira | `.cursor/skills/task-router/children/reporting-router/children/task-report/SKILL.md` — короткий комментарий + пути скринов |
+| **gototask** | «перейди к задаче 1612», `gototask` | `.agents/skills/task-router/children/gototask/scripts/gototask.ps1` |
+| **task-intake** | «заведи задачу», «догнать документацию задачи» | `.agents/skills/task-router/children/task-intake/scripts/intake_orchestrator.py` |
+| **task-diff** | «обнови диф задачи 1612» | `.agents/skills/task-router/children/task-diff/scripts/task-diff.ps1` |
+| **project-doc** | «задокументируй проект» / «задокументируй раздел [name]» | `.agents/skills/documentation-router/children/project-doc/SKILL.md` (инструкция) |
+| **task-doc** | «задокументируй задачу» / «document task» | `.agents/skills/documentation-router/children/task-doc/SKILL.md` (инструкция) |
+| **prepare-plan** | «подготовь план», «составь план», «проведи аудит плана» | `.agents/skills/prepare-plan/SKILL.md` — blast-radius ladder (P1), git-task-blame (P0.5b/P7.4a), per-шаг тест-сценарий, SOLID/DRY-гейт (P4.1), аудит P7 только код; **аудит = тот же скил (режим P7.4a), не отдельный** |
+| **git-task-blame** | «кто менял этот код», «какие задачи трогали этот файл» | `.agents/skills/task-router/children/git-task-blame/SKILL.md` — git log -L/blame → номера задач → export-task, обязателен внутри prepare-plan |
+| **test-task** | «тестируй задачу», «тестируй задачу 2606» | `.agents/skills/task-router/children/testing-router/children/test-task/SKILL.md` — оркестратор: prepare-task-test (если нет Cest) → browser-verify → test-runs по `.doc/tests.md` |
+| **prepare-task-test** | «подготовь тест задачи N» | `.agents/skills/task-router/children/testing-router/children/prepare-task-test/SKILL.md` — конструктор Cest + test.md |
+| **browser-verify** | «проверь через браузер», e2e, регрессия UI | `.agents/skills/task-router/children/testing-router/children/browser-verify/SKILL.md` — Codeception → Playwright, отчёт §8 |
+| **login-as-user** | «войди как клиент N» | `.agents/skills/login-as-user/SKILL.md` — имперсонация на dev |
+| **task-code-review** | review task diff, аудит коммитов задачи | `.agents/skills/task-router/children/task-code-review/SKILL.md` (инструкция) |
+| **send-to-git** | «отправь в гит», «закоммить и запушь» | `.agents/skills/send-to-git/SKILL.md` — согласование commit/push, выполнение после «да» |
+| **yadisk-screenshot** | «загрузи скрин с яндекса», ссылка на Яндекс.Диск | `.agents/skills/yadisk-screenshot/SKILL.md` (инструкция) |
+| **jira-report** | «напиши отчет для жиры», отчёт в Jira | `.agents/skills/task-router/children/reporting-router/children/task-report/SKILL.md` — короткий комментарий + пути скринов |
 
-Подробности: [`skills/task-router/children/gototask/SKILL.md`](skills/task-router/children/gototask/SKILL.md), [`skills/task-router/children/task-diff/SKILL.md`](skills/task-router/children/task-diff/SKILL.md).
+Подробности: [`.agents/skills/task-router/children/gototask/SKILL.md`](../.agents/skills/task-router/children/gototask/SKILL.md), [`.agents/skills/task-router/children/task-diff/SKILL.md`](../.agents/skills/task-router/children/task-diff/SKILL.md).
 
 **Правило:** использовать PS1-скрипты, **не** дублировать git-команды и **не** вызывать MCP `jira-task` вручную (скрипты сами вызывают `.agents/skills/task-router/children/jira/scripts/server.php` через PHP/Docker).
 
@@ -237,16 +237,16 @@ bugfixes/#1638_for_5.6.0.6
 cd C:\projects\copytrust\testdeploydocker
 
 # inspect — состояние веток, JSON
-powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber 1612 -Action inspect
+powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber 1612 -Action inspect
 
 # checkout существующей ветки
-powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber 1612 -Action checkout -TaskBranch "bugfixes/#1612" -LocalChanges keep
+powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber 1612 -Action checkout -TaskBranch "bugfixes/#1612" -LocalChanges keep
 
 # создать ветку от релиза (только после подтверждения пользователя!)
-powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber 1612 -Action create-branch -ReleaseBranch "release/5.6.0.6" -TaskBranch "bugfixes/#1612" -ConfirmCreateBranch
+powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber 1612 -Action create-branch -ReleaseBranch "release/5.6.0.6" -TaskBranch "bugfixes/#1612" -ConfirmCreateBranch
 
 # вмержить релиз в ветку задачи (после подтверждения)
-powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber 1612 -Action merge-release -ReleaseBranch "release/5.6.0.6" -TaskBranch "bugfixes/#1612"
+powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/task-router/children/gototask/scripts/gototask.ps1 -TaskNumber 1612 -Action merge-release -ReleaseBranch "release/5.6.0.6" -TaskBranch "bugfixes/#1612"
 ```
 
 `gototask` автоматически обновляет `task.md` (PHP или Docker `copytrust-dev-php-apache-1`).
@@ -271,13 +271,13 @@ docker exec copytrust-dev-php-apache-1 php /var/www/html/.agents/skills/task-rou
 **Консоль:**
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/children/task-diff/scripts/task-diff.ps1 -TaskNumber 1612
+powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/task-router/children/task-diff/scripts/task-diff.ps1 -TaskNumber 1612
 ```
 
 С явными ветками:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/skills/task-router/children/task-diff/scripts/task-diff.ps1 -TaskNumber 1612 -TaskBranch "bugfixes/#1612" -ReleaseBranch "release/5.6.0.6"
+powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/task-router/children/task-diff/scripts/task-diff.ps1 -TaskNumber 1612 -TaskBranch "bugfixes/#1612" -ReleaseBranch "release/5.6.0.6"
 ```
 
 Лучше запускать **на ветке задачи** — тогда в diff попадут незакоммиченные правки.

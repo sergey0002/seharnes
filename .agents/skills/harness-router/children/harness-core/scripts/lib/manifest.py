@@ -14,10 +14,17 @@ def _hash(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _skip(relative: Path, skip_dirs: set[str], skip_files: list[str]) -> bool:
+def _skip(relative: Path, skip_dirs: set[str], skip_files: list[str],
+          path_excludes: tuple[str, ...] = ()) -> bool:
+    as_posix = relative.as_posix()
+    for prefix in path_excludes:
+        if as_posix == prefix or as_posix.startswith(prefix.rstrip("/") + "/"):
+            return True
     if any(part in skip_dirs or part.startswith(".venv") or part == "__pycache__" for part in relative.parts[:-1]):
         return True
     name = relative.name
+    if ":" in name:
+        return True
     for pattern in skip_files:
         if name == pattern or (pattern.startswith("*.") and name.endswith(pattern[1:])):
             return True
@@ -28,20 +35,32 @@ def build(root: Path, kit: dict) -> dict[str, str]:
     result: dict[str, str] = {}
     skip_dirs = set(kit.get("skipDirs", []))
     skip_files = list(kit.get("skipFiles", []))
+    path_excludes = tuple(kit.get("pathExcludes", []))
     for item in kit.get("copy", []):
         base = root / item
         if not base.exists():
             continue
         if base.is_file():
             relative = base.relative_to(root)
-            if not _skip(relative, skip_dirs, skip_files):
+            if not _skip(relative, skip_dirs, skip_files, path_excludes):
                 result[relative.as_posix()] = _hash(base)
             continue
         for path in base.rglob("*"):
             if not path.is_file():
                 continue
             relative = path.relative_to(root)
-            if _skip(relative, skip_dirs, skip_files):
+            if _skip(relative, skip_dirs, skip_files, path_excludes):
+                continue
+            result[relative.as_posix()] = _hash(path)
+    for item in kit.get("skillEntryPoints", []):
+        base = root / item
+        if not base.is_dir():
+            continue
+        for path in base.rglob("SKILL.md"):
+            if not path.is_file():
+                continue
+            relative = path.relative_to(root)
+            if _skip(relative, skip_dirs, skip_files, path_excludes):
                 continue
             result[relative.as_posix()] = _hash(path)
     for item in kit.get("rootFiles", []):

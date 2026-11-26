@@ -1,6 +1,6 @@
 ---
 name: codebase-memory-mcp
-description: "Explore code structure, callers and diff impact: CBM, search_graph, trace_path, граф кода, кто вызывает. Not for documentation or database schemas; use jdocmunch or mysql. Uses only the current project's codebase-memory-mcp index."
+description: "Структура кода, кто вызывает, связи, влияние diff: CBM/search_graph/trace_path; не документы и БД."
 ---
 
 # Codebase Memory MCP

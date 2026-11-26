@@ -19,7 +19,7 @@ tags: [harness, script, gototask, git, branch-discovery]
 |---|---|---|---|---|---|
 | `-TaskNumber` | | string | **да** | | Номер задачи (например `2538` или `CT-2538`) |
 | `-RepoPath` | | string | нет | `(Get-Location).Path` | Путь к корню git-репозитория |
-| `-ConfigPath` | | string | нет | `<RepoPath>/.cursor/skills/task-router/children/gototask/config.json` | Путь к конфигу с релизными ветками |
+| `-ConfigPath` | | string | нет | `<RepoPath>/.agents/skills/task-router/children/gototask/config.json` | Путь к конфигу с релизными ветками |
 
 ## Коды выхода
 | Код | Значение | Действие вызывающего |
@@ -31,7 +31,7 @@ PowerShell не задаёт явные коды выхода — ошибки �
 
 ## Что читает и что пишет
 **Читает:**
-- `.cursor/skills/task-router/children/gototask/config.json` — `releaseBranch` и `releaseBranchFallbacks`
+- `.agents/skills/task-router/children/gototask/config.json` — `releaseBranch` и `releaseBranchFallbacks`
 - Git remote `origin` — через `git fetch origin` + `git ls-remote --heads origin`
 
 **Пишет:**
@@ -57,7 +57,7 @@ PowerShell не задаёт явные коды выхода — ошибки �
 - PowerShell 5.1+ / PowerShell 7+
 - `git` в PATH
 - Доступ к `origin` (GitVerse) по сети
-- Конфиг `.cursor/skills/task-router/children/gototask/config.json` должен существовать
+- Конфиг `.agents/skills/task-router/children/gototask/config.json` должен существовать
 
 ## Примеры
 ```powershell
@@ -65,7 +65,7 @@ PowerShell не задаёт явные коды выхода — ошибки �
 powershell -File .agents/skills/task-router/children/gototask/scripts/find-task-branch.ps1 -TaskNumber 2538
 
 # Явный путь к репо и конфигу
-powershell -File .agents/skills/task-router/children/gototask/scripts/find-task-branch.ps1 -TaskNumber 2538 -RepoPath "C:\projects\copytrust" -ConfigPath "C:\projects\copytrust\.cursor\skills\task-router\children\gototask\config.json"
+powershell -File .agents/skills/task-router/children/gototask/scripts/find-task-branch.ps1 -TaskNumber 2538 -RepoPath "C:\projects\copytrust" -ConfigPath "C:\projects\copytrust\.agents\skills\task-router\children\gototask\config.json"
 
 # Использование из gototask.ps1 (внутри скрипта)
 $branchInfo = powershell -File find-task-branch.ps1 -TaskNumber $TaskNumber | ConvertFrom-Json

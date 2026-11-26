@@ -1,0 +1,57 @@
+# Codeception Acceptance Test Suite Configuration
+#
+# Perform tests in a browser by either emulating one using PhpBrowser, or in a real browser using WebDriver.
+# If you need both WebDriver and PhpBrowser tests, create a separate suite for each.
+
+actor: AcceptanceTester
+modules:
+    enabled:
+        - WebDriver:
+        # Asserts даёт $I->fail(), assertSame(), assertTrue() и т.д.
+        # Без него падали Task/2070, 2077, 2354 ($I->fail) и фрагменты 2606
+        # ($this->assertSame в AcceptanceTester). Пакет codeception/module-asserts
+        # уже в composer.json, просто не был включён в suite.
+        - Asserts:
+        # Запрет headless и окно Chrome на экране (WSLg DISPLAY=:0).
+        # Пауза после шагов выключена: 0.4с на каждый шаг давали +20с на тест.
+        # Для показа кликов включить QA_VISIBLE_DELAY=0.3 в окружении прогона.
+        - \Tests\Support\Helper\VisibleBrowser:
+            delay: 0
+        - Db:
+            dsn: 'mysql:host=%MYSQL_HOST%;port=%MYSQL_PORT%;dbname=%MYSQL_DATABASE%;charset=utf8mb4'
+            user: '%MYSQL_USER%'
+            password: '%MYSQL_PASSWORD%'
+            # populate/cleanup выключены: раньше это реимпортировало dump.sql
+            # (95МБ, оказался битым дампом с реальными данными со стенда
+            # d2.copytrust.ru) при каждом прогоне suite, что уже один раз
+            # испортило dev-базу gb_copydev5 (см. чат от 2026-07-09). Тесты
+            # сами создают нужные фикстуры через haveInDatabase()/
+            # haveInDbDefaultClient() — общая БД дев-стенда трогаться не должна.
+            populate: false
+            cleanup: false
+    config:
+        WebDriver:
+            host: '%CHROMEDRIVER_HOST%'
+            port: %CHROMEDRIVER_PORT%
+            url: '%CHROMEDRIVER_APP_URL%'
+            browser: chrome
+            window_size: 1920x1080
+            capabilities:
+                'goog:chromeOptions':
+                    binary: "%CHROMEDRIVER_CHROME_BINARY%"
+                    # HEADLESS ЗАПРЕЩЁН. Браузер всегда на экране (WSLg).
+                    # --start-maximized / window-position - чтобы окно не
+                    # уехало за край и его было видно с первого шага.
+                    args:
+                        - "--no-sandbox"
+                        - "--disable-dev-shm-usage"
+                        - "--remote-allow-origins=*"
+                        - "--start-maximized"
+                        - "--window-position=0,0"
+                        - "--disable-infobars"
+                        - "--disable-notifications"
+
+step_decorators:
+    - Codeception\Step\ConditionalAssertion
+    - Codeception\Step\TryTo
+    - Codeception\Step\Retry

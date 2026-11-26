@@ -221,6 +221,123 @@ final class WizardPage extends BasePage
         );
     }
 
+    /**
+     * Готовит авторов и профиль для прямого вызова searchClient.
+     *
+     * Гонка автосвязывания возникает в обработчике ответа /client/search,
+     * а не в валидации формы автора. Поэтому тест вызывает searchClient
+     * дважды на одном индексе: это тот же путь, что даёт двойной клик.
+     * Профиль передаётся объектом и должен совпадать с фикстурой
+     * ct_personProfile, иначе поиск вернёт 404.
+     *
+     * @param array<string, mixed> $profile
+     */
+    public function resetAuthorsForLink(int $count, array $profile): void
+    {
+        $this->I->waitForJS(
+            'return !!(window.storeVue && window.storeVue.state.RightsHolder'
+            . ' && window.storeVue.state.RightsHolder.rights_types'
+            . ' && window.storeVue.state.RightsHolder.rights_types.length);',
+            20
+        );
+
+        $result = (string) $this->I->executeJS(
+            'return (function (cfg) {'
+            . 'var refs = (window.Wizard && window.Wizard.$refs && window.Wizard.$refs.step_component) || [];'
+            . 'var step3 = null;'
+            . 'for (var i = 0; i < refs.length; i++) {'
+            . '  if (refs[i] && typeof refs[i].searchClient === "function") { step3 = refs[i]; break; }'
+            . '}'
+            . 'if (!step3) { return "no-step3"; }'
+            . 'var authors = step3.form.authors;'
+            . 'authors.splice(0, authors.length);'
+            . 'for (var n = 0; n < cfg.count; n++) { step3.addAuthorWithoutValidate(); }'
+            . 'if (authors.length !== cfg.count) { return "authors:" + authors.length; }'
+            . 'for (var a = 0; a < authors.length; a++) { authors[a].clientId = null; }'
+            . 'step3.$store.commit("Errors/clearErrors");'
+            . 'window.__authorLink = { profile: cfg.profile, result: null };'
+            . 'return "ok";'
+            . '})(arguments[0]);',
+            [['count' => $count, 'profile' => $profile]]
+        );
+
+        $this->I->assertSame('ok', $result, 'Не удалось подготовить авторов для searchClient');
+    }
+
+    /**
+     * Запускает searchClient несколько раз подряд, не дожидаясь ответов.
+     * Так воспроизводится параллельный поиск, который даёт ложный дубль.
+     */
+    public function startAuthorSearch(int $index, int $calls = 1): void
+    {
+        $result = (string) $this->I->executeJS(
+            'return (function (cfg) {'
+            . 'var refs = (window.Wizard && window.Wizard.$refs && window.Wizard.$refs.step_component) || [];'
+            . 'var step3 = null;'
+            . 'for (var i = 0; i < refs.length; i++) {'
+            . '  if (refs[i] && typeof refs[i].searchClient === "function") { step3 = refs[i]; break; }'
+            . '}'
+            . 'var state = window.__authorLink;'
+            . 'if (!step3 || !state) { return "not-ready"; }'
+            . 'state.result = null;'
+            . 'var pending = [];'
+            . 'for (var n = 0; n < cfg.calls; n++) {'
+            . '  pending.push(step3.searchClient(state.profile, cfg.index, true));'
+            . '}'
+            . 'Promise.all(pending).then(function (res) {'
+            . '  var author = step3.form.authors[cfg.index] || null;'
+            . '  state.result = {'
+            . '    done: true,'
+            . '    results: res,'
+            . '    clientId: author ? author.clientId : null,'
+            . '    modal: !!step3.$store.state.Errors.showErrorModal,'
+            . '    errors: step3.$store.state.Errors.errors.slice(),'
+            . '    authorCount: step3.form.authors.length'
+            . '  };'
+            . '});'
+            . 'return "started:" + pending.length;'
+            . '})(arguments[0]);',
+            [['index' => $index, 'calls' => $calls]]
+        );
+
+        $this->I->assertStringStartsWith('started:', $result, 'searchClient не запущен');
+    }
+
+    public function waitForAuthorSearch(int $seconds = 20): void
+    {
+        $this->I->waitForJS(
+            'return !!(window.__authorLink && window.__authorLink.result && window.__authorLink.result.done);',
+            $seconds
+        );
+    }
+
+    /**
+     * @return array{done: bool, results: array<int, bool>, clientId: mixed, modal: bool, errors: array<int, string>, authorCount: int}
+     */
+    public function grabAuthorLinkResult(): array
+    {
+        $raw = $this->I->executeJS(
+            'return JSON.stringify(window.__authorLink && window.__authorLink.result ? window.__authorLink.result : null);'
+        );
+        $decoded = json_decode((string) $raw, true);
+        $this->I->assertIsArray($decoded, 'Нет результата searchClient');
+
+        return $decoded;
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public function grabAuthorClientIds(): array
+    {
+        $raw = $this->I->executeJS(
+            'var authors = window.storeVue.state.Item.forms["3"].form.authors.map(function (a) { return a.clientId; });'
+            . 'return JSON.stringify(authors);'
+        );
+
+        return (array) json_decode((string) $raw, true);
+    }
+
     // =================================================================
     // Шаг 4 — права субъектов
     // =================================================================

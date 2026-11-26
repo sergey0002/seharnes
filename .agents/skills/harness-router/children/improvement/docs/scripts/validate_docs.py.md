@@ -47,7 +47,7 @@ python3 .agents/skills/harness-router/children/improvement/scripts/validate_docs
 Не проверяет фактическую смысловую полноту текстов документации. Анализирует синтаксическое наличие файлов и разделов второго уровня (`##`) и локальные ссылки в активных документах `.doc/harnes`. Ссылки в `.doc/architecture`, `.doc/tasks` и исторических разделах харнеса проверяются отдельно через `check-links.py` и `doc-verify`.
 
 ## Связи
-Вызывается скриптами `harness_cli.py doctor`, используется скилом `improvement` для контроля целостности документации. Результаты соотносятся с требованиями стандарта [.doc/harnes/component-docs.md](../../../../../../.doc/harnes/component-docs.md).
+Вызывается скриптами `harness_cli.py doctor`, используется скилом `improvement` для контроля целостности документации. Результаты соотносятся с требованиями стандарта .doc/harnes/component-docs.md (`../../../../../../.doc/harnes/component-docs.md`; missing in kit).
 
 ## История изменений
 - 2026-11-11: добавлен гейт D07, проверка локальных ссылок в активных документах `.doc/harnes` через `check-links.py`.

@@ -140,7 +140,12 @@ def main() -> None:
     args = ap.parse_args()
 
     run_dir = pathlib.Path(args.run_dir)
-    junit = parse_junit(run_dir / "report.xml")
+    # Server-only runs have no Codeception report; PHPUnit JUnit is the
+    # same format and carries the real test outcomes for that layer.
+    junit_path = run_dir / "report.xml"
+    if not junit_path.exists():
+        junit_path = run_dir / "phpunit-junit.xml"
+    junit = parse_junit(junit_path)
     checkpoints = parse_checkpoints(run_dir / "checkpoints.jsonl")
     screenshots = sorted(p.name for p in run_dir.glob("**/*.png"))
 
@@ -176,6 +181,7 @@ def main() -> None:
         "exitCode": args.exit_code,
         "green": green,
         "tests": junit or fallback_from_log(run_dir / "run.log"),
+        "testcases": junit.get("testcases", []),
         "checkpoints": checkpoints,
         "screenshots": screenshots,
         "artifacts": statuses,

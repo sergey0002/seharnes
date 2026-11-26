@@ -174,8 +174,8 @@ if ! rm -rf "$OUT_DIR" 2>/dev/null; then
 fi
 mkdir -p "$OUT_DIR"
 
-CODECEPT_ARGS=(run Acceptance --steps --html --xml)
-[ -n "$FILTER" ] && CODECEPT_ARGS+=("$FILTER")
+CODECEPT_ARGS=(run Acceptance --steps --html=report.html --xml=report.xml)
+[ -n "$FILTER" ] && CODECEPT_ARGS+=("--filter=$FILTER")
 CODECEPT_ARGS+=(-g "$GROUP")
 [ "$WD_MODE" = "selenium" ] && CODECEPT_ARGS+=(--env chromedriver)
 if [ "$PHASE" = "stage" ]; then

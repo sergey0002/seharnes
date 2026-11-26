@@ -237,7 +237,7 @@ Bash: `cli_tools[]` - разбивка по CLI (`git`, `python3`, `jsondoc.py`,
   бизнес-отчета по `/files/tasks/{N}/reports/change-report/report.html`.
 - Метрики: MCP и bash-CLI по токенам (входящие, кэш, исходящие), модели по
   токенам, активное время без пауз больше 15 минут.
-- Перенос: `task-analytics` добавлен в `rebase_project.ps1` (`$docDirs`,
+- Перенос: `task-analytics` входит в kit через `kit.json` (`$docDirs`,
   must-check), `out/` исключен и считается на новом проекте заново.
 
 ---

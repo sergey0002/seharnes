@@ -1,6 +1,6 @@
 ---
 name: skill-auditor
-description: Audits, benchmarks, and iteratively improves AI skills, .skill archives, subagents, child skills, MCP setups, scripts, AGENTS.md, Cursor .mdc rules, and skill fleets across 17+ agents. Use when reviewing, grading, checking cross-agent portability, security/triggering/context bloat, running smart A/B + runtime evals, or refactoring skills (Claude Code, Codex, Cursor, Antigravity, Kilo, OpenCode, Pi, Qoder, Copilot, Windsurf) — включая «аудит скила», «проверь SKILL.md/AGENTS.md». Do NOT use for general code review or greenfield skill authoring.
+description: "Проверь/оцени скил, SKILL.md, AGENTS.md: аудит качества, переносимости, A/B; не создание с нуля."
 license: MIT
 compatibility: Requires Python 3.9+ for deterministic scripts (stdlib only; optional PyYAML). Built for strong modern frontier agents across Claude Code, OpenAI Codex, Cursor, Antigravity, Kilo Code, OpenCode, Pi, Qoder, and 75+ agentskills.io clients; degrades cleanly to sequential passes when parallel subagents are unavailable.
 metadata:

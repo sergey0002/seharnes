@@ -16,6 +16,7 @@ import argparse
 import json
 import re
 import runpy
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -102,7 +103,7 @@ def compact(root: Path, *, apply: bool, force: bool, disabled_only: bool = False
                 if not wrapper.parent.is_symlink() and not wrapper.is_symlink() and WRAPPER_MARKER in wrapper.read_text(encoding="utf-8"):
                     present.append(wrapper.relative_to(root).as_posix())
             continue
-        if relative in {".qoder/settings.json", ".qwen/settings.json", "opencode.json", ".codex/config.toml", ".kilo/kilo.jsonc"}:
+        if relative in {".qoder/settings.json", ".qwen/settings.json", "opencode.json", ".codex/config.toml", ".kilo/kilo.jsonc", ".omp/mcp.json"}:
             replacement = local_config(path, root, relative)
             if replacement == path.read_text(encoding="utf-8"):
                 continue
@@ -166,8 +167,11 @@ def compact(root: Path, *, apply: bool, force: bool, disabled_only: bool = False
             path = safe_path(root, relative)
             if relative in replacements:
                 path.write_text(replacements[relative], encoding="utf-8")
+            elif path.is_dir() and not path.is_symlink():
+                shutil.rmtree(path)
             else:
                 path.unlink()
+            if not path.exists():
                 for parent in path.parents:
                     if parent == root or parent.relative_to(root).parts[0] in {".agents", ".doc"} and len(parent.relative_to(root).parts) == 1:
                         break
@@ -245,7 +249,8 @@ def local_config(path: Path, root: Path, relative: str) -> str:
                     del mcp[key]
     managed = names & servers.keys()
     if managed and relative != ".kilo/kilo.jsonc":
-        env = {"opencode.json": "opencode", ".qwen/settings.json": "qwen", ".qoder/settings.json": "qoder"}[relative]
+        env = {"opencode.json": "opencode", ".qwen/settings.json": "qwen",
+               ".qoder/settings.json": "qoder", ".omp/mcp.json": "omp"}[relative]
         rendered = generator(env)["render_mcp"](root)
         expected = rendered[0] if env == "opencode" else rendered["mcpServers"]
         if any(servers[name] != expected.get(name) for name in managed):

@@ -77,7 +77,7 @@ qa/browser-setup.md в проекте Target
 | `dev-login.php?as=client&id=N` | ручной / Playwright без пароля клиента |
 
 Только **dev/test** стенд (`.tools/docker-test` / docker-dev), никогда прод.
-См. [login-as-user](../../.agents/skills/login-as-user/SKILL.md), admin.md (проект Target).
+См. login-as-user (`../../.agents/skills/login-as-user/SKILL.md`; missing in kit), admin.md (проект Target).
 
 ---
 
@@ -178,9 +178,10 @@ docker exec -w /var/www/html copytrust-dev-php-apache-1 php vendor/phpunit/phpun
 
 ### 5.2. Слой 1: Codeception (канон запуска)
 
-Контейнер раннера: `copytrust-codecept:8.3`. При PHP 8.2+ на хосте образ не нужен:
-`php -d register_argc_argv=1 .tools/codeception/vendor/bin/codecept -c .tools/codeception/codeception.yml ...`.
-Флаг `-d register_argc_argv=1` обязателен, иначе Codeception падает с `register_argc_argv must be set to On`; `task-test.sh` передаёт его сам.
+ Codeception всегда запускается в отдельном контейнере `copytrust-codecept:8.3`, независимо от PHP на хосте и в приложении.
+ Сайт на `:8030` продолжает работать на PHP 7.4.33; версия раннера не меняет runtime сайта.
+ Раннер собирается из `.doc/qa/docker/Dockerfile`, если образа ещё нет.
+ `register_argc_argv=1` включён в PHP-конфиг образа runner, потому что Codeception падает без этой настройки.
 Браузерная проверка: порт `9515` (chromedriver на хосте в WSLg — видимое окно) или порт `4444` (Selenium в Docker).
 Стенд: `.tools/docker-dev` (`http://127.0.0.1:8030/`, PHP 7.4) или `.tools/docker-test` (`http://127.0.0.1:8230/`).
 
@@ -365,7 +366,7 @@ Docker в сценариях выбора образа подменяется т
 - qa/fragments.md в проекте Target - библиотека AcceptanceTester
 - qa/browser-setup.md в проекте Target - Chrome / chromedriver / WSL
 - [codeception/README.md](../../.tools/codeception/README.md) - установка и запуск
-- [state/25-codeception-tools-move-2026-11-11.md](./state/25-codeception-tools-move-2026-11-11.md) - перенос рабочей копии suite в `.tools` и хостовый запуск
+- [state/25-codeception-tools-move-2026-11-11.md](./state/25-codeception-tools-move-2026-11-11.md) - история переноса рабочей копии suite и конфигурации runner
 - cicd.md §3.5 (проект Target)
 - [`.agents/skills/task-router/children/testing-router/children/test-task/SKILL.md`](../../.agents/skills/task-router/children/testing-router/children/test-task/SKILL.md)
 
@@ -373,6 +374,7 @@ Docker в сценариях выбора образа подменяется т
 
 ## История изменений
 
+- 2026-11-24: Codeception всегда использует PHP 8.3 runner в Docker, независимо от PHP хоста; PHPUnit 4.8.36 оставлен в PHP 7.4 runtime legacy-приложения.
 - 2026-11-20: §5.4.1 - уточнено, что канон Dockerfile в git это `tools/docker-dev`, а `.tools/docker-dev` локальная копия; задача #2624 перевела `tools/` и PHPStan на PHP 7.4.
 - 2026-11-11: добавлен скрипт очистки прогонов старше 14 дней `cleanup-test-runs.py`; дата берётся из содержимого прогона, dry-run по умолчанию.
 - 2026-11-11: браузерные доказательства `platform-browser-test` перенесены из `.doc/skil_data/copytrust/browser-test/` в `.doc/tasks/{N}/test-runs/{дата}_{platform}-browser/`; путь проверяет `validate_structure.py`.

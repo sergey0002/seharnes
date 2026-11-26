@@ -1,6 +1,6 @@
 ---
 name: task-router
-description: Главный маршрутизатор задач: постановка задачи, сбор требований и формулировка задачи, переход к задаче, diff, заведение, code review, git-task-blame, Jira, Kaiten, аналитика, тестирование, отчеты, документация задачи. Дочерние: analytics, audit-plan, git-task-blame, gototask, jira, kaiten, reporting-router, task-report, task-change-report, task-code-review, task-core, task-diff, task-intake, task-spec, testing-router, test-task, prepare-task-test, browser-verify.
+description: "Задача: постановка, переход, diff, аудит плана, ревью, тесты, Jira/Kaiten, отчёт, документация."
 ---
 
 # task-router

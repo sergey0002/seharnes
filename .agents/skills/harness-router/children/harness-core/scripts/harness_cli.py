@@ -25,7 +25,7 @@ import profile_manifest
 
 SKILL = Path(__file__).resolve().parents[1]
 ROOT_FILES = ["AGENTS.md", "mcp.index.md", ".codeprism.toml", ".cbmignore"]
-HARNESS_DIRS = [".cursor", ".codex", ".kilo", ".agents", ".qoder", ".qwen", ".opencode", ".dsh", ".serena", ".doc/skil_data/harness-core"]
+HARNESS_DIRS = [".cursor", ".codex", ".kilo", ".agents", ".opencode", ".omp", ".serena", ".doc/skil_data/harness-core"]
 
 
 def _run(cmd: list[str], cwd: Path, timeout: int = 1800) -> tuple[int, str]:
@@ -137,12 +137,15 @@ def cmd_doctor(args: argparse.Namespace) -> int:
                            "--root", str(root), "--check"]),
             ("opencode-view", [sys.executable, str(base / "environment-sync/scripts/generate-opencode-config.py"),
                                "--root", str(root), "--check"]),
+            ("omp-view", [sys.executable, str(base / "environment-sync/scripts/generate-omp-config.py"),
+                          "--root", str(root), "--check"]),
             ("mcp-views", [sys.executable, str(base / "mcp-audit/scripts/verify_mcp_views.py"),
                             "--canonical", ".cursor/mcp.json",
                             *[arg for env, flag, path in (
                                 ('kilo', '--kilo', '.kilo/kilo.jsonc'), ('agents', '--expanded', '.agents/mcp.json'),
                                 ('qoder', '--expanded', '.qoder/settings.json'), ('qwen', '--qwen', '.qwen/settings.json'),
                                 ('opencode', '--opencode', 'opencode.json'), ('codex', '--codex-toml', '.codex/config.toml'),
+                                ('omp', '--expanded', '.omp/mcp.json'),
                             ) if env in active for arg in (flag, path)]]),
             ("registry", [sys.executable, str(base / "improvement/scripts/validate_registry.py")]),
             ("rules", [sys.executable, str(base / "improvement/scripts/validate_rules.py"),
@@ -167,7 +170,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
             print(json.dumps({"status": "failed", "errors": ["unknown gates: " + ", ".join(unknown)]}))
             return 2
         for name, command in gate_checks:
-            if getattr(args, "compact", False) and name in {"parity", "qwen-view", "opencode-view", "mcp-views", "render-check", "mirror-check", "registry", "docs-components", "native-discovery"}:
+            if getattr(args, "compact", False) and name in {"parity", "qwen-view", "opencode-view", "omp-view", "mcp-views", "render-check", "mirror-check", "registry", "docs-components", "native-discovery"}:
                 continue
             if selected is not None and name not in selected:
                 continue
@@ -345,51 +348,33 @@ def python_export(root: Path, target: Path, profile: str, *, yes: bool) -> int:
 def cmd_export(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve()
     target = Path(args.target).resolve()
-    profile_key = {"Full": "developer", "Core": "core", "Developer": "developer",
-                   "Project": "project"}[args.profile]
-    if args.dry_run:
-        kit = config.load_kit(root)
-        source, excluded = profile_manifest.build(root, profile_key)
-        target_all = manifest.build(target, kit) if target.is_dir() else {}
-        target_map = {path: digest for path, digest in target_all.items() if path in source}
-        diff = manifest.compare(source, target_map)
-        print(json.dumps({
-            "status": "dry-run",
-            "profile": args.profile,
-            "target": str(target),
-            "overwritten_count": len(diff.overwritten),
-            "added_count": len(diff.added),
-            "kept_count": len(diff.target_only),
-            "same": diff.same,
-            "excluded_count": len(excluded),
-            "overwritten": diff.overwritten[:30],
-            "added": diff.added[:30],
-            "kept": diff.target_only[:30],
-            "excluded": excluded[:30],
-        }, ensure_ascii=False, indent=2))
-        return 0
-    target = Path(args.target).resolve()
-    engine = root / ".agents" / "skills" / "harness-router" / "children" / "new-project" / "scripts" / "rebase_project.ps1"
-    if not engine.is_file():
-        print(f"export engine missing: {engine}")
+    profile = {"Full": "developer", "Core": "core", "Developer": "developer",
+               "Project": "project"}[args.profile]
+    mode = {"migrate": "install", "clean": "mirror", "update": "update"}[args.mode]
+    engine = root / ".agents" / "skills" / "harness-router" / "children" / "new-project" / "scripts"
+    if str(engine) not in sys.path:
+        sys.path.insert(0, str(engine))
+    try:
+        import export_kit
+    except ImportError as error:
+        print(json.dumps({"status": "failed", "reason": f"export engine missing: {error}"},
+                         ensure_ascii=False))
         return 2
-    command = ["pwsh", "-NoProfile", "-File", str(engine), "-Target", args.target,
-               "-Profile", "Core" if profile_key == "core" else "Full", "-Mode", args.mode]
-    if args.project_name:
-        command += ["-ProjectName", args.project_name]
-    if args.yes:
-        command.append("-Yes")
-    if args.skip_preflight:
-        command.append("-SkipPreflight")
-    if args.skip_tools:
-        command.append("-SkipTools")
-    if args.no_review:
-        command.append("-SkipReview")
     if args.no_backup:
-        command.append("-SkipBackup")
-    code, output = _run(command, root)
-    print(output)
-    return code
+        print(json.dumps({"status": "warning", "reason": "backup is always written for export"},
+                         ensure_ascii=False))
+    try:
+        result = export_kit.export(root, target, profile, mode,
+                                   project_name=args.project_name,
+                                   skip_tools=args.skip_tools,
+                                   dry_run=args.dry_run)
+    except (OSError, ValueError) as error:
+        print(json.dumps({"status": "failed", "reason": str(error)}, ensure_ascii=False))
+        return 2
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    if args.dry_run:
+        return 0
+    return 0 if result.get("status") == "passed" else 2
 
 
 def cmd_setup(args: argparse.Namespace) -> int:

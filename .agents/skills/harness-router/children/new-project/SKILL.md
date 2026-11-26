@@ -1,159 +1,131 @@
 ---
 name: new-project
 description: >-
-  Переносит или обновляет kit харнеса в целевом проекте режимами migrate, clean
-  и update. Применять только по запросам перенести харнес, экспортировать kit,
-  обновить kit, повторный перенос kit, clean install harness, new-project.
+  Переносит или обновляет kit харнеса в целевом проекте режимами install, update
+  и mirror. Применять по запросам перенести харнес, экспортировать kit, обновить
+  kit, повторный перенос kit, clean install harness, new-project.
 ---
 
 # new-project
 
-Перенос kit харнеса в целевой проект и повторное обновление. Основная точка
-входа - `rebase_project.ps1`; `harness_cli.py` в этом скиле не используется.
+Перенос kit харнеса в целевой проект и повторное обновление. Точка входа одна:
+`scripts/export_kit.py`, она же вызывается `harness_cli.py export` и
+`harness_transfer.py export`. Отдельного PowerShell-движка больше нет.
 
-По умолчанию перенос не инициализирует Git и не изменяет `.git/info/exclude`.
-Для прежнего поведения нужны явные `-InitGit` и/или `-ManageGitExclude`;
-новый `origin` скрипт не назначает.
-
-Перед записью Core проверяет декларации политик Source установленным доверенным Python-reader. При отсутствующей или ослабленной политике перенос останавливается до создания Target; полный preflight релиза и Mirror пока не заменены этой проверкой.
-После переноса legacy-скрипт запускает скопированные генераторы Target, поэтому Source должен быть доверенным. Проверка YAML не делает недоверенный Git-источник безопасным.
+Состав kit задаёт `harness-core/assets/kit.json`. Включённость сред задаёт
+`harness-core/assets/environments.json`, и её читает только шаг развёртывания
+представлений в целевом проекте. Экспорт копирует эталоны канона и не копирует
+сгенерированные представления сред: их создаёт `sync-agent-views.sh` уже в Target.
 
 ## Когда применять
 
 - первый перенос харнеса в существующий проект;
-- нужен чистый kit без локальных скилов и правил;
-- нужно обновить kit в уже перенесенном проекте;
-- нужно понять, что было перезаписано и что осталось локальным.
+- нужно обновить kit в уже перенесённом проекте;
+- нужен точный kit без локальных файлов проекта;
+- нужно понять, что будет перезаписано и что останется локальным.
 
 ## Вход
 
-- абсолютный путь Target;
-- профиль `Full` или `Core`;
-- режим `migrate`, `clean` или `update`;
-- подтверждение пользователя на перезапись.
+- абсолютный путь Source и Target;
+- профиль `core`, `developer` или `project`;
+- режим `install`, `update` или `mirror`.
 
 ## Режимы
 
 | Режим | Поведение |
 |---|---|
-| `migrate` | бэкап перезаписанных файлов, kit поверх Target, target-only сохраняется, после переноса запускается `migration-review` |
-| `clean` | бэкап всех kit-файлов Target, удаление kit-компонентов вне kit, установка только kit, без разбора; запуск без бэкапа запрещён |
-| `update` | обновление kit поверх уже перенесенного проекта, локальные дополнения сохраняются, без разбора конфликтов |
+| `install` | Первый перенос. Существующий файл не перезаписывается. `mcp.json` и `AGENTS.md` сливаются структурно: серверы Target сохраняются. |
+| `update` | Обновляет kit-файлы поверх установленного харнеса, локальные файлы вне kit сохраняет. |
+| `mirror` | Точный kit: удаляет файлы kit, которых нет в источнике, после backup. |
 
-## Локальные утилиты стенда
+Дополнительно `export` принимает `--exclude PATH` (не копировать путь или префикс) и
+`--keep PATH` (путь принадлежит Target, не перезаписывать и не удалять). Оба флага
+повторяемые. Ими исключают тяжёлые архивы и сохраняют локальные файлы Target.
 
-Скрипты `create-workspace.sh` и `create-isolated-workspace.sh` были CopyTrust-специфичными и содержали локальные значения. Они вынесены из переносимого скила в `.doc/skil_data/new-project/local/` и не входят в kit. Для переноса в произвольную папку используй `copy-project`.
+## Профили
+
+| Профиль | Состав |
+|---|---|
+| `core` | Runtime-скилы, правила, harness-инструменты и панель; без трекера и task-скилов. |
+| `developer` | Полный kit: Jira, ветки, PHP, Docker, e2e. |
+| `project` | Полный kit и данные приложения. |
+
+Перед записью Core проверяет декларации политик Source установленным reader и
+останавливается при `POLICY_MISSING` или `TRUSTED_GATE_WEAKENING`.
 
 ## Шаги
 
-1. Выбрать режим и профиль.
-2. Запустить перенос:
+1. Предпросмотр без записи:
 
-```powershell
-pwsh -NoProfile -File .agents/skills/harness-router/children/new-project/scripts/rebase_project.ps1 `
-  -Target "C:\path\to\project" -Profile Full -Mode migrate
+```bash
+python3 .agents/skills/harness-router/children/new-project/scripts/export_kit.py \
+  --source . --target /path/to/project --profile developer --mode install --dry-run
 ```
 
-3. Проверить бэкап и отчет:
+2. Перенос:
+
+```bash
+python3 .agents/skills/harness-router/children/new-project/scripts/export_kit.py \
+  --source . --target /path/to/project --profile developer --mode install
+```
+
+Через CLI харнеса: `harness_cli.py export --target <path> --profile Full|Core`.
+
+3. Проверить отчёт и маркер:
 
 ```text
-.doc/.rebase-backup/{timestamp}/
+.doc/.rebase-report.md
+.doc/.rebase-report.json
 .doc/.rebase-conflicts.json
+.doc/.rebase-preserved.txt
 .doc/.rebase-kit.json
+EXPORT_NEXT_STEPS.md
 ```
 
-4. После переноса открыть `EXPORT_NEXT_STEPS.md` в Target и выполнять его
-   настройки только с параметрами целевого проекта.
-5. В режиме `migrate` скрипт сам запускает `migration-review`: без `-Yes` он
-   интерактивный, с `-Yes` формирует только отчет. При `-SkipReview` запустить
-   разбор вручную:
-
-```bash
-python3 .agents/skills/harness-router/children/migration-review/scripts/review_migration.py \
-  --root . --interactive
-```
-
-6. Скрипт автоматически выполняет локальную синхронизацию из канона Target. Для повторной проверки:
-
-```bash
-bash .agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh --local-only
-```
-
-Синхронизация обязательна для всех режимов и блокирует успешный экспорт при ошибке. Она не меняет глобальные конфиги других проектов.
-
-7. Проверить настройки без записи:
+4. Открыть `EXPORT_NEXT_STEPS.md` в Target и выполнить настройку проекта.
+5. Проверить готовность без записи:
 
 ```bash
 python3 .agents/skills/harness-router/children/project-setup/scripts/onboard-project.py \
   --root . --check
 ```
 
-Затем заполнить Target по `EXPORT_NEXT_STEPS.md`; не применять фиктивные значения
-или `--yes` без проверки предлагаемых путей и настроек.
-
-8. В режиме `clean` локальные компоненты не разбираются: они остаются только в
-   бэкапе.
-9. В режиме `update` повторный разбор не выполняется. Для отдельного разбора запустить
-   `migration-review` вручную.
-
-Перенос DSH kit выполняется явно через `copy-dsh-kit.ps1`. Локальный
-`.git/info/exclude` исключает `.dsh` из Git, но не мешает этому шагу. Скрипт
-`copy-project` использует только tracked-файлы и потому `.dsh` не переносит.
-
-Полная процедура: `.doc/rebase_project.md` и
-`.doc/harnes/state/14-project-migration.md`.
-
 ## Выход
 
-- kit в Target;
-- безопасный набор `.tools` без `.env`, `dump.sql`, `vendor` и `_output`; отключается `-SkipTools`;
-- `.tools/scripts` и `.tools/mcp-servers` копируются всегда: на них ссылаются MCP-конфиги;
-- `.tools/codeception` получает `codeception.yml`, `composer.json`, `composer.lock` и `scripts` при включённом `.tools`;
-- CodePrism остаётся отключённым, адрес образца заменён заглушкой `http://127.0.0.1:0/mcp`;
-- бэкап перезаписанных файлов;
-- `.doc/.rebase-conflicts.json`;
-- маркер `.doc/.rebase-kit.json`;
-- отчет разбора в режиме `migrate`.
-- `sourcegraph-local` не копируется; стек SG разворачивается вручную.
+- kit в Target по составу `kit.json`;
+- backup перезаписанных файлов в `.doc/.rebase-backup/{stamp}/`;
+- представления включённых сред, собранные `sync-agent-views.sh --local-only`;
+- отчёт, маркер и список файлов Target вне kit;
+- `EXPORT_NEXT_STEPS.md`.
 
 ## Ограничения
 
-- `clean` удаляет kit-компоненты Target вне kit. Без бэкапа не запускать: `-Mode clean -SkipBackup` завершается ошибкой.
-- `update` не разрешает конфликты и не устанавливает локальные скилы.
-- Секреты и MCP-значения из оригинала не копируются автоматически.
-- Прямой запуск `rebase_project.ps1` выполняет разбор только в режиме `migrate`.
-- Must-check проверяет наличие обязательных файлов и отсутствие чужих данных. Пропуск печатает `EXPORT_REBASE_DONE_WITH_WARNINGS` и возвращает код 2; успешный перенос печатает `EXPORT_REBASE_DONE`.
-- Существующий `.codex/config.toml` в Target не блокирует повторный экспорт: файл бэкапится, MCP-серверы Target-only сохраняются, CodePrism заменяется заглушкой.
+- Секреты и `*.local.*` не копируются; `mcp.env` создаётся из `mcp.env.example`.
+- `install` не перезаписывает существующие файлы.
+- `mirror` удаляет только путь kit, отсутствующий в источнике, после backup.
+- DSH не входит в kit: среда отключена, файлы отсутствуют в `kit.json`.
+- Абсолютные пути Source переписываются на Target; CodePrism отключается заглушкой.
 
 ## Read-only предпросмотр и сверка
 
-`scripts/harness_transfer.py` — единая точка проверки и файлового обновления для явно выбранных путей или корней. Команды `fetch`, `inventory`, `plan`, `verify`, `approve`, `apply`, `rollback`, `render`, `compact` и `adopt` работают с локальным каталогом или локальным bare-хранилищем Git. `fetch` получает одну ветку или тег без checkout; сеть используется только в этой команде, код кандидата не запускается.
+`scripts/harness_transfer.py` — отдельный движок для явно выбранных путей и
+локального bare-хранилища Git. Команды `fetch`, `inventory`, `plan`, `verify`,
+`approve`, `apply`, `rollback`, `render`, `compact`, `adopt` и `export` работают
+без сети, кроме `fetch`. `export` в этом движке вызывает тот же `export_kit.py`,
+поэтому состав совпадает с `harness_cli.py export`.
 
-- `fetch` получает ref в `refs/harness/source`; встроенный пароль в URL отклоняется, локальный путь требует `--allow-local`.
-- `inventory` показывает SHA-256, режимы и защищённые пути Source и Target.
-- `plan` строит предпросмотр с решениями по конфликтам; при отсутствии baseline каждый существующий файл Target требует решения.
-- `verify` сверяет Target с `.doc/web/state/transfer/receipt.json`.
-- `approve` проверяет решения и срок, заново сверяет Source и Target.
-- `apply` пишет выбранные обычные файлы через backup, журнал и verify; receipt пишется последним.
+- `fetch` получает ref в `refs/harness/source`; встроенный пароль в URL отклоняется.
+- `plan` строит предпросмотр с решениями по конфликтам.
+- `apply` пишет выбранные файлы через backup, журнал и verify; receipt пишется последним.
 - `rollback` восстанавливает активный журнальный прогон.
-- `render` пересобирает generated views текущими доверенными генераторами; `--check` только проверяет.
-
-`apply` поддерживает обычные файлы, `AGENTS.md` (только managed block) и `.cursor/mcp.json` (структурный merge: серверы Target сохраняются, новые и конфликтующие upstream-серверы добавляются disabled). Остальные настройки адаптеров и generated views (`.qoder/`, `.codex/rules/`, `.kilo/rules/`, `.agents/rules/`) в план apply не включаются: их создаёт renderer. `apply --render` пересобирает views после commit. Панель, supervisor, Docker и Windows-native входы в текущую область не входят.
+- `render` пересобирает generated views доверенными генераторами.
 
 ## История изменений
 
-- 2026-11-11: экспорт больше не блокируется адресом CodePrism в источнике и существующим `.codex/config.toml` в Target; адрес образца заменяется заглушкой. `.tools/scripts` копируется всегда, must-check приведён к текущей раскладке и возвращает код 2 при пропусках, `clean` без бэкапа запрещён.
-
-## Профили и текущее состояние
-
-`Core`, `Developer` и `Project` задают состав kit. `Developer` является развитием прежнего Full, `Project` добавляет приложение. Профильная карта строится `profile_manifest.py`; dry-run и `plan --profile` без явных корней используют её. Generated views при выборе профиля исключаются. Фактический PowerShell-export всё ещё копирует по своим спискам, поэтому единый walker для actual export остаётся задачей P0.
-
-`harness_transfer.py apply` поддерживает обычные файлы, `AGENTS.md` и `.cursor/mcp.json`. Generated views в план не включаются, а пересобираются `render_agent_views.py` или `sync-agent-views.sh`. Receipt, SQLite-журнал, backup и `rollback` подключены. Полный staging renderer до первой записи, профильный отбор путей и Windows/NTFS-тесты остаются открытыми.
-
-`compact_agent_views.py` и `harness_transfer compact` удаляют generated views, `composer.phar` и preflight backups. После клона или компакта среды восстанавливаются обычной командой `sync-agent-views.sh`. `doctor --compact` проверяет компактный эталон без view-гейтов, обычный `doctor` требует восстановленные views.
-
-Локальные CopyTrust workspace-скрипты вынесены в `.doc/skil_data/new-project/local/` и не входят в переносимый скил. `copy-project` остаётся отдельным контрактом Git-снимка приложения.
+- 2026-11-25: PowerShell-движок `rebase_project.ps1` и обёртки удалены. Экспорт идёт через `export_kit.py` по составу `kit.json`; предпросмотр и перенос используют один walker. Добавлен режим `mirror`. DSH исключён из kit.
 
 ## Связанные документы
 
-Текущий перенос: `harness_transfer.py`, `harness_wizard.py`, `profile_manifest.py`, `render_agent_views.py`, `compact_agent_views.py`. Исторические сведения о старом `rebase_project.ps1`: `.doc/harnes/state/14-project-migration.md` и `.doc/rebase_project.md`.
+`export_kit.py`, `profile_manifest.py`, `kit_selection.py`, `kit_adapt.py`,
+`transfer_modes.py`, `harness_transfer.py`. Канон процедуры:
+`.doc/rebase_project.md`.

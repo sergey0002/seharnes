@@ -96,6 +96,9 @@ final class OrderMainPage extends BasePage
     public const LITERAL_SKIP = 'не удалось оплатить';
     public const LITERAL_BANNER_SUM = 'Сумма неоплаченных заказов';
     public const LITERAL_ONE_CLICK = 'Выберите способ оплаты';
+    // Stage 2 bug fixes: problem orders modal
+    public const LITERAL_PROBLEM_ORDERS_TITLE = 'Список заказов при оплате которых возникли проблемы';
+    public const LITERAL_PROBLEM_ORDERS_BODY = 'Оплатите их по отдельности';
 
     private const BANNER = '//*[contains(@class,"unpaid-orders-banner")]';
     private const PAY_BANNER = '//button[contains(@class,"unpaid-orders-banner__pay")]';
@@ -315,7 +318,7 @@ final class OrderMainPage extends BasePage
 
     public function dontSeeAgreementModal(): void
     {
-        $this->I->dontSeeElement(self::AGREEMENT_BOX);
+        $this->I->waitForElementNotVisible(self::AGREEMENT_BOX, 5);
     }
 
     public function waitConfirmFromAccount(): void
@@ -389,5 +392,104 @@ final class OrderMainPage extends BasePage
     {
         $this->I->waitForText(self::LITERAL_SKIP, 10);
         $this->I->see(self::LITERAL_SKIP);
+    }
+
+    /**
+     * Stage 2: модалка со списком проблемных заказов (problemOrders).
+     * Ожидается после групповой оплаты, если есть заказы с rid_deleted.
+     */
+    public function seeProblemOrdersModal(): void
+    {
+        $this->I->waitForText(self::LITERAL_PROBLEM_ORDERS_TITLE, 15);
+        $this->I->see(self::LITERAL_PROBLEM_ORDERS_TITLE);
+        $this->I->see(self::LITERAL_PROBLEM_ORDERS_BODY);
+    }
+
+    /**
+     * Проверить, что в модалке problemOrders есть указанные номера заказов.
+     * @param int[] $orderIds
+     */
+    public function seeProblemOrdersList(array $orderIds): void
+    {
+        $body = (string) $this->I->executeJS(
+            'var modals = document.querySelectorAll(".modal-container");'
+            . 'for (var i = 0; i < modals.length; i++) {'
+            . '  var title = modals[i].querySelector("h2.modal-header__title");'
+            . '  if (title && (title.innerText || "").indexOf("Список заказов при оплате") !== -1) {'
+            . '    var body = modals[i].querySelector("[slot=body], .modal-body");'
+            . '    return body ? String(body.innerText || "").replace(/\\s+/g, " ").trim() : "";'
+            . '  }'
+            . '}'
+            . 'return "";'
+        );
+        foreach ($orderIds as $id) {
+            $this->I->assertTrue(
+                strpos($body, (string) $id) !== false,
+                'problemOrders модалка должна содержать заказ #' . $id . ', body: ' . $body
+            );
+        }
+    }
+
+    /**
+     * Закрыть модалку problemOrders (кнопка ОК).
+     */
+    public function closeProblemOrdersModal(): void
+    {
+        $clicked = $this->I->executeJS(
+            'var modals = document.querySelectorAll(".modal-container");'
+            . 'for (var i = 0; i < modals.length; i++) {'
+            . '  var title = modals[i].querySelector("h2.modal-header__title");'
+            . '  if (title && (title.innerText || "").indexOf("Список заказов при оплате") !== -1) {'
+            . '    var btn = modals[i].querySelector("button.formbox__buttons_find, button[type=button]");'
+            . '    if (btn) { btn.click(); return true; }'
+            . '  }'
+            . '}'
+            . 'return false;'
+        );
+        $this->I->assertTrue((bool) $clicked, 'не удалось закрыть модалку problemOrders');
+        $this->I->waitForJS(
+            'var modals = document.querySelectorAll(".modal-container");'
+            . 'for (var i = 0; i < modals.length; i++) {'
+            . '  var title = modals[i].querySelector("h2.modal-header__title");'
+            . '  if (title && (title.innerText || "").indexOf("Список заказов при оплате") !== -1) { return false; }'
+            . '}'
+            . 'return true;',
+            10
+        );
+    }
+
+    /**
+     * Проверить, что в столбце статуса для заказа НЕТ надписи "не удалось оплатить".
+     * Используется для заказов с удалёнными файлами (ObjectDeleted) — они не должны попадать в skipped.
+     */
+    public function dontSeeSkipLabelForOrder(int $orderId): void
+    {
+        $hasSkip = $this->rowHasSkipLabel($orderId);
+        $this->I->assertFalse($hasSkip, 'заказ #' . $orderId . ' не должен иметь "не удалось оплатить" в статусе');
+    }
+
+    /**
+     * Проверить, что в столбце статуса для заказа ЕСТЬ надпись "не удалось оплатить".
+     * Используется для обычных skipped (не удалось оплатить по иным причинам).
+     */
+    public function seeSkipLabelForOrder(int $orderId): void
+    {
+        $hasSkip = $this->rowHasSkipLabel($orderId);
+        $this->I->assertTrue($hasSkip, 'заказ #' . $orderId . ' должен иметь "не удалось оплатить" в статусе');
+    }
+
+    private function rowHasSkipLabel(int $orderId): bool
+    {
+        return (bool) $this->I->executeJS(
+            'var rows = document.querySelectorAll("#vue-order-container table tbody tr");'
+            . 'for (var i = 0; i < rows.length; i++) {'
+            . '  var fail = rows[i].querySelector(".order-status-cell__fail");'
+            . '  if (!fail) { continue; }'
+            . '  var txt = rows[i].innerText || "";'
+            . '  if (txt.indexOf(String(arguments[0])) !== -1) { return true; }'
+            . '}'
+            . 'return false;',
+            [$orderId]
+        );
     }
 }

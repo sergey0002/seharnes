@@ -2,7 +2,7 @@
 """Скрины прогона для отчёта в Jira.
 
 Usage (Cursor):
-  python3 .cursor/skills/task-router/children/task-report/scripts/collect-shots.py TASK [MAX]
+  python3 .agents/skills/task-router/children/task-report/scripts/collect-shots.py TASK [MAX]
 Usage (Codex):
   python3 .codex/skills/task-router/children/reporting-router/children/task-report/scripts/collect-shots.py TASK [MAX]
 """

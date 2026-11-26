@@ -134,8 +134,7 @@
 │   │
 │   ├── mark-verify-done.ps1        ← Отметка документа сверенным в verify-registry.tsv.
 │   │
-│   ├── export-rebase-project.ps1   ← Обёртка экспорта переноса харнеса
-│   │                                  (канон: rebase_project.ps1).
+│   ├── export_kit.py               ← Экспорт kit харнеса (install/update/mirror).
 │   │
 │   ├── _batch-ai-links.py          ← Массовая простановка AI-блоков в arch-доки.
 │   │
@@ -342,7 +341,7 @@ tags: [harness, readme, documentation]
 4. Выводит: какие документы устарели и какие файлы изменились.
 
 Полный состав docscripts (включая build-tasks-index.ps1, find-related-tasks.ps1,
-get-verify-batch.ps1, mark-verify-done.ps1, export-rebase-project.ps1,
+get-verify-batch.ps1, mark-verify-done.ps1, export_kit.py,
 _batch-ai-links.py и recovery-утилиты): см. [state/05-scripts.md](state/05-scripts.md).
 
 ---
@@ -823,7 +822,7 @@ Codex работает как CI/CD агент:
 ## Связи
 
 - [doc_rules.md](doc_rules.md) — конституция документации
-- `.doc/architecture/index.md` (проект Target) — оглавление архитектуры
+- [architecture/index.md](../architecture/index.md) — оглавление архитектуры
 - [project-doc SKILL](../../.agents/skills/documentation-router/children/project-doc/SKILL.md) — инструкции агенту
 - [task-doc SKILL](../../.agents/skills/documentation-router/children/task-doc/SKILL.md) — документирование задач
 - [AGENTS.md](../../AGENTS.md) — корневые правила

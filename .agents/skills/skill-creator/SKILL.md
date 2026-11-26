@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: "Designs, scaffolds, and packages portable 17-agent AI Skills from scratch or chat workflows (Claude, Codex, Cursor, OpenCode, Kilo, Antigravity, Pi, Qoder). Use when creating a new skill, building scripts/openai.yaml/evals, or packaging .skill archives — включая «создай скил», «подготовь SKILL.md». Do NOT use for standalone audits of existing skills (use skill-auditor) or general app coding."
+description: "Создай новый скил: SKILL.md, scripts/evals, упаковка .skill; не аудит существующего."
 license: MIT
 compatibility: "Requires Python 3.10+ (standard library; optional PyYAML). Auto-integrates with sibling skill-auditor when present."
 metadata:

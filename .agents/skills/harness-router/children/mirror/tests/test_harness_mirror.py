@@ -61,13 +61,16 @@ def make_repo(tmp_path: Path) -> Path:
     return tmp_path
 
 
+MIRROR_DATA = Path(".agents/skills/harness-router/children/mirror/.data")
+
+
 def scan(root: Path, **kw):
-    data = (root / ".cursor" / "skills" / "harness-mirror" / ".data").resolve()
+    data = (root / MIRROR_DATA).resolve()
     return hm.cmd_scan(args(**kw), root, data)
 
 
 def data_of(root: Path) -> Path:
-    return (root / ".cursor" / "skills" / "harness-mirror" / ".data").resolve()
+    return (root / MIRROR_DATA).resolve()
 
 
 def test_markdown_roundtrip_with_frontmatter():
@@ -187,6 +190,18 @@ def test_visibility_contract_across_adapters(tmp_path):
     write(root / ".qwen" / "rules" / "gates.md", "---\ndescription: gates\n---\n")
     write(root / ".qwen" / "rules" / "path-rule.md",
           "---\ndescription: path rule\npaths:\n  - '**/*.md'\n---\n")
+    # compute_visibility reads the project environment registry. The real
+    # registry disables qwen/qoder/antigravity, so the fixture writes a local
+    # registry that enables exactly the adapters exercised here.
+    registry = root / ".agents/skills/harness-router/children/harness-core/assets/environments.json"
+    registry.parent.mkdir(parents=True, exist_ok=True)
+    enabled = {"codex": True, "kilo": True, "qwen": True, "qoder": True, "agents": True, "opencode": True}
+    registry.write_text(json.dumps({"schema": 1, "environments": [
+        {"id": env, "enabled": env in enabled} for env in
+        ("cursor", "codex", "kilo", "qoder", "qwen", "agents", "dsh", "opencode", "omp")
+    ]}), encoding="utf-8")
+    write(root / "opencode.json", '{"instructions": [".opencode/rules/gates.md"]}\n')
+    write(root / ".opencode" / "rules-index.md", "<!-- glob-triggers -->\n`**/*.md`\n")
 
     report = hm.compute_visibility(root)
     assert report["status"] == "passed", report["errors"]
@@ -349,7 +364,7 @@ def test_missing_target_keeps_path(tmp_path):
     write(notes, "# Notes\n\nSee `shared.md`.\n")
     scan(root)
     data = data_of(root)
-    node_file = data / "nodes" / "doc__demo-notes.json"
+    node_file = data / "nodes" / "doc__demo-references-notes.json"
 
     def shared_relation():
         node = json.loads(node_file.read_text(encoding="utf-8"))
@@ -792,7 +807,7 @@ def test_relative_links_resolve_from_source(tmp_path):
     )
     scan(root)
     data = data_of(root)
-    node = json.loads((data / "nodes" / "doc__demo-notes.json").read_text(encoding="utf-8"))
+    node = json.loads((data / "nodes" / "doc__demo-references-notes.json").read_text(encoding="utf-8"))
     targets = {r["target_node_id"] for b in node["content_blocks"] for r in b["relations"] if r["resolution"] == "resolved"}
     assert "skill:demo" in targets
     assert "rule:doc-rules" in targets
@@ -890,6 +905,6 @@ def test_bare_name_resolves_inside_skill(tmp_path):
     write(root / ".cursor" / "skills" / "other" / "SKILL.md", "---\nname: other\ndescription: o\n---\n\n# Other\n")
     write(root / ".cursor" / "skills" / "other" / "README.md", "# Other readme\n")
     scan(root)
-    node = json.loads((data_of(root) / "nodes" / "doc__demo-notes.json").read_text(encoding="utf-8"))
+    node = json.loads((data_of(root) / "nodes" / "doc__demo-references-notes.json").read_text(encoding="utf-8"))
     ids = {r.get("target_node_id") for b in node["content_blocks"] for r in b.get("relations", [])}
     assert "doc:demo-readme" in ids

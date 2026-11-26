@@ -45,8 +45,8 @@
     },
     "codeprism": {
       "type": "http",
-      "url": "http://127.0.0.1:9201/mcp",
-      "disabled": false,
+      "url": "http://127.0.0.1:0/mcp",
+      "disabled": true,
       "alwaysAllow": [
         "get_graph_stats",
         "get_context",
@@ -205,9 +205,9 @@
         "@playwright/mcp@0.0.38"
       ],
       "env": {
-        "PLAYWRIGHT_MCP_EXECUTABLE_PATH": "/home/newuser/.local/chrome-for-testing/chrome-wrap.sh",
-        "LD_LIBRARY_PATH": "/home/newuser/.local/chrome-deps/root/usr/lib/x86_64-linux-gnu:/home/newuser/.local/chrome-deps/root/lib/x86_64-linux-gnu",
-        "CHROME_PATH": "/home/newuser/.local/chrome-for-testing/chrome-wrap.sh"
+        "PLAYWRIGHT_MCP_EXECUTABLE_PATH": "",
+        "LD_LIBRARY_PATH": "",
+        "CHROME_PATH": ""
       },
       "disabled": false,
       "alwaysAllow": [
@@ -259,7 +259,7 @@
       "url": "http://127.0.0.1:7080/.api/mcp/v1",
       "disabled": true,
       "headers": {
-        "Authorization": "token sgp_local_21caa5a8c2fdce18911a098fdc40a7fa61ca2466"
+        "Authorization": "token REPLACE_WITH_SOURCEGRAPH_MCP_TOKEN"
       },
       "alwaysAllow": [
         "sg_keyword_search",

@@ -59,4 +59,5 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/compact_
 ## История изменений
 
 - 2026-11-13: добавлена компактная очистка generated views.
+- 2026-11-24: `.omp/mcp.json` очищается с сохранением локальных серверов; отдельного зеркала правил и скилов у omp нет.
 - 2026-11-20: список представлений берётся из реестра; `AGENTS.md` сохраняет текст после bootstrap.

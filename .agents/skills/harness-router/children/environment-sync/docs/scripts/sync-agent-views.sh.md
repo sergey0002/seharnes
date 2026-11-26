@@ -69,6 +69,7 @@ bash .agents/skills/harness-router/children/environment-sync/scripts/sync-agent-
 Связанные скрипты: `generate-agent-configs.py`, `generate-mcp-config.py`, `verify_parity.py`.
 
 ## История изменений
+- 2026-11-24: добавлена среда omp: parity по `.omp/rules` и проверка MCP по `.omp/mcp.json`.
 - 2026-11-19: удалено создание постоянных резервных копий; запрещены самодельные архивы перед sync, rebuild и doctor.
 - 2026-11-07: составлен нормативный документ скрипта со статусом actual.
 - 2026-11-09: добавлен блокирующий `rule-visibility` в общий прогон синхронизации.

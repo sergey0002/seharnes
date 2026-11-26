@@ -24,6 +24,8 @@ if [[ -f "${ENV_FILE}" ]]; then
   source <(tr -d '\r' < "${ENV_FILE}")
   set +a
 fi
+# Ensure Node.js from nvm is in PATH
+export PATH="/home/newuser/.local/bin:${PATH}"
 
 if [[ "$#" -eq 0 ]]; then
   echo "run-with-mcp-env.sh: command is required" >&2

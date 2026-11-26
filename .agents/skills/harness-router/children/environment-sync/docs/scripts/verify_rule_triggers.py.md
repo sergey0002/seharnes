@@ -23,6 +23,7 @@ tags: [harness, script, verify_rule_triggers, parity, verification]
 - DSH: инлайн `(always)` в `DSH-RULES.md` / on-demand таблица (остальные)
 - Codex: только копия файла, нет trigger engine — always в `rules-index.md` head, остальные в tail
 - OpenCode: `instructions` list (always) / `.opencode/rules-index.md` (остальные)
+- omp: плоское зеркало с сохранённым frontmatter; `alwaysApply` inline, `globs` в описании правила, остальное по требованию
 
 Скрипт читает все сгенерированные views и сверяет trigger и размещение каждого правила во всех средах. Дополнительно проверяет, что `gate: true` правила остаются inline, а `attach: glob` правила имеют автоматический trigger или generated glob-блок. JSON содержит `status`, `rules`, `kinds`, `gates`, `attach_globs` и `errors`.
 
@@ -50,6 +51,7 @@ tags: [harness, script, verify_rule_triggers, parity, verification]
 | --codex-index |  | string | нет | .codex/rules-index.md | Путь к Codex rules-index |
 | --opencode |  | string | нет | opencode.json | Путь к OpenCode конфигу |
 | --opencode-index |  | string | нет | .opencode/rules-index.md | Путь к OpenCode rules-index |
+| --omp |  | string | нет | .omp/rules | Путь к плоскому зеркалу правил omp |
 
 ## Коды выхода
 | Код | Значение | Действие вызывающего |
@@ -126,4 +128,5 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/verify_r
 ## История изменений
 - 2026-11-07: полная документация на основе анализа кода
 - 2026-11-09: добавлена проверка visibility-контрактов гейтов и glob-триггеров
+- 2026-11-24: добавлена среда omp (`--omp`): проверяется совпадение классификации плоского зеркала.
 - 2026-11-20: добавлена среда OpenCode (`--opencode`, `--opencode-index`)

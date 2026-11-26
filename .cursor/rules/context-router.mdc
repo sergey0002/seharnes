@@ -87,7 +87,7 @@ alwaysApply: true
    контроль `.agents/skills/harness-router/children/environment-sync/scripts/verify_parity.py`.
 7. Проверки:
    `python3 .agents/skills/harness-router/children/improvement/scripts/validate_registry.py`,
-   `python3 .agents/skills/harness-router/children/improvement/scripts/validate_rules.py --rules-dir .cursor/rules --skills-dir .cursor/skills`,
+   `python3 .agents/skills/harness-router/children/improvement/scripts/validate_rules.py --rules-dir .cursor/rules --skills-dir .agents/skills`,
    `python3 .agents/skills/harness-router/children/improvement/scripts/validate_skills.py`,
    `python3 .agents/skills/harness-router/children/improvement/scripts/validate_docs.py`.
 8. MCP-аудит: `node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only={server}`.

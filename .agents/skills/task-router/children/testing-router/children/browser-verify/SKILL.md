@@ -20,7 +20,7 @@ MCP (headed по умолчанию, флаг `--headless` не добавлят
 
 Канон полноты: [`.doc/harnes/testaudit.md`](../../../.doc/harnes/testaudit.md) §9.
 Playwright не повторяет ветку, у которой уже есть метод PHPUnit или Cest.
-Порядок прогона методов - по правилу [test-priority](../../../.cursor/rules/test-priority.mdc):
+Порядок прогона методов - по правилу test-priority (`../../../.cursor/rules/test-priority.mdc`; missing in kit):
 сначала методы свежих правок, затем полное покрытие, затем regression.
 
 ---
@@ -137,7 +137,7 @@ bash .agents/skills/task-router/children/testing-router/children/browser-verify/
 даёт HTTP `000`, пока у пользователя UI на `localhost:8030` уже открыт.
 Перед фразой "стенд/chromedriver недоступны" обязателен повтор проверки с
 `required_permissions: ["all"]` (канон:
-[browser-setup.md - AI/sandbox](../../../.doc/qa/browser-setup.md#ai--sandbox-ложный-стенд-недоступен-обязательно)).
+browser-setup.md - AI/sandbox (`../../../.doc/qa/browser-setup.md#ai--sandbox-ложный-стенд-недоступен-обязательно`; missing in kit)).
 Неверная диагностика: CT-2061 (стенд), CT-2607 (бинарник есть / процесс нет) - не повторять.
 
 Предусловия и разбор типичных ошибок:
@@ -176,7 +176,7 @@ phpunit и не cest. Уже зелёный метод этого шага не 
 
 При исправлении вёрстки и ручной проверке сначала открой реальный URL под ролью из flow. Подтверди роль и наличие нужного элемента в rendered DOM. На dev/test-стенде используй документированный dev-вход только после подтверждения окружения; не подменяй вход искусственным DOM.
 
-Если код и браузер расходятся, **до** вывода про Smarty-кеш, hard reload или пересборку сравни фактически загруженные `document.styleSheets[].href` / `script.src` с редактируемым файлом и `getComputedStyle` изменённого элемента. Если браузер использует bundle, определи его source/build путь. Сброс кеша или пересборку делай только при подтверждённой необходимости, не как первый диагностический шаг (см. [browser-setup.md](../../../.doc/qa/browser-setup.md#ассеты-и-кеш-перед-сбросом)).
+Если код и браузер расходятся, **до** вывода про Smarty-кеш, hard reload или пересборку сравни фактически загруженные `document.styleSheets[].href` / `script.src` с редактируемым файлом и `getComputedStyle` изменённого элемента. Если браузер использует bundle, определи его source/build путь. Сброс кеша или пересборку делай только при подтверждённой необходимости, не как первый диагностический шаг (см. browser-setup.md (`../../../.doc/qa/browser-setup.md#ассеты-и-кеш-перед-сбросом`; missing in kit)).
 
 Для layout/overflow зафиксируй `getBoundingClientRect().width` карточки и родителя до/после переключения, `scrollWidth > clientWidth` / `scrollHeight > clientHeight` у нужного контейнера и фактическое изменение `scrollLeft` / `scrollTop`. Для hover и кнопки проверь `getComputedStyle` и результат действия. Снимок после этих проверок делай на живой странице; mock/preview называй только mock/preview и не выдавай вместо скрина исправленного приложения. Если роль или стенд недоступны, сообщи об ограничении, а не объявляй UI проверенным.
 
@@ -266,7 +266,7 @@ phpunit и не cest. Уже зелёный метод этого шага не 
 python3 .agents/skills/task-router/children/testing-router/children/test-task/scripts/gates.py {N}
 ```
 
-12 проверок G0-G11 плюс G12 (машинный прогон) и G13 (таблица веток, [testaudit §9](../../../.doc/harnes/testaudit.md#9-когда-проверять-и-что-считать-веткой)).
+12 проверок G0-G11 плюс G12 (машинный прогон) и G13 (таблица веток, testaudit §9 (`../../../.doc/harnes/testaudit.md#9-когда-проверять-и-что-считать-веткой`; missing in kit)).
 
 Пока хоть один блокирующий гейт красный — задача **не** ready-for-qa.
 Не обходить гейт правкой теста под зелёный результат: если гейт красный,
@@ -302,7 +302,7 @@ python3 .agents/skills/task-router/children/testing-router/children/test-task/sc
 - **Не объявлять стенд/chromedriver мёртвыми** по `curl`/`ss` из sandbox
   (HTTP `000`). Сначала повтор с `required_permissions: ["all"]`; если
   пользователь видит UI на `:8030` - перепроверить, не спорить. Канон:
-  [browser-setup.md § AI/sandbox](../../../.doc/qa/browser-setup.md#ai--sandbox-ложный-стенд-недоступен-обязательно)
+  browser-setup.md § AI/sandbox (`../../../.doc/qa/browser-setup.md#ai--sandbox-ложный-стенд-недоступен-обязательно`; missing in kit)
 - **Не писать "chromedriver нет / не установлен"**, если
   `~/.local/chrome-for-testing/chromedriver-linux64/chromedriver` executable:
   формулировка только "не запущен на :9515"
@@ -315,7 +315,7 @@ python3 .agents/skills/task-router/children/testing-router/children/test-task/sc
 - Не считать последний verdict достаточным без проверки его номера задачи,
   группы и актуальности кода и требований.
 - Не повторять в Playwright ветку, у которой уже есть метод PHPUnit или Cest
-  ([testaudit §9](../../../.doc/harnes/testaudit.md#9-когда-проверять-и-что-считать-веткой)).
+  (testaudit §9 (`../../../.doc/harnes/testaudit.md#9-когда-проверять-и-что-считать-веткой`; missing in kit)).
 - Не пропускать AC-ID, который есть только в комментарии или user-extra.
 - Не закрывать задачу после Playwright-only, если стабильный сценарий можно
   перенести в Cest.

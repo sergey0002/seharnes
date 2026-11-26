@@ -70,7 +70,7 @@ tags: [harness, mcp, docs, legacy]
 ## Связи
 
 - [Карта MCP](./README.md) - общий список
-- [MCP-серверы](../state/04-mcp.md) - причина отключения
+- MCP-серверы (`../state/04-mcp.md`; missing in kit) - причина отключения
 
 ---
 

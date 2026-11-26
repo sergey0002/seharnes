@@ -20,7 +20,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .codex/task-diff.ps1 -TaskNu
 Или напрямую:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .codex/skills/task-router/children/task-diff/scripts/task-diff.ps1 -TaskNumber {N}
+powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/task-router/children/task-diff/scripts/task-diff.ps1 -TaskNumber {N}
 ```
 
 | Action | Когда |

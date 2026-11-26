@@ -10,11 +10,7 @@
     "assets": []
   },
   "tests": [],
-  "children": [
-    "children/test-task",
-    "children/prepare-task-test",
-    "children/browser-verify"
-  ],
+  "children": [],
   "dependencies": {
     "skills": [],
     "project": []

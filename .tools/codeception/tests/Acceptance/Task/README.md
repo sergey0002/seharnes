@@ -15,8 +15,8 @@ Cest-файлы конкретных задач (не глобальный ре�
   и флоу использованы, ссылка на этот файл
 
 Создаётся и обновляется скилом `prepare-task-test`
-([Cursor](../../../../../.cursor/skills/prepare-task-test/SKILL.md) /
-[Codex](../../../../../.codex/skills/prepare-task-test/SKILL.md)).
+(Cursor (`../../../../../.cursor/skills/prepare-task-test/SKILL.md`; missing in kit) /
+Codex (`../../../../../.codex/skills/prepare-task-test/SKILL.md`; missing in kit)).
 
 Не путать с:
 - `.doc/codeception/tests/Acceptance/*Cest.php` (без подпапки) — тесты

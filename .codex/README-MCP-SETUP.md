@@ -62,4 +62,4 @@ node .codex\scripts\test-mcp-servers.mjs
   - Windows: `codebase-memory-mcp.exe` в `%LOCALAPPDATA%\Programs\codebase-memory-mcp\`
   - WSL/Linux: `~/.local/bin/codebase-memory-mcp` (`codebase-memory-mcp-ui-linux-amd64`), **tmux** для UI :9749
 
-Подробности: [правило CBM](rules/mcp-codebase-memory.md) и [документация сервера](../.doc/harnes/mcp/codebase-memory-mcp.md), серверы: [`.codex/README.md`](README.md).
+Подробности: правило CBM (`rules/mcp-codebase-memory.md`; missing in kit) и документация сервера (`../.doc/harnes/mcp/codebase-memory-mcp.md`; missing in kit), серверы: [`.codex/README.md`](README.md).

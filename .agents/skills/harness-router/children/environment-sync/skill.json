@@ -7,21 +7,25 @@
   "resources": {
     "scripts": [
       "scripts/compact_agent_views.py",
-      "scripts/generate-agent-configs.py",
       "scripts/environment_policy.py",
+      "scripts/generate-agent-configs.py",
       "scripts/generate-antigravity-rules.py",
       "scripts/generate-codex-mcp.py",
       "scripts/generate-dsh-config.py",
       "scripts/generate-mcp-config.py",
+      "scripts/generate-omp-config.py",
       "scripts/generate-opencode-config.py",
       "scripts/generate-qoder-config.py",
       "scripts/generate-qwen-config.py",
       "scripts/render_agent_views.py",
       "scripts/rule_model.py",
+      "scripts/setup-workspace.py",
       "scripts/sync-agent-views.sh",
       "scripts/verify_generated_copies.py",
       "scripts/verify_parity.py",
-      "scripts/verify_rule_triggers.py"
+      "scripts/verify_rule_triggers.py",
+      "scripts/workspace-gate.py",
+      "scripts/workspace-mcp.py"
     ],
     "references": [],
     "assets": []
@@ -30,8 +34,10 @@
     "tests/test_dsh_config.py",
     "tests/test_dsh_kit.py",
     "tests/test_generated_copies.py",
+    "tests/test_omp_config.py",
     "tests/test_render_agent_views.py",
-    "tests/test_sync_views.py"
+    "tests/test_sync_views.py",
+    "tests/test_workspace_copy.py"
   ],
   "children": [],
   "dependencies": {

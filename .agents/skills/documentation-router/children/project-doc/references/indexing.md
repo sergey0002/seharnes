@@ -138,7 +138,7 @@ regex и `.js`/`.tpl` вне графа используй `.tools/scripts/multi
 codegraph не полнотекстовый поиск. `.doc/` в граф не входит, читай через
 `multi-search.sh` или `Read`. Сообщества, god nodes и shortest path из старого
 graphify в codegraph не заменяются; для таких вопросов брать CBM `trace_path`.
-См. [правило codegraph](../../../../.cursor/rules/mcp/codegraph.mdc) и
+См. правило codegraph (`../../../../.cursor/rules/mcp/codegraph.mdc`; missing in kit) и
 [документацию](../../../../codegraph/docs/mcp/codegraph.md).
 
 #### Шаг 3 — Связи и impact (для ## Как устроено и ## Связи)

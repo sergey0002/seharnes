@@ -75,7 +75,7 @@ dompdf/** linguist-vendored
 ```
 
 Правила Zoekt и устройство стека:
-[sourcegraph-local.md](../../architecture/sourcegraph-local.md).
+sourcegraph-local.md (`../../architecture/sourcegraph-local.md`; missing in kit).
 
 ## Установка и перенос
 
@@ -92,8 +92,8 @@ dompdf/** linguist-vendored
 ## Связи
 
 - [Карта MCP](./README.md) - общий список
-- [MCP-серверы](../state/04-mcp.md) - причина отключения
-- [MCP-стек](../state/15-mcp-stack.md) - локальный стек как опция
+- MCP-серверы (`../state/04-mcp.md`; missing in kit) - причина отключения
+- MCP-стек (`../state/15-mcp-stack.md`; missing in kit) - локальный стек как опция
 
 ---
 

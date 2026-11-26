@@ -42,7 +42,7 @@ tags: [harness, script, qa-manifest]
 - Git tracked/untracked файлы (`git ls-files`)
 - Файлы проекта по расширениям
 - `.doc/tasks/{N}/` требования
-- `.cursor/skills/{name}/SKILL.md` скилов
+- `.agents/skills/{name}/SKILL.md` скилов
 - `.tools/codeception/.env` (SHA256)
 - Docker: `docker inspect` php-контейнера (image ID)
 - Env vars: QA_PHPUNIT_CONTAINER, QA_PHPSTAN_LEVEL, CHROMEDRIVER_*, MYSQL_*

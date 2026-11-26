@@ -43,7 +43,7 @@ Kilo читает `.agents/skills/` по умолчанию.
 | send-to-git | [send-to-git](../../../.agents/skills/send-to-git/README.md) | `../../../.agents/skills/send-to-git/SKILL.md` |
 | task-report | [task-report](../../../.agents/skills/task-router/children/reporting-router/children/task-report/README.md) | `../../../.agents/skills/task-router/children/reporting-router/children/task-report/SKILL.md` |
 | task-change-report | [task-change-report](../../../.agents/skills/task-router/children/reporting-router/children/task-change-report/README.md) | `../../../.agents/skills/task-router/children/reporting-router/children/task-change-report/SKILL.md` |
-| login-as-user | [login-as-user](../../../.agents/skills/login-as-user/README.md) | `../../../.agents/skills/login-as-user/SKILL.md` |
+| login-as-user | login-as-user (`../../../.agents/skills/login-as-user/README.md`; missing in kit) | `../../../.agents/skills/login-as-user/SKILL.md` |
 
 ## 2. Документация, код и бизнес-анализ (5)
 

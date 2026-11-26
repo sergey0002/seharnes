@@ -29,7 +29,7 @@ tags: [harness, environment, sync, parity, export, editor, opencode]
 
 | Режим | Что делает среда | Пример | Объем работы |
 |---|---|---|---|
-| Нативные скилы | читает `.agents/skills` и `AGENTS.md` сама | opencode, Kilo, Qwen Code | низкий |
+| Нативные скилы | читает `.agents/skills` и `AGENTS.md` сама | opencode, Kilo, Qwen Code, omp | низкий |
 | Зеркало скилов | требует свою копию `.editor/skills` | Codex, Qoder | средний |
 | Свое правило | требует свой формат правил | Codex `flat_md`, Qoder `trigger`, Qwen `paths` | средний или высокий |
 
@@ -56,7 +56,7 @@ tags: [harness, environment, sync, parity, export, editor, opencode]
 | Проверка MCP | `.agents/skills/harness-router/children/mcp-audit/scripts/verify_mcp_views.py` | добавить конфиг среды |
 | Kit экспорта | `.agents/skills/harness-router/children/harness-core/assets/kit.json` | каталог среды в `copy` |
 | CLI переноса | `.agents/skills/harness-router/children/harness-core/scripts/harness_cli.py` | каталог среды в `HARNESS_DIRS` |
-| Скрипт переноса | `.agents/skills/harness-router/children/new-project/scripts/rebase_project.ps1` | `kitScanDirs`, `targetKitDirs`, `Write-GitExclude`, списки Core |
+| Скрипт переноса | `.agents/skills/harness-router/children/new-project/scripts/export_kit.py` | состав из `kit.json`, профили, режимы install/update/mirror |
 | Инструкции агента | `AGENTS.md` | строка адаптера и правило чтения |
 | Состояние | `.doc/harnes/state/01-canon-envs.md`, `.doc/harnes/state/13-agent-migration.md` | таблица сред и артефактов |
 | Индекс | `.doc/harnes/index.md` | строка нового документа |
@@ -77,8 +77,8 @@ tags: [harness, environment, sync, parity, export, editor, opencode]
 5. Написать `generate-{name}-config.py` с двумя режимами: запись и `--check`.
    Генератор должен быть идемпотентным: повторный запуск не меняет файл.
 6. Подключить генератор в `sync-agent-views.sh` до записи parity-манифеста.
-7. Добавить каталог среды в `kit.json`, `HARNESS_DIRS`, `rebase_project.ps1` и
-   `.git/info/exclude`.
+7. Добавить каталог среды в `kit.json` и `HARNESS_DIRS`. Экспорт читает состав
+   из `kit.json`, отдельный список в скрипте переноса не нужен.
 8. Выполнить синк, затем чистый экспорт в `/tmp` и синк уже в экспортированном
    проекте. Без второго шага проверяется только текущий репозиторий.
 9. Обновить `AGENTS.md`, `state/01-canon-envs.md`, `state/13-agent-migration.md`
@@ -215,10 +215,8 @@ opencode читает проектные правила из `AGENTS.md`, ски
 
 Экспорт и синхронизация это два разных шага.
 
-`harness_cli.py export` запускает `rebase_project.ps1`. Скрипт копирует kit,
-пишет `EXPORT_NEXT_STEPS.md` и не вызывает `sync-agent-views.sh`. Флаг
-`-RunSetup` запускает `.cursor/setup.ps1`, `.codex/setup.ps1` и проверку панели,
-но не синк.
+`harness_cli.py export` запускает `export_kit.py`. Скрипт копирует kit, пишет
+`EXPORT_NEXT_STEPS.md` и сам вызывает `sync-agent-views.sh --local-only` в Target.
 
 `onboard-project.py` пытается запустить `.doc/synh_harnes/sync-agent-views.sh`.
 Этого файла в текущем каноне нет, поэтому шаг синка пропускается с состоянием
@@ -259,8 +257,8 @@ python3 .agents/skills/harness-router/children/mirror/scripts/harness_mirror.py 
 Обязательная проверка переноса:
 
 ```bash
-pwsh -NoProfile -File .agents/skills/harness-router/children/new-project/scripts/rebase_project.ps1 \
-  -Target /tmp/new-project -Profile Full -SkipRuntimeDeps -SkipGitInit -Yes
+python3 .agents/skills/harness-router/children/new-project/scripts/export_kit.py \
+  --source . --target /tmp/new-project --profile developer --mode install --skip-runtime-deps
 # затем в /tmp/new-project
 bash .agents/skills/harness-router/children/environment-sync/scripts/sync-agent-views.sh
 ```
@@ -321,9 +319,9 @@ bash .agents/skills/harness-router/children/environment-sync/scripts/sync-agent-
 ### П-4: Must-аудит экспорта не учитывает профиль
 
 - Симптом: успешный экспорт Core печатает MISSING для файлов, которые Core удаляет.
-- Причина: список `$must` в `rebase_project.ps1:2156` статический.
-- Решение: строить список с учетом `$Profile` или помечать Full-only записи.
-- Файлы: `.agents/skills/harness-router/children/new-project/scripts/rebase_project.ps1:2156`
+- Причина: старый список обязательных файлов был статическим.
+- Решение: список строится по профилю и по `environments.json` в `export_kit.py`.
+- Файлы: `.agents/skills/harness-router/children/new-project/scripts/export_kit.py`
 
 ### П-5: Внешний freshness-гейт не покрывает Qwen и DSH
 
@@ -337,8 +335,8 @@ bash .agents/skills/harness-router/children/environment-sync/scripts/sync-agent-
 ### П-6: Описания environment-sync и new-project не соответствуют коду
 
 - Симптом: `SKILL.md` этих скилов ссылается на подкоманды `harness_cli.py`, которых нет.
-- Причина: реальные точки входа это `sync-agent-views.sh` и `rebase_project.ps1`.
-- Решение: переписать шаги скилов под фактические скрипты.
+- Причина: реальные точки входа это `sync-agent-views.sh` и `export_kit.py`.
+- Решение: шаги скилов приведены к этим скриптам.
 
 ### П-7: Экспорт без IncludeKilo оставляет проект без .kilo до синка
 
@@ -350,6 +348,7 @@ bash .agents/skills/harness-router/children/environment-sync/scripts/sync-agent-
 
 ## История изменений
 
+- 2026-11-24: добавлена среда omp: нативный режим правил и скилов, генератор `generate-omp-config.py` пишет только `.omp/mcp.json`, адаптер `omp` для doctor, `.omp` в `kit.json`, `HARNESS_DIRS` и исключениях Git. Вложенные правила и скилы в зеркало не попадают: omp сканирует корень на один уровень, а корневые файлы это роутеры со ссылками на детей. Отдельный файл нужен для MCP, потому что провайдер Cursor игнорирует `disabled`, `envFile`, `${workspaceFolder}` и `${env:VAR}`. Детали: [state/13-agent-migration.md](./state/13-agent-migration.md).
 - 2026-11-20: введена декларативная политика сред через `environments.json` с переключателем `enabled`; добавлен `environment_policy.py` (чтение переключателей, список управляемых путей, безопасная очистка); синхронизация и перенос используют `render_agent_views.py` с фильтрацией по `enabled`; `compact_agent_views.py` читает список управляемых копий из реестра; `verify_rule_triggers.py`, `harness_mirror.py` и doctor фильтруют проверки по `enabled`; отключены Qoder, Qwen, DSH, Agents (Antigravity) и Cursor (канон); включены Codex, Kilo, OpenCode; Cursor остался каноном с `enabled: false`; OpenCode v2: `generate-opencode-config.py` пишет `opencode.json` (`mcp.servers`, `disabled`), `.opencode/rules` и компактный индекс; `compact_agent_views.py` читает список управляемых копий из реестра и не удаляет изменённые MCP-записи.
 - 2026-11-11: П-1 переписан как исправленная проблема: генератор и синк используют один путь в `harness-router`, старый артефакт в `harness-core` удалён.
 - 2026-11-11: в области сканирования харнеса путь `.cursor/mcp-servers` заменён на `.tools/mcp-servers`.

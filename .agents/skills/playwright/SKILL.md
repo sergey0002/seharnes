@@ -1,6 +1,6 @@
 ---
 name: playwright
-description: "Verify uncovered UI behavior in a visible browser using Playwright MCP. Use for DOM inspection, clicks and screenshots when the scenario has no Cest or PHPUnit method."
+description: "Проверь DOM, клики, скриншоты в видимом браузере, если нет Cest/PHPUnit; иначе Codeception."
 ---
 
 # Playwright MCP

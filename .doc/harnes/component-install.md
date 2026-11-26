@@ -1,6 +1,6 @@
 # Установка скила, скрипта и MCP
 
-> Актуализация 2026-11-13: текущие профили называются Core, Developer и Project. Имена Full и Core ниже исторические; legacy Full отображается в Developer. Основной перенос выполняет `harness_transfer.py`, а не старый `rebase_project.ps1`. Среда DeepSeek Harness удалена 2026-11-18, шаги DSH ниже исторические.
+> Актуализация 2026-11-25: перенос выполняет `export_kit.py` режимами install, update и mirror; профили core, developer и project. Среда DeepSeek Harness удалена 2026-11-18, шаги DSH и PowerShell-движок ниже исторические.
 
 <!-- meta
 type: rules
@@ -117,7 +117,7 @@ tags: [harness, install, skills, scripts, mcp, migration, dsh]
 6. Если скрипт запускается в DSH, обновить `.dsh/adapters/shell.md`,
    `.dsh/scripts/run-ps1.sh` (примеры) и `.dsh/kit.manifest.json`.
 7. Если скрипт нужен на новом проекте, добавить путь в `$must` или в
-   `copy-dsh-kit.ps1 -Check`.
+   проверку состава kit.
 8. Выполнить проверки из раздела 6.
 
 ### 3.3 Перенос
@@ -143,7 +143,7 @@ tags: [harness, install, skills, scripts, mcp, migration, dsh]
 
 Шаги:
 
-1. `rebase_project.ps1` копирует код, исключая `state`, `ADAPTERS.local.md`, `actions.local.json`.
+1. `export_kit.py` копирует kit по `kit.json`, исключая `state`, `ADAPTERS.local.md`, `actions.local.json`.
 2. `-RunSetup` вызывает `.doc/web/install.ps1 -Check`, затем `-Project`.
 3. `install.sh --check` проверяет `python3`, `bash`, `pwsh`, `docker`, `service.json`, `actions.json`.
 4. `docker compose -p copytrust-tools -f .doc/web/compose.tools.yml up -d --build` поднимает сервис на `127.0.0.1:8077`.
@@ -272,11 +272,11 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/generate
 
 1. Экспорт копирует `.cursor`, `.agents`, `.codex`, `.kilo` и DSH kit.
 2. Новый скил в `{SKILLS_ROOT}` попадает автоматически.
-3. Новый скрипт в `.dsh/scripts` копируется через `copy-dsh-kit.ps1`, а его
+3. Новый скрипт харнеса копируется по `kit.json`, а его
    наличие проверяется по `kit.manifest.json`.
 4. Новый MCP попадает в `.cursor/mcp.json` и генерируется на Target.
 5. На Target выполняется `sync-agent-views.sh`.
-6. Проверяется `copy-dsh-kit.ps1 -Check`.
+6. Проверяется состав kit в Target.
 7. Запускаются Full и Core сборки, проверяется `$must`.
 8. Запускается `smoke.sh` и проверка видимости компонента.
 
@@ -333,12 +333,11 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/generate
 - Причина: файл ведется вручную.
 - Ограничение: добавление MCP без строки в `mcp-names.md` считается неполным.
 
-### П-3: `copy-dsh-kit.ps1 -Check` проверяет только фиксированный список
+### П-3: DSH kit больше не переносится
 
-- Симптом: новый адаптер или скрипт не скопирован, проверка зеленая.
-- Причина: `required` в скрипте не пополняется автоматически.
-- Ограничение: до появления `kit.manifest.json` новый файл добавляется в
-  `required` вручную.
+- Симптом: старые инструкции требуют `copy-dsh-kit.ps1 -Check`.
+- Причина: среда DSH удалена, скрипт удалён.
+- Решение: состав kit задаёт `kit.json`; проверка идёт через must-check `export_kit.py`.
 
 ---
 

@@ -37,6 +37,22 @@ function Get-RepoRoot {
     return Get-RepoRoot -StartPath $parent
 }
 
+function Get-DocRepoRoot {
+    param([string]$RepoRoot)
+    # If RepoRoot is a worktree (.git is a file), find main repo for .doc/ access
+    $gitPath = Join-Path $RepoRoot ".git"
+    if (Test-Path $gitPath -PathType Leaf) {
+        $gitContent = Get-Content $gitPath -Raw
+        if ($gitContent -match '^gitdir:\s*(.+)$') {
+            $mainGitDir = $Matches[1].Trim()
+            # main repo is parent of .git/worktrees/... (three Split-Path levels up)
+            $mainRepo = Split-Path (Split-Path (Split-Path $mainGitDir -Parent) -Parent) -Parent
+            if (Test-Path $mainRepo) { return (Resolve-Path $mainRepo).Path }
+        }
+    }
+    return $RepoRoot
+}
+
 function Invoke-Git {
     param([string]$Repo, [string[]]$GitArgs)
     Push-Location $Repo
@@ -366,7 +382,8 @@ function Get-MergeConflicts([string]$Repo) {
 # --- main ---
 
 $repo = Get-RepoRoot -StartPath $(if ($RepoPath) { $RepoPath } else { (Get-Location).Path })
-if (-not $ConfigPath) { $ConfigPath = Join-Path $repo ".cursor/skills/task-router/children/gototask/config.json" }
+$docRepo = Get-DocRepoRoot $repo
+if (-not $ConfigPath) { $ConfigPath = Join-Path $docRepo ".agents/skills/task-router/children/gototask/config.json" }
 $config = Get-Content $ConfigPath -Raw | ConvertFrom-Json
 
 # Network access is not guaranteed. `git ls-remote` reaching the server can fail
@@ -401,17 +418,17 @@ $jsondocIngest = @{ status = "skipped"; reason = "task_export_skipped" }
 $taskInfo = $null
 if (-not $SkipTaskExport) {
     try {
-        $taskExport = Export-TaskMd $repo $TaskNumber
-        if ($taskExport.ok) { $jsondocIngest = Invoke-JsondocTrackerIngest $repo $TaskNumber }
+        $taskExport = Export-TaskMd $docRepo $TaskNumber
+        if ($taskExport.ok) { $jsondocIngest = Invoke-JsondocTrackerIngest $docRepo $TaskNumber }
         else { $jsondocIngest = @{ status = "skipped"; reason = "task_export_failed" } }
-        $taskInfo = Read-TaskInfo $repo $TaskNumber
+        $taskInfo = Read-TaskInfo $docRepo $TaskNumber
     } catch {
         $taskExport = @{ ok = $false; error = $_.Exception.Message }
         $jsondocIngest = @{ status = "skipped"; reason = "task_export_failed" }
-        $taskInfo = Read-TaskInfo $repo $TaskNumber
+        $taskInfo = Read-TaskInfo $docRepo $TaskNumber
     }
 } else {
-    $taskInfo = Read-TaskInfo $repo $TaskNumber
+    $taskInfo = Read-TaskInfo $docRepo $TaskNumber
 }
 
 $legacyNums = if ($taskInfo -and $taskInfo.bitbucket) { @($taskInfo.bitbucket) } else { @() }
@@ -641,6 +658,23 @@ function Invoke-CheckoutReleaseBranch([string]$Repo, [string]$Branch) {
     Invoke-CheckoutBranch $Repo $Branch
 }
 
+# Map of branch -> absolute worktree path for every branch currently checked out
+# anywhere in this repository (main checkout, Kandev tasks, Kilo worktree pool).
+function Get-WorktreeBranchOwners([string]$Repo) {
+    $owners = @{}
+    $raw = Invoke-Git $Repo @("worktree", "list", "--porcelain")
+    $currentPath = $null
+    foreach ($line in @($raw -split "`r?`n")) {
+        if ($line -match '^worktree (.+)$') {
+            $currentPath = $Matches[1].Trim()
+        } elseif ($line -match '^branch refs/heads/(.+)$' -and $currentPath) {
+            $name = $Matches[1].Trim()
+            if (-not $owners.ContainsKey($name)) { $owners[$name] = $currentPath }
+        }
+    }
+    return $owners
+}
+
 # After apply: best-effort refresh of the codegraph index (no LLM).
 function Invoke-CodegraphIndexSync([string]$Repo) {
     if ($env:CODEGRAPH_AUTO_UPDATE -eq '0') {
@@ -695,12 +729,30 @@ switch ($Action) {
     }
     "create-branch" {
         if ($heads -notcontains $release) { throw "Release branch not on origin: $release" }
-        Invoke-CheckoutReleaseBranch $repo $release
-        # create new branch from current HEAD
-        Invoke-Git $repo @("checkout", "-b", $branch) | Out-Null
+        # A release branch may be checked out in another worktree (Kandev, Kilo pool),
+        # and a local branch cannot be open in two worktrees at once. Create the task
+        # branch straight from the release commit instead of checking the release out.
+        Invoke-FetchRemoteBranch $repo $release
+        $releaseSha = Get-RemoteBranchSha $repo $release
+        if (-not (Test-LocalCommit $repo $releaseSha)) {
+            throw "Release commit $releaseSha not available locally after fetch (branch: $release)"
+        }
+        $occupied = Get-WorktreeBranchOwners $repo
+        if ($occupied.ContainsKey($branch) -and $occupied[$branch] -ne $repo) {
+            throw "Task branch $branch is already checked out in worktree: $($occupied[$branch])"
+        }
+        if (Test-LocalBranch $repo $branch) {
+            # Never reset an existing local branch: it may hold the user's commits.
+            Invoke-CheckoutBySha $repo $branch $releaseSha
+            $created = $false
+        } else {
+            $raw = Invoke-Git $repo @("checkout", "-b", $branch, $releaseSha)
+            if ($LASTEXITCODE -ne 0) { throw "checkout -b failed for $branch at $releaseSha" }
+            $created = $true
+        }
         Write-ApplyJson @{
             ok = $true; action = $Action; branch = $branch; releaseBranch = $release
-            created = $true; localChanges = $localResult
+            created = $created; releaseSha = $releaseSha; localChanges = $localResult
             currentBranch = (Invoke-Git $repo @("branch", "--show-current"))
             head = (Invoke-Git $repo @("log", "-1", "--oneline"))
         }

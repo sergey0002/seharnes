@@ -48,6 +48,7 @@ MCP-конфиги и их серверы. Каталог `.doc/` это док�
 | Codex CLI | `.codex/` | rules как `.md` без Cursor-frontmatter; `rules-index.md` содержит обязательные правила, on-demand правила и сгенерированную glob-таблицу для условных правил; `go-task.ps1` / `task-diff.ps1` форвардят к канону |
 | Kilo | `.kilo/` | нативный `kilo.jsonc`; always-правила находятся в `instructions`, остальные в `.kilo/rules-index.md`; условные правила также перечислены в сгенерированной glob-таблице, поскольку Kilo не прикрепляет их по пути автоматически |
 | OpenCode | `.opencode/`, `opencode.json` | правила копируются плоским `.md` без frontmatter; always-правила в `instructions`, остальные в `.opencode/rules-index.md` с glob-таблицей; MCP под `mcp.servers` (`type: local|remote`, `disabled`), секреты через `run-with-mcp-env.sh`; `alwaysAllow`/`disabledTools` - фрагмент для ручного слияния |
+| omp (oh-my-pi) | `.omp/` | читает `.cursor/rules`, `.agents/skills` и `AGENTS.md` нативно; зеркал правил и скилов нет: вложенные читаются по ссылкам из корневых роутеров, `.omp/mcp.json` - MCP в формате omp (`enabled`, `type`, `url`/`command`, `headers`); путь к инструменту раскрывается абсолютно, предмет проверки (`--repository`, `MCP_WORKSPACE`) становится `.` или удаляется, потому что omp запускает сервер в каталоге рабочей папки, `envFile` заменяется обёрткой `run-with-mcp-env.sh`; `alwaysAllow`/`disabledTools` не переносятся |
 | Antigravity | `.agents/` | `rules`, `skills`, `mcp_config.json` с раскрытыми путями; legacy `.antigravity/` и `.gemini/` не генерируются |
 | Agents | `.agents/` | универсальные рантаймы, полный набор |
 | DeepSeek Harness (удалён 2026-11-18) | `.dsh/project.patch.yml`, `DSH-RULES.md`, `.dsh/skills/dsh-router/`, `.dsh/adapters/`, `.dsh/scripts/`, `.dsh/models.overlay.json` | среда и генератор `generate-dsh-config.py` больше не используются; пакет `@deepseek-ai/dsh` и каталоги `.dsh` удалены |
@@ -57,6 +58,7 @@ MCP-конфиги и их серверы. Каталог `.doc/` это док�
 - `generate-agent-configs.py` - skills/rules + Kilo remote + single wrap + permissions fragment.
 - `generate-mcp-config.py` - MCP с раскрытием `${workspaceFolder}` для Antigravity/Gemini.
 - `generate-opencode-config.py` - `opencode.json` (`mcp.servers`), `.opencode/rules` и компактный индекс для OpenCode v2.
+- `generate-omp-config.py` - только `.omp/mcp.json` для omp.
 - `sync-agent-views.sh` - оркестратор: генераторы, копии, LF-нормализация, parity, freshness-гейт.
 
 Сгенерированные артефакты лежат в `.doc/skil_data/`:
@@ -224,4 +226,5 @@ python3 .agents/skills/harness-router/children/environment-sync/tests/test_sync_
 - 2026-11-05: Codex получил генерируемый `.codex/rules-index.md` и ссылку в `.codex/AGENTS.md`, поэтому обязательные и on-demand правила находятся без чтения всех 38 файлов
 - 2026-11-09: добавлены inline-гейты, generated glob-блоки для Kilo/Codex/DSH и проверка видимости в синке и harness mirror; правило `gates.mdc` зарегистрировано как компонент
 - 2026-11-20: добавлена среда OpenCode v2: `generate-opencode-config.py` пишет `opencode.json` (`mcp.servers`, `disabled`), `.opencode/rules` и компактный индекс; синк, doctor, `verify_rule_triggers.py` и `verify_mcp_views.py` проверяют новую среду
+- 2026-11-24: добавлена среда omp (oh-my-pi): `generate-omp-config.py` пишет только `.omp/mcp.json`; правила и скилы omp читает из канона нативно, вложенные доступны по ссылкам из корневых роутеров; в реестр сред добавлена запись `omp` с `enabled: true`, doctor проверяет `omp-view`, `verify_mcp_views.py` получает `.omp/mcp.json` как expanded view
 - 2026-11-20: введена декларативная политика сред: `environments.json` теперь единственный источник `enabled` для всех генераторов; добавлен `environment_policy.py` (чтение переключателей, путей управляемых файлов, безопасная очистка); `render_agent_views.py` и `sync-agent-views.sh` фильтруют генерацию по `enabled`; `compact_agent_views.py` читает список управляемых копий из реестра; `verify_rule_triggers.py`, `harness_mirror.py` и doctor фильтруют проверки по `enabled`; отключены Qoder, Qwen, DSH, Agents (Antigravity) и Cursor (канон); включены Codex, Kilo, OpenCode; Cursor остался каноном, его `enabled: false` не удаляет `.cursor/` и `.agents/skills/`

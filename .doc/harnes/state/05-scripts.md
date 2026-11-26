@@ -80,7 +80,7 @@ tags: [harness, scripts]
 | `find-related-tasks.ps1` | Поиск задач по файлам и документам, score, флаг `-Json` | кандидаты для P0.5a и V6 |
 | `check-links.py` | Проверка md-ссылок и якорей в документации | список битых ссылок |
 | `task-identity.py` | Гейт личности задачи: заголовок task.md, metadata.title, ключ трекера, номер ветки | exit 0 / 2 |
-| `export-rebase-project.ps1` | Обертка экспорта переноса kit | zip-профиль FULL или CORE |
+| `export_kit.py` | Экспорт kit режимами install, update, mirror | профили core, developer, project |
 | `_batch-ai-links.py` | Массовая простановка AI-блоков в arch-документы | arch `*.md` |
 | `_fix_indexed_files_order.py`, `_restore_cicd_from_transcript.py` | Разовые recovery-утилиты | - |
 
@@ -143,8 +143,9 @@ arch JSON, иначе legacy скан. Скоринг не дублируетс�
 Сгенерированные артефакты лежат в `.doc/skil_data/harness-core/`: `parity-report.json`,
 `antigravity_mcp_config.windows-wsl.json`, `kit-manifest.json`. Нативный
 `antigravity_mcp_config.json` лежит в `.doc/skil_data/harness-router/`. Артефакты
-не правятся руками. `copy-dsh-kit.ps1` перенесён в
-`.agents/skills/harness-router/children/new-project/scripts/`, план отчетной цепочки в
+не правятся руками. Перенос kit выполняет `export_kit.py` в
+`.agents/skills/harness-router/children/new-project/scripts/`; DSH-скрипты удалены,
+план отчетной цепочки в
 `.agents/skills/harness-router/children/environment-sync/references/report-workflow-plan.md`.
 
 Запуск из корня репо:

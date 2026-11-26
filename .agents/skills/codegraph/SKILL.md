@@ -1,9 +1,6 @@
 ---
 name: codegraph
-description: >-
-  Codegraph, граф кода, контекст задачи, какие тесты затронуты, открыть граф.
-  Use for codegraph context/affected/ui/explore, symbols, call paths and blast
-  radius. Not for documentation, database schemas or source edits.
+description: "Граф кода: символы, пути вызовов, blast radius, context/affected/ui; не документы и схема БД."
 ---
 
 # CodeGraph

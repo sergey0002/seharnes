@@ -40,7 +40,7 @@ tags: [harness, mcp, db, stand]
 | Параметр | Значение |
 |---|---|
 | Статус | включен |
-| Транспорт | `command: bash /home/newuser/projects/copytrust/testdeploydocker/.tools/scripts/run-with-mcp-env.sh node` |
+| Транспорт | `command: bash /home/newuser/projects/seharnes/.tools/scripts/run-with-mcp-env.sh node` |
 | Переменные окружения | `MYSQL_DATABASE`, `MYSQL_HOST`, `MYSQL_MCP_LISTEN_HOST`, `MYSQL_MCP_LISTEN_PORT`, `MYSQL_PORT`, `MYSQL_USER` |
 | Учетная запись | `MYSQL_USER` равен `user`; пароль хранится в `MYSQL_PASSWORD` и не печатается |
 

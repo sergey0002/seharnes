@@ -179,6 +179,30 @@
       ]
     },
     {
+      "id": "omp",
+      "enabled": true,
+      "adapter": "omp",
+      "generator": "generate-omp-config.py",
+      "rules": {
+        "source": ".cursor/rules",
+        "mode": "native"
+      },
+      "skills": {
+        "mode": "native",
+        "target": ".agents/skills"
+      },
+      "mcp": {
+        "source": ".cursor/mcp.json",
+        "target": ".omp/mcp.json"
+      },
+      "instructions": {
+        "target": "AGENTS.md"
+      },
+      "generated": [
+        ".omp/mcp.json"
+      ]
+    },
+    {
       "id": "dsh",
       "enabled": false,
       "adapter": "dsh",

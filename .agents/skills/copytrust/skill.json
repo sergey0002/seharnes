@@ -10,10 +10,7 @@
     "assets": []
   },
   "tests": [],
-  "children": [
-    "children/platform-browser-test",
-    "children/platform-logs"
-  ],
+  "children": [],
   "dependencies": {
     "skills": [],
     "project": []

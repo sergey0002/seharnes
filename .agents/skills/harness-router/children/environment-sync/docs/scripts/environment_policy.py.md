@@ -56,4 +56,5 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/environm
 
 ## История изменений
 
+- 2026-11-24: пространство имён `.omp` разрешено в `safe_path`.
 - 2026-11-20: добавлено чтение переключателей и путей управляемых представлений.

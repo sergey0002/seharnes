@@ -1,11 +1,6 @@
 ---
 name: prepare-plan
-description: >-
-  Use when the user asks to prepare or write an implementation plan:
-  подготовь план, составь план, prepare plan, plan.md, stage2 plan, план этапа.
-  Produces an authored plan.md with per-file Before/After patches, sources of
-  truth, AC and R/S scenarios, and a self-check. Do NOT use for plan audit,
-  implementation, test execution, task documentation or code review.
+description: "Подготовь план, составь план, plan.md, stage2; без реализации, аудита плана и запуска тестов."
 ---
 
 # prepare-plan

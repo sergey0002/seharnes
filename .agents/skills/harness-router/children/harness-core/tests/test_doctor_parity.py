@@ -113,7 +113,16 @@ class DoctorParityTest(unittest.TestCase):
             return 0, "{}"
 
         root = Path(__file__).resolve().parents[6]
-        with patch.object(harness_cli, "_run", side_effect=run), contextlib.redirect_stdout(io.StringIO()):
+        # The doctor filters gates by enabled environments, and the project
+        # registry turns qoder/qwen off. This test covers the full-kit command
+        # shape, so load_environments returns every adapter enabled here.
+        full = {"schema": 1, "environments": [
+            {"id": env, "adapter": env, "enabled": True} for env in
+            ("cursor", "codex", "kilo", "qoder", "qwen", "agents", "dsh", "opencode", "omp")
+        ]}
+        with patch.object(harness_cli, "_run", side_effect=run), \
+                patch.object(harness_cli.config, "load_environments", return_value=full), \
+                contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(harness_cli.cmd_doctor(argparse.Namespace(root=str(root), junk=False, skip_gates=False)), 0)
 
         parity = next(c for c in commands if c[1].endswith("verify_parity.py"))

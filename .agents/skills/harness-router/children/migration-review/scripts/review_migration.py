@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Review local skills, rules and MCP after a harness migration.
 
-Reads the conflict backup written by rebase_project.ps1, scans the target
+Reads the conflict backup written by export_kit.py, scans the target
 project for local components and proposes safe installation steps.
 
 Usage:

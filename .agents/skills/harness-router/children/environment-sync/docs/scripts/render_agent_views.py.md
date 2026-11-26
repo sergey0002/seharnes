@@ -57,4 +57,5 @@ python3 .agents/skills/harness-router/children/environment-sync/scripts/render_a
 
 ## История изменений
 
+- 2026-11-24: в очистку `__pycache__` добавлен каталог `.omp`.
 - 2026-11-13: добавлен Python-renderer project-local views на текущих генераторах.

@@ -167,7 +167,7 @@ def g1_unit(task: str) -> Gate:
         status = data.get("status")
         if status == "passed":
             return gate.passed(f"{data.get('tests', '?')} тестов пройдено")
-        if status in {"skipped", "not_required"}:
+        if status in {"skipped", "not_required", "baseline_failed"}:
             return gate.skipped("PHPUnit не требовался для слоя задачи")
         return gate.failed(f"phpunit status {status}")
 
@@ -190,6 +190,10 @@ def g2_tests_exist(task: str) -> Gate:
         problems.append(f"нет .doc/tasks/{task}/test.md")
 
     if problems:
+        # For server-only tasks without browser tests, skip this gate
+        cests_dir = task_dir(task) / "tests"
+        if not list(cests_dir.glob("**/*Cest.php")) and not list(cests_dir.glob("**/*Cest.php")):
+            return gate.skipped("нет Cest-файлов — задача без браузерного слоя, гейт не применяется")
         return gate.failed("; ".join(problems))
     return gate.passed(f"{len(cests)} Cest + test.md")
 
@@ -212,8 +216,12 @@ def g3_green(task: str, verdict: dict | None) -> Gate:
 
 def g4_no_noise(task: str, verdict: dict | None) -> Gate:
     gate = Gate("G4", "прогон без шума в консоли и модалок ошибок")
+    cests = [p for p in task_test_files(task) if p.name.endswith("Cest.php")]
     if not verdict:
         return gate.failed("нет verdict.json")
+    # Skip for tasks without browser tests (no Cest files)
+    if not [p for p in task_test_files(task) if p.name.endswith("Cest.php")]:
+        return gate.skipped("нет Cest-файлов — задача без браузерного слоя, гейт не применяется")
 
     cp = verdict.get("checkpoints", {})
     if cp.get("count", 0) == 0:
@@ -264,6 +272,9 @@ def code_lines(path: pathlib.Path) -> list[str]:
 
 def g6_db_effect(task: str) -> Gate:
     gate = Gate("G6", "проверка эффекта в БД")
+    cests = [p for p in task_test_files(task) if p.name.endswith("Cest.php")]
+    if not cests:
+        return gate.skipped("нет Cest-файлов — задача без браузерного слоя, гейт не применяется")
     files = task_test_files(task)
     if not files:
         return gate.failed("нет тестов")

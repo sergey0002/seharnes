@@ -10,9 +10,7 @@
     "assets": []
   },
   "tests": [],
-  "children": [
-    "children/bug-cause"
-  ],
+  "children": [],
   "dependencies": {
     "skills": [],
     "project": []

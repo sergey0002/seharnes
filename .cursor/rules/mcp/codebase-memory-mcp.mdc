@@ -147,7 +147,7 @@ alwaysApply: false
 ## Ошибки и границы
 
 - `project` только из `list_projects`. Для этого репозитория имя
-  `home-newuser-projects-copytrust-testdeploydocker`.
+  `home-newuser-projects-seharnes`.
 - Ответ можно усечь по бюджету токенов: смотреть `truncated` и
   `truncation_reason`, продолжать через `next_offset` или `next_cursor`.
 - `.doc/` в индекс не входит. Документация ищется через
@@ -166,7 +166,7 @@ alwaysApply: false
 
 ```bash
 node .agents/skills/harness-router/children/mcp-audit/scripts/test-mcp-servers.mjs --only=codebase-memory-mcp
-codebase-memory-mcp cli --project home-newuser-projects-copytrust-testdeploydocker index_status
+codebase-memory-mcp cli --project home-newuser-projects-seharnes index_status
 ```
 
 ## Связи

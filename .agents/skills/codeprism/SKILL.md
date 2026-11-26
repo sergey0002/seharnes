@@ -1,6 +1,6 @@
 ---
 name: codeprism
-description: Uses the CodePrism knowledge graph to give an agent structural context before reading files: symbols, callers, callees, impact, dependencies, data flow and a security gate before writes. Use when exploring an unfamiliar module, planning a refactor, tracing callers, checking blast radius, or scanning proposed code for secrets and vulnerabilities before writing.
+description: "Связи и влияние правок, поток данных, security gate перед записью; не запуск тестов."
 license: MIT
 compatibility: Requires the codeprism-ai package (0.1.11) and the codeprism MCP server configured in the project. Works in Cursor, Codex, Kilo and any MCP client.
 metadata:

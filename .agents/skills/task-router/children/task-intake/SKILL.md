@@ -36,10 +36,10 @@ description: >-
 | Что | Значение |
 |---|---|
 | Папка задачи | `.doc/tasks/{N}` |
-| Снимок состояния | `.cursor/skills/task-router/children/task-intake/scripts/intake_state.py` |
-| Быстрый проход 0-3 | `.cursor/skills/task-router/children/task-intake/scripts/intake_orchestrator.py` |
-| Каркас разбора дифа | `.cursor/skills/task-router/children/task-intake/scripts/intake_analysis.py` |
-| Секции doc.md из JSON | `.cursor/skills/task-router/children/task-intake/scripts/doc_sections.py` |
+| Снимок состояния | `.agents/skills/task-router/children/task-intake/scripts/intake_state.py` |
+| Быстрый проход 0-3 | `.agents/skills/task-router/children/task-intake/scripts/intake_orchestrator.py` |
+| Каркас разбора дифа | `.agents/skills/task-router/children/task-intake/scripts/intake_analysis.py` |
+| Секции doc.md из JSON | `.agents/skills/task-router/children/task-intake/scripts/doc_sections.py` |
 | Экспорт Jira | `gototask.ps1 -Action export-task` |
 | Регистрация источника | `jsondoc.py ingest-tracker` |
 | Диф | `task-diff.ps1` |
@@ -95,7 +95,7 @@ TaskIntake:
 Один проход, без сканирования всего каталога:
 
 ```bash
-python3 .cursor/skills/task-router/children/task-intake/scripts/intake_state.py --root . --task {N}
+python3 .agents/skills/task-router/children/task-intake/scripts/intake_state.py --root . --task {N}
 ```
 
 Скрипт только читает и печатает компактный JSON: какие артефакты есть, какие
@@ -129,7 +129,7 @@ python3 .agents/skills/documentation-router/children/project-doc/scripts/task-id
 Быстрый путь: один вызов вместо шагов 0-3.
 
 ```bash
-python3 .cursor/skills/task-router/children/task-intake/scripts/intake_orchestrator.py --task {N} --no-network
+python3 .agents/skills/task-router/children/task-intake/scripts/intake_orchestrator.py --task {N} --no-network
 ```
 
 Скрипт сам вызывает state, экспорт, ingest и диф, но только для шагов, которые
@@ -227,7 +227,7 @@ git log --all --no-merges --format='%h %ad %s' --date=short --grep "issues/{LEGA
 1. Собрать каркас разбора одной командой:
 
 ```bash
-python3 .cursor/skills/task-router/children/task-intake/scripts/intake_analysis.py --root . --task {N}
+python3 .agents/skills/task-router/children/task-intake/scripts/intake_analysis.py --root . --task {N}
 ```
 
 Скрипт пишет `_jsondoc/work/intake-analysis.scaffold.json`: файлы со `state`,
@@ -261,7 +261,7 @@ python3 .cursor/skills/task-router/children/task-intake/scripts/intake_analysis.
 
 ### Шаг 4. Документация и запись анализа
 
-Следовать `.cursor/skills/documentation-router/children/task-doc/SKILL.md`, режим B целиком. Скил сам создаёт
+Следовать `.agents/skills/documentation-router/children/task-doc/SKILL.md`, режим B целиком. Скил сам создаёт
 `doc.md` по шаблону, если файла нет, и выполняет B3, B3.3, B3.7, B4, B4.5.
 
 В `task-doc` передать: task id, `task.md`, tracker, `diff.md`, `diff.files.md` и
@@ -295,7 +295,7 @@ python3 .cursor/skills/task-router/children/task-intake/scripts/intake_analysis.
 секций и при `--finalize` делает apply, render, индекс и проверки:
 
 ```bash
-python3 .cursor/skills/task-router/children/task-intake/scripts/doc_sections.py --root . --task {N} \
+python3 .agents/skills/task-router/children/task-intake/scripts/doc_sections.py --root . --task {N} \
   --input .doc/tasks/{N}/_jsondoc/work/sections.json --finalize
 ```
 
@@ -375,6 +375,6 @@ Legacy: {номера Bitbucket | none}
 
 - [gototask](../gototask/SKILL.md) - экспорт `task.md` и `tracker.json`
 - [task-diff](../task-diff/SKILL.md) - диф по коммитам, режим `any-ref`
-- [task-doc](../task-doc/SKILL.md) - запись `doc.md`, архитектура, индекс
-- [JSONdoc](../../../.doc/harnes/jsondoc.md) - `ingest-tracker`, `apply`, `render`
-- [doc_rules.md](../../../.doc/harnes/doc_rules.md) - формат документации
+- task-doc (`../task-doc/SKILL.md`; missing in kit) - запись `doc.md`, архитектура, индекс
+- JSONdoc (`../../../.doc/harnes/jsondoc.md`; missing in kit) - `ingest-tracker`, `apply`, `render`
+- doc_rules.md (`../../../.doc/harnes/doc_rules.md`; missing in kit) - формат документации

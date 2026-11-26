@@ -1,13 +1,13 @@
-> Актуализация 2026-11-13: перенос выполняет `new-project/scripts/harness_transfer.py` (`plan`, `approve`, `apply`, `verify`, `rollback`). Имена Full и Core ниже исторические: текущие профили Core, Developer и Project, legacy Full отображается в Developer. `clean`, автоматический `git init`, запись `.git/info/exclude` и `PURGE` не выполняются. CLI apply поддерживает обычные файлы, `AGENTS.md` (managed block) и `.cursor/mcp.json`; generated views и остальные adapter config ждут общего Python-renderer. Docker, панель, supervisor, Windows-деплой и серверное окружение в текущую задачу не входят. Старые указания ниже являются историческими.
+> Актуализация 2026-11-25: перенос выполняет `new-project/scripts/export_kit.py` режимами `install`, `update` и `mirror`; профили называются `core`, `developer` и `project`. Состав kit задаёт `kit.json`, включённость сред - `environments.json`. PowerShell-движок `rebase_project.ps1`, обёртки и DSH-скрипты удалены. Разделы ниже, где упомянуты `rebase_project.ps1`, `copy-dsh-kit.ps1`, `-Mode clean` и `.dsh`, сохранены как история старого механизма. Текущая процедура: `.agents/skills/harness-router/children/new-project/SKILL.md` и `docs/scripts/export_kit.py.md`. Для эталонного репозитория seharnes отдельная инструкция: `.doc/harnes/seharnes-transfer.md`.
 
 # Перенос AI-kit и локальной среды разработки
 
 <!-- meta
 type: config
 status: actual
-updated: 2026-11-11
+updated: 2026-11-25
 version: 1.29
-related: [rebase_project.ps1, rebase_project_gi.ps1, mcp.index.md, harnes/doc_rules.md, harnes/readmy.md, harnes/readmy_doc.md, synh_harnes/README.md, qa/browser-setup.md, harnes/tests.md, harnes/testaudit.md, tasks/index.md, leantime/mcp.md, leantime/access.md, kaiten/doc.md, harnes/mcp/codebase-memory-mcp.md]
+related: [.agents/skills/harness-router/children/new-project/SKILL.md, .agents/skills/harness-router/children/new-project/scripts/export_kit.py, mcp.index.md, harnes/doc_rules.md, harnes/readmy.md, harnes/readmy_doc.md, synh_harnes/README.md, qa/browser-setup.md, harnes/tests.md, harnes/testaudit.md, tasks/index.md, leantime/mcp.md, leantime/access.md, kaiten/doc.md, harnes/mcp/codebase-memory-mcp.md]
 tags: [migration, rebase, cursor, codex, mcp, skills, rules, credentials, docker, local-env, git-exclude, export-script, windows, wsl, selenium, day0, core, leantime, ai-kit-only]
 -->
 
@@ -114,7 +114,7 @@ tags: [migration, rebase, cursor, codex, mcp, skills, rules, credentials, docker
 | Вне документа | Действие агента |
 |---------------|-----------------|
 | Инсталляторы Docker/Node/uv/Cursor/CBM | скачать по ссылкам Day0; при отсутствии прав - попросить пользователя |
-| Бинарь CBM | `install.ps1 --ui` из [codebase-memory-mcp.md](harnes/mcp/codebase-memory-mcp.md) |
+| Бинарь CBM | `install.ps1 --ui` из codebase-memory-mcp.md (`harnes/mcp/codebase-memory-mcp.md`; missing in kit) |
 | Живой SG token | Site Admin → создать; вписать в mcp.json (scrub при export стирает старый) |
 | Данные MySQL Leantime (docker volume) | не в kit; после up - пустая БД или перенос volume вручную |
 | Код целевого приложения | clone/флешка отдельно; kit его не заменяет |
@@ -830,7 +830,7 @@ powershell -ExecutionPolicy Bypass -File .agents/skills/documentation-router/chi
 
 Опциональный контур: локальный [Leantime](https://leantime.io) + community MCP [daniel-eder/leantime-mcp](https://github.com/daniel-eder/leantime-mcp). **Не** замена Jira / `CT-{N}` / gototask. Задачи Leantime - числовые id; моста к `.doc/tasks/{N}/` нет.
 
-Канон на образце: [leantime/mcp.md](./leantime/mcp.md), [leantime/access.md](./leantime/access.md), [leantime/api-local.md](./leantime/api-local.md).
+Канон на образце: leantime/mcp.md (`./leantime/mcp.md`; missing in kit), leantime/access.md (`./leantime/access.md`; missing in kit), leantime/api-local.md (`./leantime/api-local.md`; missing in kit).
 
 ### Что копирует export
 
@@ -862,13 +862,13 @@ docker compose up -d
 
 Автозапуск контейнеров: `restart: unless-stopped` (если Docker Desktop/Engine стартует после reboot). MCP стартует только с Cursor/Codex сессией.
 
-Рядом research Kaiten (не runtime): [kaiten/doc.md](./kaiten/doc.md) - export копирует файл.
+Рядом research Kaiten (не runtime): kaiten/doc.md (`./kaiten/doc.md`; missing in kit) - export копирует файл.
 
 ---
 
 ## Воссоздание контейнеров с нуля
 
-Если на новой машине **нет** `copytrust-dev` / selenium / Sourcegraph - поднять заново по конфигам ниже. Образы Docker Hub скачает сам. Полные README: [docker-dev](../tools/docker-dev/README.md), [docker-test](../tools/docker-test/README.md), [sourcegraph-local](../sourcegraph-local/README.md), [browser-setup](./qa/browser-setup.md).
+Если на новой машине **нет** `copytrust-dev` / selenium / Sourcegraph - поднять заново по конфигам ниже. Образы Docker Hub скачает сам. Полные README: docker-dev (`../tools/docker-dev/README.md`; missing in kit), docker-test (`../tools/docker-test/README.md`; missing in kit), sourcegraph-local (`../sourcegraph-local/README.md`; missing in kit), [browser-setup](./qa/browser-setup.md).
 
 ### 0. Требования на машине
 
@@ -1039,7 +1039,7 @@ MYSQL_PASSWORD=password
 MYSQL_ROOT_PASSWORD=root_password
 ```
 
-Сервисы как у dev + **soap-server**. Канон шагов: [docker-test/README.md](../tools/docker-test/README.md) (дамп → `tools/codeception/tests/Support/Data/dump.sql`, migrate, `up -d php-apache`).
+Сервисы как у dev + **soap-server**. Канон шагов: docker-test/README.md (`../tools/docker-test/README.md`; missing in kit) (дамп → `tools/codeception/tests/Support/Data/dump.sql`, migrate, `up -d php-apache`).
 
 ```bash
 cd tools/docker-test
@@ -1119,7 +1119,7 @@ cp .env.example .env   # при необходимости
 
 Упрощённый single-container вариант: `./start-single.sh` (см. скрипт; данные в `~/.sourcegraph/`).
 
-**В IDE после подъёма:** токен в `.cursor/mcp.json` headers; фильтр `repo:^src-serve-git-3434/repos/{имя}$`. Детали: [MCP.md](../sourcegraph-local/MCP.md), [День 1](#день-1-куда-что-прописать-со-старта).
+**В IDE после подъёма:** токен в `.cursor/mcp.json` headers; фильтр `repo:^src-serve-git-3434/repos/{имя}$`. Детали: MCP.md (`../sourcegraph-local/MCP.md`; missing in kit), [День 1](#день-1-куда-что-прописать-со-старта).
 
 ### 6. Сводка: что должно быть в `docker ps`
 
@@ -1280,7 +1280,7 @@ Host для agent suite: **PHP 8.3+** + Composer (в контейнере при
 | **CBM** | один раз MCP `index_repository` на абсолютный путь корня проекта |
 | **XML River / extractor** | `.doc/skil_data/xmlriver/.env`, `.agents/skills/page-content/scripts/.env` |
 | **Leantime MCP** (опц.) | `.doc/skil_data/leantime/mcp/mcp.env` (`LEANTIME_*`); контейнеры `leantime_*` на **8095** |
-| **Leantime UI** | [access.md](./leantime/access.md) / `LEAN_ADMIN_*` в `docker/.env` |
+| **Leantime UI** | access.md (`./leantime/access.md`; missing in kit) / `LEAN_ADMIN_*` в `docker/.env` |
 | **App стенд** | [Воссоздание контейнеров с нуля](#воссоздание-контейнеров-с-нуля) §1–2 |
 | **e2e / selenium / SG стек** | там же §3–5 |
 | **e2e** | `.tools/codeception/.env`; selenium **или** chromedriver; опц. `tools/docker-test` |
@@ -2074,7 +2074,7 @@ node .cursor\scripts\test-mcp-servers.mjs   # общий smoke MCP kit (Cursor �
 - [Профиль CORE](#профиль-core) - docs/MCP без трекера
 - [qa/browser-setup.md](./qa/browser-setup.md) - Chrome / chromedriver / Playwright WSL
 - [tests.md](harnes/tests.md) - чек-лист e2e / prepare-task-test (§7-8)
-- [tasks/index.md](./tasks/index.md) - индекс задач (на образце сгенерирован; на новом проекте создать скриптом)
+- tasks/index.md (`./tasks/index.md`; missing in kit) - индекс задач (на образце сгенерирован; на новом проекте создать скриптом)
 - [`.cursor/scripts/node-mcp.cmd`](../.cursor/scripts/node-mcp.cmd) / [node-mcp.sh](../.cursor/scripts/node-mcp.sh) - лаунчеры phpstan MCP
 - [`.cursor/README.md`](../.cursor/README.md) - MCP kit Cursor
 - [`.codex/AGENTS.md`](../.codex/AGENTS.md) / [CODEX-CONFIG-NOTES.md](../.codex/CODEX-CONFIG-NOTES.md)

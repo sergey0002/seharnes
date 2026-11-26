@@ -978,7 +978,7 @@ context7, playwright, codebase-memory, sourcegraph) - JSONdoc не являет�
 | `build-tasks-index`, `find-related-tasks`, `generate-doc-index`, `generate-file-registry`, `map-project`, `get-indexing-batch`, `mark-noise`, `get-verify-batch`, `mark-verify-done`, `audit-docs`, `validate-docs`, `sync-docs`, `_lib.ps1` | Контракты §9.2: golden TSV/веса/очереди/cwd | Обёртки/JSON-aware чтение после golden tests |
 | `_batch-ai-links.py` | Массовая простановка AI-блоков при индексации | Переключить чтение arch docs на JSON sections (J11), запись через arch writer |
 | `_fix_indexed_files_order.py`, `_restore_cicd_from_transcript.py` | Разовые recovery-утилиты | Inventory classified, не адаптируются; использование фиксирует owning workflow |
-| `export-rebase-project.ps1` | Экспорт документации проекта | Проверить чтение через `_lib`; view/JSON дают то же содержимое (J11 golden) |
+| `export_kit.py` | Экспорт kit харнеса | Проверить чтение через `_lib`; view/JSON дают то же содержимое (J11 golden) |
 | `.doc/qa/scripts/*` (28) | verdict/gates/ac-results/history как evidence | J12: manifest/выбор прогона adapters; остальные (run-phpunit, static-on-diff, db-isolation, doctor...) - inventory no-impact: читают diff/tests, не doc-структуру |
 | `.doc/skil_data/jira`: `server.php`, `src/`, `export_task.py` | PHP transport, Markdown builder, MCP export_task_md | J13 dual-output (task.md + snapshot из одного сбора); `export_task.py` - паритет или deprecation решение; `diag-auth.php`, `test-adf-converter.php`, `config.env` - без изменений |
 | `.codex/go-task.ps1`, `.codex/task-diff.ps1` | Форвардинг параметров в canonical | Интерфейс сохранён; фактический forwarding фиксируется golden (IT01), расхождение adapter/canonical исправляется точечно |
@@ -1296,7 +1296,7 @@ After-коды и per-step тестовые результаты должны б
   28 qa/scripts, .jira и synh_harnes; для каждого - сохраняемый функционал, точка
   взаимодействия (batch/apply/ingest), этап J, сквозной порядок прохода задачи;
   ранее неучтённые `_batch-ai-links.py`, `_fix_indexed_files_order.py`,
-  `_restore_cicd_from_transcript.py`, `export-rebase-project.ps1`,
+  `_restore_cicd_from_transcript.py`, `export_kit.py`,
   `generate-mcp-config.py` классифицированы.
 - 2026-11-06: `validate --task|--arch|--all [--links]` реализован: схема документа
   и локальные ссылки опубликованного view, exit 1 при ошибке. Пример §6.3 приведён

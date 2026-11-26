@@ -191,9 +191,9 @@ cd .doc/web
 ./verify.sh
 ```
 
-`rebase_project.ps1 -RunSetup` вызывает `install.ps1 -Check` и `-Project`. Если проверка не прошла, компонент не считается установленным.
+Настройку компонента выполняет `onboard-project.py`, он вызывает `install.ps1 -Check` и `-Project`. Если проверка не прошла, компонент не считается установленным.
 
-Канон переноса: [rebase_project.md](../../rebase_project.md), установка компонента: [component-install.md](../component-install.md).
+Канон переноса: [rebase_project.md](../../rebase_project.md), установка компонента: [component-install.md](../../harnes/component-install.md).
 
 ---
 
@@ -252,9 +252,9 @@ cd .doc/web
 - [Операционное описание панели](../../web/README.md) - маршруты, запуск, безопасность
 - [Журнал изменений панели](../../web/changelog.md) - полный список правок
 - [Перенос харнеса](../../rebase_project.md) - профили, исключения, must-check
-- [Установка компонента](../component-install.md) - обязательные проверки
-- [Анализ диалогов](./16-task-analytics.md) - источник токенов и метрик
-- [Харнес-миррор](./19-harness-mirror.md) - устройство графа и зеркал
+- [Установка компонента](../../harnes/component-install.md) - обязательные проверки
+- [Анализ диалогов](../../harnes/state/16-task-analytics.md) - источник токенов и метрик
+- [Харнес-миррор](../../harnes/state/19-harness-mirror.md) - устройство графа и зеркал
 - [Цены](../../web/config/prices.json) - коэффициенты и стоимость
 
 ---

@@ -130,6 +130,16 @@ def test_native_discovery_contract() -> None:
     generator = load_generator()
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
+        # The discovery manifest is written only for enabled environments. The
+        # project registry disables agents (Antigravity) and dsh, so enable them
+        # here to test the contract instead of the current project switches.
+        registry = root / ".agents/skills/harness-router/children/harness-core/assets/environments.json"
+        registry.parent.mkdir(parents=True)
+        data = json.loads((SCRIPTS.parents[1] / "harness-core/assets/environments.json").read_text(encoding="utf-8"))
+        for entry in data["environments"]:
+            if entry["id"] in ("agents", "dsh"):
+                entry["enabled"] = True
+        registry.write_text(json.dumps(data), encoding="utf-8")
         rules = root / ".cursor/rules"
         rules.mkdir(parents=True)
         (rules / "gates.mdc").write_text("---\nalwaysApply: true\ngate: true\n---\n# Guard\n", encoding="utf-8")
@@ -675,11 +685,17 @@ def test_sync_qoder_preflight_before_writes() -> None:
         script_dir.mkdir(parents=True)
         for name in ("sync-agent-views.sh", "render_agent_views.py", "environment_policy.py", "compact_agent_views.py", "generate-qoder-config.py", "rule_model.py", "verify_parity.py"):
             (script_dir / name).write_bytes((SCRIPTS / name).read_bytes())
+        # The registry below enables qoder only, so preflight runs before any
+        # other generator and must reject the linked skill before writing.
         registry = script_dir.parents[1] / "harness-core/assets/environments.json"
         registry.parent.mkdir(parents=True)
-        registry.write_bytes((SCRIPTS.parents[1] / "harness-core/assets/environments.json").read_bytes())
+        data = json.loads((SCRIPTS.parents[1] / "harness-core/assets/environments.json").read_text(encoding="utf-8"))
+        for entry in data["environments"]:
+            entry["enabled"] = entry["id"] == "qoder"
+        registry.write_text(json.dumps(data), encoding="utf-8")
         (root / ".cursor/rules").mkdir(parents=True)
         (root / ".cursor/mcp.json").write_text('{"mcpServers": {}}', encoding="utf-8")
+        (root / "AGENTS.md").write_text("# Local instructions\n", encoding="utf-8")
         canonical = root / ".agents/skills/demo/SKILL.md"
         canonical.parent.mkdir(parents=True)
         canonical.write_text("# Demo\n", encoding="utf-8")

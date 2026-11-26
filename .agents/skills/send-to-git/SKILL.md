@@ -1,10 +1,6 @@
 ---
 name: send-to-git
-description: >-
-  Согласование отправки в git: status, список файлов задачи, предупреждение если лишнее,
-  текст подтверждения и команды commit/push. Выполняет только после явного «да».
-  Use when: отправь в гит, отправь в git, закоммить и запушь, commit and push,
-  send to git, предложи коммит, запушь задачу.
+description: "Отправь в гит, закоммить и запушь: согласуй файлы, сообщение и команды; исполняй после согласия."
 ---
 
 # Send to Git (отправь в гит)
@@ -165,7 +161,7 @@ git push origin "HEAD:refs/heads/{currentBranch}"
 
 ## Связи
 
-- Push: [cicd.md §6a](../../../.doc/architecture/cicd.md#6a-локальный-git-push)
+- Push: cicd.md §6a (`../../../.doc/architecture/cicd.md#6a-локальный-git-push`; missing in kit)
 - После успешного push и отдельного согласия: **task-diff** при необходимости,
   затем при включённом JSONdoc обновить git-проекцию:
   `python3 .agents/skills/documentation-router/children/task-doc/scripts/jsondoc.py ingest-git --task {N} --root .`

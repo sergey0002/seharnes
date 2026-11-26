@@ -28,10 +28,10 @@ tags: [harness, tools, scripts, docker, tests]
 | `.tools/docker-dev` | Основное dev-окружение: `php-apache`, `mysql`, `php7.1-cli`, `node-cli`. Порты задаёт `.tools/docker-dev/.env` |
 | `.tools/docker-test` | Второй стенд для проверок, порты 8230 Apache, 8231 MySQL, 8232 SOAP из `.tools/docker-test/.env` |
 | `.tools/mcp-servers/php-toolchain` | Исходник собственного MCP-сервера `server.js` в режимах `phpstan` и `php-deps`. Вызов: `.tools/scripts/node-mcp.sh` |
-| `.tools/disk-scan` | Скрипты поиска занятого места на `C:` и в WSL2, README внутри каталога |
+| `.tools/disk-scan` | Симлинк на `/home/newuser/projects/.tools/disk-scan`, скрипты поиска занятого места |
 | `.tools/php85-scan` | Сканеры совместимости с PHP 8.5: `composer_matrix.py`, `deprecation-logger.php`, `deprecation_summary.py`, `fix_implicit_nullable.py`, `run.sh`, `scan.php` |
-| `.tools/hermes` | Docker Compose окружение `nousresearch/hermes-agent` |
-| `.tools/openhands` | Docker Compose окружение OpenHands, порт 3001 наружу в 3000 контейнера |
+| `.tools/hermes` | Симлинк на общий стек `/home/newuser/projects/.tools/hermes` |
+| `.tools/openhands` | Симлинк на общий стек `/home/newuser/projects/.tools/openhands`, порт 3001 |
 | `.tools/tasks` | Локальная символическая ссылка на `../.doc/tasks`; сами документы и данные задач остаются в `.doc/tasks`, ссылка не является частью kit |
 | `.tools/scripts` | Системные утилиты харнеса, таблица ниже |
 
@@ -47,7 +47,7 @@ tags: [harness, tools, scripts, docker, tests]
 | Скрипт | Роль | Окружение |
 |---|---|---|
 | `mcp-shared-server.sh` | Поднимает общий HTTP-сервер из stdio MCP через `mcp-proxy`, слушает `127.0.0.1:<порт>` | `MCP_SHARED_*`, uv-кеш |
-| `wait-for-ports.sh` | Ждёт TCP-порты перед стартом сервиса, таймаут `MCP_WAIT_TIMEOUT` | используется в `dsh-web.service` как `ExecStartPre` для порта 9131 |
+| `wait-for-ports.sh` | Ждёт TCP-порты перед стартом сервиса, таймаут `MCP_WAIT_TIMEOUT` | использовался в удалённом `dsh-web.service`; сейчас вызывается вручную и из юнитов MCP |
 | `node-mcp.sh`, `node-mcp.cmd` | Находит node для MCP php-toolchain и запускает переданную команду | `NODE_BIN`, `PATH`, `/mnt/c/Program Files/nodejs` |
 | `php-docker.sh`, `php-docker.js`, `php-docker.ps1`, `php-docker.cmd` | Выполняет PHP в контейнере dev-стенда, переписывает пути проекта в `/var/www/html` | `DOCKER_PHP_CONTAINER`, по умолчанию `copytrust-dev-php-apache-1` |
 | `mysql-mcp-proxy.mjs` | TCP-ретранслятор `127.0.0.1:3306` в опубликованный порт MySQL стенда | `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`, `MYSQL_MCP_LISTEN_*` |
@@ -102,3 +102,4 @@ port.
 ## История изменений
 
 - 2026-11-11: документ создан при переносе скриптов из `.cursor/scripts` в скилы и `.tools/scripts`.
+- 2026-11-14: Hermes, OpenHands и disk-scan вынесены в `/home/newuser/projects/.tools`. В проекте остались симлинки.

@@ -314,6 +314,35 @@ final class PaymentsMainPage extends BasePage
         $this->I->assertStringNotContainsString('%PDF', $src);
     }
 
+    /**
+     * Проверить текст внутри аккордеона канала (контент варианта оплаты).
+     */
+    public function seeChannelText(string $code, string $text): void
+    {
+        $this->waitChannelPresent($code);
+        $scope = $this->channelScope($code);
+        $this->I->assertStringContainsString(
+            $text,
+            $this->I->executeJS('return document.querySelector("' . $scope . '").innerText;')
+        );
+    }
+
+    /**
+     * Проверить наличие кнопки one-click для канала.
+     */
+    public function seeOneClickButton(string $code): void
+    {
+        $this->I->seeElement('.one-click-ps-button[data-paymethod="' . $code . '"]');
+    }
+
+    /**
+     * Проверить отсутствие канала в списке (для неактивных/фильтруемых).
+     */
+    public function dontSeeChannelInList(string $code): void
+    {
+        $this->I->dontSeeElement('[data-paymethod="' . $code . '"]');
+    }
+
     private function paymethod(string $code): string
     {
         return '//*[@data-paymethod="' . $code . '"]';

@@ -139,7 +139,7 @@ MCP-сервер описывается двумя файлами: правил�
 6. Секреты не печатаются.
 
 Документ сервера следует шаблону [mcp/README.md](./README.md) и требованиям
-[component-docs.md](../component-docs.md), раздел 5.
+component-docs.md (`../component-docs.md`; missing in kit), раздел 5.
 
 ---
 
@@ -331,11 +331,11 @@ parity зеленый, в Kilo 19 путей в `instructions`, в Antigravity 1
 ## Связи
 
 - [MCP-документы](./README.md) - шаблон и состав серверов
-- [Формат скила](../skill-format.md) - структура скила и `references/`
-- [Документирование компонентов](../component-docs.md) - документы MCP и скриптов
-- [Правила харнеса](../state/03-rules.md) - текущий состав 36 правил
-- [MCP-состояние](../state/04-mcp.md) - серверы, порядок, адаптации
-- [Миграция между агентами](../state/13-agent-migration.md) - синк и parity
+- Формат скила (`../skill-format.md`; missing in kit) - структура скила и `references/`
+- Документирование компонентов (`../component-docs.md`; missing in kit) - документы MCP и скриптов
+- Правила харнеса (`../state/03-rules.md`; missing in kit) - текущий состав 36 правил
+- MCP-состояние (`../state/04-mcp.md`; missing in kit) - серверы, порядок, адаптации
+- Миграция между агентами (`../state/13-agent-migration.md`; missing in kit) - синк и parity
 - [План миграции](../../plan/harnesmigrations.md) - фазы M9-M11
 
 ---

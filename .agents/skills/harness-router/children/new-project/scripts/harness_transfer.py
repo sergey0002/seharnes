@@ -26,6 +26,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import SimpleNamespace
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "harness-core/scripts"))
 
@@ -429,6 +430,20 @@ def _check_approval(plan: dict, plan_bytes: bytes, approved: dict) -> None:
     for entry in required:
         if decisions.get(entry["path"]) not in _allowed_choices(entry):
             raise DecisionError(f"invalid approved decision for {entry['path']}")
+
+
+def _run_export(args) -> tuple[int, dict]:
+    import export_kit
+
+    result = export_kit.export(Path(args.source), Path(args.target), args.profile, args.mode,
+                               project_name=args.project_name,
+                               runtime_deps=not args.skip_runtime_deps,
+                               skip_tools=args.skip_tools,
+                               exclude=tuple(args.exclude), keep=tuple(args.keep),
+                               dry_run=args.dry_run)
+    if args.dry_run:
+        return EXIT_PASSED, result
+    return (EXIT_PASSED if result.get("status") == "passed" else EXIT_NEEDS_DECISION), result
 
 
 def _run_render(args) -> tuple[int, dict]:
@@ -1026,6 +1041,23 @@ def _build_parser() -> argparse.ArgumentParser:
     compact.add_argument("--jsonl", action="store_true")
     compact.add_argument("--non-interactive", action="store_true")
 
+    export_cmd = sub.add_parser("export", help="copy the harness kit into a project")
+    export_cmd.add_argument("--source", type=Path, default=Path("."))
+    export_cmd.add_argument("--target", type=Path, required=True)
+    export_cmd.add_argument("--profile", choices=("core", "developer", "project"), default="developer")
+    export_cmd.add_argument("--mode", choices=("install", "update", "mirror"), default="install")
+    export_cmd.add_argument("--project-name", default="")
+    export_cmd.add_argument("--skip-runtime-deps", action="store_true")
+    export_cmd.add_argument("--skip-tools", action="store_true")
+    export_cmd.add_argument("--exclude", action="append", default=[],
+                            help="relative path or prefix to leave out; repeatable")
+    export_cmd.add_argument("--keep", action="append", default=[],
+                            help="relative path or prefix owned by the target; repeatable")
+    export_cmd.add_argument("--dry-run", action="store_true")
+    export_cmd.add_argument("--yes", action="store_true", help="accepted; export never prompts")
+    export_cmd.add_argument("--jsonl", action="store_true")
+    export_cmd.add_argument("--non-interactive", action="store_true")
+
     adopt = sub.add_parser("adopt", help="preview or commit legacy adoption")
     adopt.add_argument("--target", type=Path)
     adopt.add_argument("--root", action="append")
@@ -1063,6 +1095,8 @@ def main(argv: list[str] | None = None) -> int:
             code, payload = _run_render(args)
         elif args.command == "compact":
             code, payload = _run_compact(args)
+        elif args.command == "export":
+            code, payload = _run_export(args)
         elif args.command == "adopt":
             code, payload = _run_adopt(args)
         else:

@@ -29,7 +29,7 @@ VS Code), у каждого свой stdio-процесс `codebase-memory-mcp`,
 [mcp-codebase-memory](./mcp/codebase-memory-mcp.mdc).
 
 ```
-index_repository(repo_path="/home/newuser/projects/copytrust/testdeploydocker", mode="fast")
+index_repository(repo_path="/home/newuser/projects/seharnes", mode="fast")
 ```
 
 `fast` достаточно: нужна структура графа (файлы, классы, вызовы функций), а не
@@ -50,13 +50,13 @@ index_repository(repo_path="/home/newuser/projects/copytrust/testdeploydocker", 
 ## Проверка
 
 ```
-index_status(project="home-newuser-projects-copytrust-testdeploydocker")
+index_status(project="home-newuser-projects-seharnes")
 ```
 
 Или без MCP-сервера:
 
 ```bash
-codebase-memory-mcp cli --json index_status --project home-newuser-projects-copytrust-testdeploydocker
+codebase-memory-mcp cli --json index_status --project home-newuser-projects-seharnes
 codebase-memory-mcp cli --json list_projects --detail stats
 ```
 

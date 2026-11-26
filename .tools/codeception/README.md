@@ -4,13 +4,11 @@
 **[`.doc/qa/browser-setup.md`](../../.doc/qa/browser-setup.md)**.
 
 **Порядок проведения тестов** (PHPUnit → Codeception → проверка после прогона):
-**[cicd.md §3.5](../../.doc/architecture/cicd.md#35-как-проводить-проверку-порядок-работ)**.
+**cicd.md §3.5 (`../../.doc/architecture/cicd.md#35-как-проводить-проверку-порядок-работ`; missing in kit)**.
 
 ## Подготовка
-0. Для локального запуска:
-   - `Установить php 8.3: powershell -c "& ([ScriptBlock]::Create((irm 'https://www.php.net/include/download-instructions/windows.ps1'))) -Version 8.3"`
-   - `Включить в php.ini extesnsion: curl, mbstring, openssl, zip, pdo_mysql`
-   - `Установить composer https://getcomposer.org/Composer-Setup.exe`
+0. Для установки зависимостей нужен Composer. Сам Codeception запускается в
+   Docker-образе `copytrust-codecept:8.3`; PHP хоста не выбирает runtime тестов.
 1. Установить зависимости для codeception:
    - `cd .tools/codeception`
    - `composer install`
@@ -41,23 +39,23 @@ bash .agents/skills/task-router/children/testing-router/children/browser-verify/
 3. Из корня проекта:
 
 ```bash
-php -d register_argc_argv=1 .tools/codeception/vendor/bin/codecept -c .tools/codeception/codeception.yml \
-  run Acceptance --env chromedriver -g <group>
+bash .agents/skills/task-router/children/testing-router/children/test-task/scripts/task-test.sh <N> \
+  --phase browser --group <group>
 ```
 
-Флаг `-d register_argc_argv=1` обязателен: Codeception проверяет эту настройку и без неё падает с `register_argc_argv must be set to On`. Раннер `task-test.sh` уже передаёт флаг сам.
+Команда запускает закреплённый PHP 8.3 runner. Прямой запуск `php vendor/bin/codecept` на хосте не используется.
 
 Без Selenium на 4444 можно опустить `--env chromedriver` и использовать порт
 `9515` из `.env` (см. П-2 в browser-setup).
 
-## WSL без PHP на хосте (docker-dev)
+## WSL с локальным Chromedriver (docker-dev)
 
-Если `which php` пусто, а стенд на `:8030` поднят в Docker - гоняй Codeception
-из контейнера `php:8.3-cli` в сети Selenium. Полная команда и `.env`:
-[browser-setup.md §WSL без PHP CLI](../../.doc/qa/browser-setup.md#wsl-без-php-cli-на-хосте-docker-dev--selenium).
+Codeception всегда работает в Docker-образе `copytrust-codecept:8.3`, а браузер
+подключается к локальному Chromedriver на `:9515`. Полная схема и `.env`:
+[browser-setup.md: изолированный Codeception runner](../../.doc/qa/browser-setup.md).
 
 Канон тестов в git: `tools/codeception/`. Локальный vendor: `.tools/codeception/`.
-После прогона на dev: `curl :8030/` должен быть 200 (см. [cicd §3.6](../../.doc/architecture/cicd.md#36-данные-acceptance-на-dev-стенде-гигиена)).
+После прогона на dev: `curl :8030/` должен быть 200 (см. cicd §3.6 (`../../.doc/architecture/cicd.md#36-данные-acceptance-на-dev-стенде-гигиена`; missing in kit)).
 
 ## Windows (классический путь)
 
